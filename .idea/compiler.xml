@@ -7,10 +7,12 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="rabbitMQ" />
+        <module name="Apps" />
         <module name="NettyServer" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="Apps" target="11" />
       <module name="NettyServer" target="11" />
       <module name="rabbitmq" target="11" />
       <module name="rabbitMQ" target="11" />

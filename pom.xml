@@ -11,6 +11,7 @@
   <modules>
     <module>NettyServer</module>
     <module>rabbitMQ</module>
+      <module>Apps</module>
   </modules>
 
   <name>Spotify</name>
