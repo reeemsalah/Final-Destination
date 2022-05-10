@@ -9,13 +9,17 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import scalable.com.shared.Hook;
+
 public class RabbitMQCommunicatorApp extends RabbitMQCommunicator {
     private String queueName;
     private String consumerTag;
-      public RabbitMQCommunicatorApp(String queueName,Channel channel) throws IOException {
+    private final Hook appHook;
+      public RabbitMQCommunicatorApp(String queueName,Channel channel,Hook appHook) throws IOException {
           super(channel);
           this.queueName=queueName;
           this.declareSpecificQueue(queueName);
+          this.appHook= appHook;
       }
     public void startListening() throws IOException {
         // listening to the request queue, ready to consume a request and process it
@@ -39,36 +43,17 @@ public class RabbitMQCommunicatorApp extends RabbitMQCommunicator {
         // creating a callback which would invoke the required command specified by the
         // JSON request message
         // adding the corrID of the response, which is the corrID of the request
+             appHook.send(consumerTag,delivery);
+        
+    }
+    public void sendResponse(Delivery delivery,String response) throws IOException {
         AMQP.BasicProperties replyProps = new AMQP.BasicProperties.Builder()
                 .correlationId(delivery.getProperties().getCorrelationId()).build();
+        channel.basicPublish("", delivery.getProperties().getReplyTo(), replyProps,
+                response.getBytes(StandardCharsets.UTF_8));
 
-        String response = "";
-        try {
-            // invoking command
-            String req = new String(delivery.getBody(), StandardCharsets.UTF_8);
-
-            System.out.println("App: request: " + req);
-
-            // TODO do i call the command function ? 
-            JSONParser parser = new JSONParser();
-            org.json.simple.JSONObject propertiesJson = (org.json.simple.JSONObject) parser.parse(req);
-            Object commandName = propertiesJson.get("functionName");
-
-            response += executor.apply((String) commandName, new JSONObject(req));
-
-            System.out.println("Sending: " + response);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        } finally {
-            // sending response message to the response queue, which is defined by the
-            // request message's properties
-            channel.basicPublish("", delivery.getProperties().getReplyTo(), replyProps,
-                    response.getBytes(StandardCharsets.UTF_8));
-
-            // sending a manual acknowledgement of sending the response
-            channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
-
-        }
+        // sending a manual acknowledgement of sending the response
+        channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
     }
 
 }
