@@ -1,4 +1,4 @@
-package scalable.com.shared;
+package scalable.com.Interfaces;
 
 
 import com.rabbitmq.client.Delivery;

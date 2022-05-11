@@ -1,7 +1,8 @@
 package scalable.com.rabbitMQ;
 
 import com.rabbitmq.client.Connection;
-import scalable.com.shared.Hook;
+import scalable.com.Interfaces.Hook;
+
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;

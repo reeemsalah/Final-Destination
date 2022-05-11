@@ -3,13 +3,12 @@ package scalable.com.rabbitMQ;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Delivery;
-import org.json.JSONObject;
+import scalable.com.Interfaces.Hook;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-import scalable.com.shared.Hook;
+
+
 
 public class RabbitMQCommunicatorApp extends RabbitMQCommunicator {
     private String queueName;

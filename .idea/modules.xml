@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Apps/Apps.iml" filepath="$PROJECT_DIR$/Apps/Apps.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Apps/Apps.Apps.iml" filepath="$PROJECT_DIR$/Apps/Apps.Apps.iml" />
+      <module fileurl="file://$PROJECT_DIR$/user_app/Apps.user_app.iml" filepath="$PROJECT_DIR$/user_app/Apps.user_app.iml" />
       <module fileurl="file://$PROJECT_DIR$/NettyServer/NettyServer.iml" filepath="$PROJECT_DIR$/NettyServer/NettyServer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Shared/Shared.iml" filepath="$PROJECT_DIR$/Shared/Shared.iml" />
       <module fileurl="file://$PROJECT_DIR$/Spotify.iml" filepath="$PROJECT_DIR$/Spotify.iml" />
       <module fileurl="file://$PROJECT_DIR$/rabbitMQ/rabbitMQ.iml" filepath="$PROJECT_DIR$/rabbitMQ/rabbitMQ.iml" />
     </modules>
