@@ -33,12 +33,11 @@ protected ClassManager classManager;
 
 //read the .properties file and set the properties variable
 
-protected abstract void getProperties();
 protected abstract String getAppName();
 
-protected void start() throws IOException, TimeoutException, ClassNotFoundException {
+protected  void start() throws IOException, TimeoutException, ClassNotFoundException {
     appController=new Controller(this);
-    this.getProperties();
+   
     this.initRabbitMQ();
     this.classManager.init();
     this.threadsManager=new ThreadPoolManager();
