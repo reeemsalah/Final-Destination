@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Properties;
 import java.util.concurrent.TimeoutException;
 
@@ -33,8 +34,8 @@ public class Server {
     static final int PORT = Integer.parseInt(System.getProperty("port", SSL ? "8443" : "8080"));
     public static final AttributeKey<HttpRequest> REQ_KEY = AttributeKey.valueOf("req");
     public static final AttributeKey<String> QUEUE_KEY = AttributeKey.valueOf("queue");
-    public static final ArrayList<String> apps = new ArrayList<>(Arrays.asList("example", "thread", "subthread", "recommendation", "notification", "chat", "search", "user", "authentication", "useraction"));
-
+    public static  ArrayList<String> apps ;
+    public static  Properties p;
     public static final int nThreads = 8;
     protected static final EventExecutorGroup queueExecutorGroup = new DefaultEventExecutorGroup(nThreads);
     public static EventLoopGroup bossGroup;
@@ -42,13 +43,26 @@ public class Server {
     protected static RabbitMQServer rabbitMQServer;
     private static void initializeRabbitMQ() throws IOException, TimeoutException {
         
-        Properties p=new Properties();
-        p.load(Server.class.getClassLoader().getResourceAsStream("ServerConfig.properties"));
+        
+
         rabbitMQServer=new RabbitMQServer(p.getProperty("rabbitmq_host"));
+    }
+    private static void loadProperties() throws IOException {
+        p=new Properties();
+        p.load(Server.class.getClassLoader().getResourceAsStream("ServerConfig.properties"));
+
+       
+    }
+    private static  void loadApps(){
+        String[] temp=p.getProperty("apps").split(",");
+        apps=new ArrayList<String>();
+        Collections.addAll(apps,temp);
     }
     public static void main(String[] args) throws CertificateException, IOException, InterruptedException, TimeoutException {
         // Configure SSL.
-        
+
+            loadProperties();
+           loadApps();
         final SslContext sslCtx;
         if (SSL) {
             SelfSignedCertificate ssc = new SelfSignedCertificate();

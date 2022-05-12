@@ -32,14 +32,20 @@ protected ThreadPoolManager threadsManager;
 protected ClassManager classManager;
 
 //read the .properties file and set the properties variable
-
+    public RabbitMQCommunicatorApp getRabbitMQCommunicatorApp(){
+        return  this.rabbitMQCommunicatorApp;
+    }
 protected abstract String getAppName();
-
+protected abstract void initProperties();
+protected abstract void initClassManager();
 protected  void start() throws IOException, TimeoutException, ClassNotFoundException {
+    
+      initProperties();
+      initClassManager();
     appController=new Controller(this);
    
     this.initRabbitMQ();
-    this.classManager.init();
+    
     this.threadsManager=new ThreadPoolManager();
      
     appController.start();
@@ -47,14 +53,14 @@ protected  void start() throws IOException, TimeoutException, ClassNotFoundExcep
 protected  void initRabbitMQ() throws IOException, TimeoutException {
     Hook hook=this::appHook;
     this.rabbitMQApp=new RabbitMQApp(properties.getProperty("rabbitMQ_host"));
-    this.rabbitMQCommunicatorApp=this.rabbitMQApp.getNewCommunicator(this.getAppName().toUpperCase()+"App",hook);
+    this.rabbitMQCommunicatorApp=this.rabbitMQApp.getNewCommunicator(this.getAppName().toUpperCase()+"Server",hook);
     
 }
 public void appHook(String consumerTag, Delivery delivery) throws IOException {
   //this method is called whenever this app's rabbitmq receives a message
    
 
-    String response = "";
+    String response = "{\"statusCode\": 200, \"msg\": \"done\"}";
     try {
         // invoking command
         String req = new String(delivery.getBody(), StandardCharsets.UTF_8);

@@ -14,7 +14,13 @@ public void start(){
     ThreadPoolManager threadPool=this.app.getThreadPool();
     //TODO get  the thread count from properties
     threadPool.initThreadPool(ServiceConstants.DEFAULT_THREADS_COUNT);
-
+    try {
+        this.app.getRabbitMQCommunicatorApp().startListening();
+    }
+    catch (Exception e){
+        System.out.println(e.getMessage());
+        System.exit(1);
+    }
 }
 
 

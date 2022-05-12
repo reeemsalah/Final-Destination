@@ -18,6 +18,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import Netty.Server;
+import scalable.com.shared.classes.JWTHandler;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -41,6 +42,35 @@ public class RequestHandler extends SimpleChannelInboundHandler<HttpObject> {
 
     private static boolean isEmptyHttpContent(HttpContent httpContent) {
         return httpContent.equals(LastHttpContent.EMPTY_LAST_CONTENT);
+    }
+
+    private void errorResponse(ChannelHandlerContext ctx, int code, String msg) {
+        JSONObject response = new JSONObject().put("statusCode", code).put("msg", msg);
+        ByteBuf content = Unpooled.copiedBuffer(response.toString(), CharsetUtil.UTF_8);
+        ctx.pipeline().context("QueueHandler").fireChannelRead(content.copy());
+    }
+
+    private JSONObject getHeaders() {
+        headers = new JSONObject();
+        req.headers().entries().forEach(entry -> headers.put(entry.getKey(), entry.getValue()));
+        return headers;
+    }
+
+    private JSONObject getToken() {
+        
+        String authHeader = headers.has("Authorization") ? headers.getString("Authorization") : null;
+        JSONObject authenticationParams = JWTHandler.getUnauthorizedAuthParams();
+        if (authHeader != null) {
+            String[] auth = authHeader.split(" ");
+            if (auth.length > 1) {
+                authenticationParams = JWTHandler.decodeToken(auth[1]);
+            }
+        }
+         JSONObject returnObject=new JSONObject();
+        returnObject.put(JWTHandler.TOKEN_PAYLOAD,authenticationParams.get(JWTHandler.TOKEN_PAYLOAD));
+        returnObject.put(JWTHandler.IS_AUTHENTICATED,authenticationParams.get(JWTHandler.IS_AUTHENTICATED));
+        System.out.println(returnObject.toString());
+        return returnObject ;
     }
     private String getQueueName(){
         System.out.println("getting queueName");
@@ -69,8 +99,11 @@ public class RequestHandler extends SimpleChannelInboundHandler<HttpObject> {
         request.put("uriParams", uriParams);
         request.put("methodType", methodType);
         request.put("headers", headers);
+        request.put("commandName",commandName);
+        request.put(JWTHandler.IS_AUTHENTICATED,token.get(JWTHandler.IS_AUTHENTICATED));
+        request.put(JWTHandler.TOKEN_PAYLOAD,token.get(JWTHandler.TOKEN_PAYLOAD));
 
-
+        System.out.println(request.toString());
         if (requestDecoder != null) {
             JSONObject httpData = readHttpData();
             httpData.keySet().forEach(key -> request.put(key, httpData.getJSONObject(key)));
@@ -162,28 +195,7 @@ public class RequestHandler extends SimpleChannelInboundHandler<HttpObject> {
                 '}';
     }
 
-    private void errorResponse(ChannelHandlerContext ctx, int code, String msg) {
-        JSONObject response = new JSONObject().put("statusCode", code).put("msg", msg);
-        ByteBuf content = Unpooled.copiedBuffer(response.toString(), CharsetUtil.UTF_8);
-        ctx.pipeline().context("QueueHandler").fireChannelRead(content.copy());
-    }
 
-    private JSONObject getHeaders() {
-        headers = new JSONObject();
-        req.headers().entries().forEach(entry -> headers.put(entry.getKey(), entry.getValue()));
-        return headers;
-    }
-
-    private JSONObject getToken() {
-        // JWT token
-        // set token if auth header is set
-
-        String authHeader = headers.has("Authorization") ? headers.getString("Authorization") : null;
-        
-       
-        //request.put("authenticationParams", authHeader);
-        return new JSONObject().put("token",authHeader);
-    }
 
     private JSONObject readHttpData() throws IOException, JSONException {
         JSONObject data = new JSONObject();

@@ -19,10 +19,12 @@ public class RabbitMQCommunicatorApp extends RabbitMQCommunicator {
           this.queueName=queueName;
           this.declareSpecificQueue(queueName);
           this.appHook= appHook;
+          
       }
     public void startListening() throws IOException {
         // listening to the request queue, ready to consume a request and process it
         // using the above callback
+        
         consumerTag = channel.basicConsume(queueName, false, this::onDelivery, (consumerTag -> {
         }));
     }
@@ -42,6 +44,7 @@ public class RabbitMQCommunicatorApp extends RabbitMQCommunicator {
         // creating a callback which would invoke the required command specified by the
         // JSON request message
         // adding the corrID of the response, which is the corrID of the request
+        System.out.println("hereeee");
              appHook.send(consumerTag,delivery);
         
     }
