@@ -13,8 +13,7 @@
     <module>rabbitMQ</module>
       <module>Apps</module>
       <module>Shared</module>
-    <module>userApp</module>
-    <module>userApp</module>
+    
     <module>user_app</module>
   </modules>
 
@@ -50,7 +49,14 @@
       <artifactId>json</artifactId>
       <version>20210307</version>
     </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-hibernate-validator</artifactId>
+      <version>2.9.0.Final</version>
+    </dependency>
+
   </dependencies>
+
 
   <build>
     <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->

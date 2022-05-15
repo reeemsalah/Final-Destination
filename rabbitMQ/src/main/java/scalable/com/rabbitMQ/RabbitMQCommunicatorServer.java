@@ -51,6 +51,7 @@ public class RabbitMQCommunicatorServer extends RabbitMQCommunicator {
 
     public String awaitResponse(String corrId, String targetQueue) throws IOException, InterruptedException {
         // Create a blocking queue to put the expected response in.
+        System.out.println("awaiting response");
         final BlockingQueue<String> response = new ArrayBlockingQueue<>(1);
 
 

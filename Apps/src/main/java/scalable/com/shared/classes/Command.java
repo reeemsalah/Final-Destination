@@ -1,4 +1,9 @@
 package scalable.com.shared.classes;
 
-public class Command {
+import org.json.JSONObject;
+
+public abstract class Command {
+     public abstract String getCommandName();
+    public abstract String execute(JSONObject request);
+    
 }
