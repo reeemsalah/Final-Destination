@@ -19,7 +19,7 @@
       <module name="NettyServer" target="11" />
       <module name="rabbitmq" target="11" />
       <module name="rabbitMQ" target="11" />
-      <module name="Shared" target="11" />
+      <module name="Shared" target="15" />
       <module name="Spotify" target="1.8" />
       <module name="userApp" target="11" />
     </bytecodeTargetLevel>
