@@ -66,6 +66,6 @@ public class Login extends UserCommand{
 
     @Override
     public String getCommandName() {
-        return "login";
+        return "Login";
     }
 }
