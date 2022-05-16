@@ -227,7 +227,7 @@ package-lock.json
 .classpath
 *.env
 config.json
-.idea/dataSources.xml
+.idea/
 
 
 
