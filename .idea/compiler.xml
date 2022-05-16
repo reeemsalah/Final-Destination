@@ -7,13 +7,14 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="Shared" />
-        <module name="Apps.Apps" />
         <module name="rabbitMQ" />
+        <module name="Apps" />
         <module name="NettyServer" />
-        <module name="Apps.user_app" />
+        <module name="user_app" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="Apps" target="11" />
       <module name="Apps.Apps" target="11" />
       <module name="Apps.user_app" target="11" />
       <module name="NettyServer" target="11" />
@@ -21,6 +22,7 @@
       <module name="rabbitMQ" target="11" />
       <module name="Shared" target="15" />
       <module name="Spotify" target="1.8" />
+      <module name="user_app" target="11" />
       <module name="userApp" target="11" />
     </bytecodeTargetLevel>
   </component>
