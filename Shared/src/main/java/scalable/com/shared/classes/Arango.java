@@ -43,7 +43,7 @@ public class Arango implements PooledDatabaseClient {
     public void createPool(int maxConnections) {
 
         final String arangoHost = EnvVariablesUtils.getOrDefaultEnvVariable("ARANGO_HOST", ArangoDefaults.DEFAULT_HOST);
-        final String arango_user = EnvVariablesUtils.getOrDefaultEnvVariable("ARANGO_USER", "root");
+        final String arango_user = EnvVariablesUtils.getOrDefaultEnvVariable("ARANGO_USER", ArangoDefaults.DEFAULT_USER);
         final String arango_password = EnvVariablesUtils.getOrDefaultEnvVariable("ARANGO_PASSWORD", "");
                                     //System.getenv("ARANGO_USER") , System.getenv("ARANGO_PASSWORD")
         
