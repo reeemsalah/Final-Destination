@@ -179,6 +179,14 @@ public class Arango implements PooledDatabaseClient {
         arangoDB.db(dbName).collection(collectionName).insertDocument(baseEdgeDocument);
         return readEdgeDocument(dbName, collectionName, baseEdgeDocument.getKey());
     }
+
+    public BaseEdgeDocument createEdgeDocument(String dbName, String collectionName, String to, String from) {
+        BaseEdgeDocument baseEdgeDocument = new BaseEdgeDocument();
+        baseEdgeDocument.setFrom(from);
+        baseEdgeDocument.setTo(to);
+        arangoDB.db(dbName).collection(collectionName).insertDocument(baseEdgeDocument);
+        return readEdgeDocument(dbName, collectionName, baseEdgeDocument.getKey());
+    }
     
 
     public BaseDocument readDocument(String dbName, String collectionName, String documentKey) {

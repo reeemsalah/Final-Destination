@@ -73,12 +73,12 @@ public class RequestHandler extends SimpleChannelInboundHandler<HttpObject> {
         return returnObject ;
     }
     private String getQueueName(){
-        System.out.println("getting queueName");
+      
         String[] queueName=this.uri.split("/");
         return queueName[1];
     }
     private String getCommandName(){
-        System.out.println("getting commandName");
+       
         String[] queueName=this.uri.split("/");
         return queueName[2];
     }
