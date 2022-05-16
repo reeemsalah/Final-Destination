@@ -23,10 +23,10 @@ public class QueueHandler extends SimpleChannelInboundHandler<Object> {
         String queueName = ctx.channel().attr(Server.QUEUE_KEY).get();
 
         queueName = queueName.toUpperCase();
-        //the queue the Server should wait for response
+       
         String reqQueueName = queueName + "Server";
 
-        //the queue the app is listening to
+        
         String resQueueName = queueName + "App";
         try (RabbitMQCommunicatorServer channel = Server.rabbitMQServer.getNewCommunicator()) {
             String response = channel.placeRequestInQueue(request, reqQueueName, resQueueName);

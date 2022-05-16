@@ -77,6 +77,17 @@ public abstract class CommandVerifier extends Command {
          this.validateAttributeTypes();
         return true;
     }
+    public void validateAnnotations() throws ValidationException {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
+        Set<ConstraintViolation<Object>> violations = validator.validate(this);
+        if(!violations.isEmpty()) {
+            String errorMessage = violations.stream()
+                    .map(cv -> cv.getMessage())
+                    .collect(Collectors.joining(", "));
+            throw new ValidationException(errorMessage);
+        }
+    }
 
     public abstract String getRestAPIMethod();
     public abstract boolean isAuthNeeded();
