@@ -51,7 +51,27 @@ public abstract class CommandVerifier extends Command {
     }
     
     public abstract String execute();
-    public abstract void validateAttributesNumber() throws IOException, ValidationException;
+   // public abstract void validateAttributesNumber() throws IOException, ValidationException;
+
+   
+    public void validateAttributesNumber() throws IOException, ValidationException {
+
+        Properties prop = new Properties();
+        prop.load(CommandVerifier.class.getClassLoader().getResourceAsStream(this.getCommandName() + ".properties"));
+        
+
+        for (Map.Entry<Object, Object> e : prop.entrySet()) {
+            System.out.println("\"" +e.getValue()+"\"");
+            if (!body.has( (String) e.getValue() )) {
+
+                throw new ValidationException("Attribute: "+e.toString()+" is missing");
+            }
+        }
+
+
+
+
+    }
     public boolean verifyBody() throws ValidationException, IOException {
         this.validateAttributesNumber();
          this.validateAttributeTypes();

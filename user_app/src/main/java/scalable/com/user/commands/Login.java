@@ -2,6 +2,7 @@ package scalable.com.user.commands;
 
 import scalable.com.exceptions.ValidationException;
 import scalable.com.shared.classes.CommandVerifier;
+import scalable.com.shared.classes.Responder;
 
 import java.io.IOException;
 import java.util.Map;
@@ -25,8 +26,8 @@ public class Login extends UserCommand{
 
     @Override
     public String execute() {
-        System.out.println("henaaaaaa!!!!");
-        return "henaaaa";
+       
+        return Responder.makeMsgResponse("wala wala wala, el so7ab yala");
     }
 
    
