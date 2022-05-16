@@ -18,15 +18,18 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Min;
 public class Login extends UserCommand{
     @NotBlank(message="username should not be empty")
+
       private String username;
     @NotBlank(message="password should not be empty")
       private String password;
-      
+    
+     
 
 
     @Override
     public String execute() {
-       
+
+                                     
         return Responder.makeMsgResponse("wala wala wala, el so7ab yala");
     }
 
@@ -53,15 +56,8 @@ public class Login extends UserCommand{
         catch (Exception e){
             throw new ValidationException("attributes data types are wrong");
         }
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        Validator validator = factory.getValidator();
-        Set<ConstraintViolation<Object>> violations = validator.validate(this);
-        if(!violations.isEmpty()) {
-            String errorMessage = violations.stream()
-                    .map(cv -> cv.getMessage())
-                    .collect(Collectors.joining(", "));
-            throw new ValidationException(errorMessage);
-        }
+        this.validateAnnotations();
+
     }
 
     @Override

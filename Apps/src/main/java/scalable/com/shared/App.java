@@ -8,10 +8,7 @@ import org.json.simple.parser.ParseException;
 import scalable.com.Interfaces.Hook;
 import scalable.com.rabbitMQ.RabbitMQApp;
 import scalable.com.rabbitMQ.RabbitMQCommunicatorApp;
-import scalable.com.shared.classes.ClassManager;
-import scalable.com.shared.classes.Command;
-import scalable.com.shared.classes.Controller;
-import scalable.com.shared.classes.ThreadPoolManager;
+import scalable.com.shared.classes.*;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -31,13 +28,28 @@ protected Controller appController;
 protected ThreadPoolManager threadsManager;
 protected ClassManager classManager=new ClassManager();
 
+
 //read the .properties file and set the properties variable
-    public RabbitMQCommunicatorApp getRabbitMQCommunicatorApp(){
+public RabbitMQCommunicatorApp getRabbitMQCommunicatorApp(){
         return  this.rabbitMQCommunicatorApp;
     }
 protected abstract String getAppName();
-    
-//protected abstract void initClassManager();
+  
+    protected void dbInit() throws IOException {
+        Properties properties=new Properties();
+        properties.load(App.class.getClassLoader().getResourceAsStream("db.properties"));
+                if(properties.contains("arangodb")) {
+                    System.out.println(" i created the database !!!!");
+                    Arango arango = Arango.getInstance();
+                    arango.createPool(1);
+                    arango.createDatabaseIfNotExists("spotifyArangoDb");
+                }
+                if(properties.contains("postgres")){
+                    //TODO initialize postgres
+                }
+
+    }
+
 protected  void start() throws IOException, TimeoutException, ClassNotFoundException {
     
       initProperties();

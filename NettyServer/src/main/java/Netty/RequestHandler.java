@@ -108,7 +108,7 @@ public class RequestHandler extends SimpleChannelInboundHandler<HttpObject> {
             JSONObject httpData = readHttpData();
             httpData.keySet().forEach(key -> request.put(key, httpData.getJSONObject(key)));
         }
-
+             System.out.println(request);
         return request;
     }
 
@@ -132,7 +132,7 @@ public class RequestHandler extends SimpleChannelInboundHandler<HttpObject> {
             headers = getHeaders();
             token=getToken();
             commandName=getCommandName();
-            System.out.println("token: " +token+" queueName: "+queueName+" command name: "+commandName);
+            //System.out.println("token: " +token+" queueName: "+queueName+" command name: "+commandName);
             ctx.channel().attr(Server.REQ_KEY).set(req);
             isFormData = headers.getString("Content-Type").split(";")[0].equals("multipart/form-data");
         }

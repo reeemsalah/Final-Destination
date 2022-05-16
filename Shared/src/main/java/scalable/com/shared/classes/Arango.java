@@ -28,10 +28,12 @@ import static org.junit.Assert.*;
 public class Arango implements PooledDatabaseClient {
     private static Arango instance;
     private static ArangoDB.Builder builder;
-    private ArangoDB arangoDB;
+    private  ArangoDB arangoDB;
+    String dbName;
 
-    private Arango() {
+    public Arango() {
         super();
+        
     }
 
     @Override
@@ -55,7 +57,8 @@ public class Arango implements PooledDatabaseClient {
                 .serializer(new ArangoJack())
                 .connectionTtl(null)
                 .keepAliveInterval(600);
-        System.out.println(builder);
+        System.out.println(builder.toString());
+        System.out.println(arangoDB);
         connect();
     }
 
@@ -73,7 +76,7 @@ public class Arango implements PooledDatabaseClient {
         }
         return instance;
     }
-
+     
     // For the purpose of running tests
     public static Arango getConnectedInstance() {
 
@@ -107,6 +110,7 @@ public class Arango implements PooledDatabaseClient {
 
     private void connect() {
         arangoDB = builder.build();
+        System.out.println(arangoDB);
     }
 
     private boolean isConnected() {
@@ -131,6 +135,7 @@ public class Arango implements PooledDatabaseClient {
     }
 
     public boolean createDatabase(String dbName) {
+        this.dbName=dbName;
         return arangoDB.createDatabase(dbName);
     }
 
@@ -143,11 +148,14 @@ public class Arango implements PooledDatabaseClient {
     }
 
     public void createDatabaseIfNotExists(String dbName) {
+
         if (!databaseExists(dbName))
+            
             createDatabase(dbName);
     }
 
     public void createCollection(String dbName, String collectionName, boolean isEdgeCollection) {
+        System.out.println(arangoDB);
         arangoDB.db(dbName).createCollection(collectionName, new CollectionCreateOptions().type(isEdgeCollection ? CollectionType.EDGES : CollectionType.DOCUMENT));
     }
 
@@ -156,6 +164,7 @@ public class Arango implements PooledDatabaseClient {
     }
 
     public boolean collectionExists(String dbName, String collectionName) {
+        System.out.println(arangoDB+"in collection");
         return arangoDB.db(dbName).collection(collectionName).exists();
     }
 
