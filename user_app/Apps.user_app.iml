@@ -13,6 +13,9 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="Apps.Apps" />
     <orderEntry type="module" module-name="rabbitMQ" />
+    <orderEntry type="module" module-name="Shared" />
+    <orderEntry type="module" module-name="Apps.Apps" />
+    <orderEntry type="module" module-name="rabbitMQ" />
     <orderEntry type="library" name="Maven: com.googlecode.json-simple:json-simple:1.1.1" level="project" />
     <orderEntry type="module" module-name="Shared" />
     <orderEntry type="library" name="Maven: com.auth0:java-jwt:4.0.0-beta.0" level="project" />
