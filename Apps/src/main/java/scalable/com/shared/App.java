@@ -27,6 +27,7 @@ protected RabbitMQCommunicatorApp rabbitMQCommunicatorApp;
 protected Controller appController;
 protected ThreadPoolManager threadsManager;
 protected ClassManager classManager=new ClassManager();
+protected PostgresConnection sqlDb;
 
 
 //read the .properties file and set the properties variable
@@ -39,13 +40,16 @@ protected abstract String getAppName();
         Properties properties=new Properties();
         properties.load(App.class.getClassLoader().getResourceAsStream("db.properties"));
                 if(properties.contains("arangodb")) {
-                    System.out.println(" i created the database !!!!");
+                    System.out.println(" i created arango db !!!!");
                     Arango arango = Arango.getInstance();
                     arango.createPool(1);
                     arango.createDatabaseIfNotExists("spotifyArangoDb");
                 }
                 if(properties.contains("postgres")){
                     //TODO initialize postgres
+                    System.out.println("I created postgres db");
+                    sqlDb=new PostgresConnection();
+                    sqlDb.initSource();
                 }
 
     }
