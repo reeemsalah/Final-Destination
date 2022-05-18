@@ -34,7 +34,7 @@ public class SignUp extends UserCommand  {
 
         System.out.println("iam in execute");
         
-
+        
 
 //        Arango arango=Arango.getInstance();
 //        arango.createCollectionIfNotExists("spotifyArangoDb","user",false);
