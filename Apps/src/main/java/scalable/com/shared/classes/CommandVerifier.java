@@ -75,6 +75,7 @@ public abstract class CommandVerifier extends Command {
     public boolean verifyBody() throws ValidationException, IOException {
         this.validateAttributesNumber();
          this.validateAttributeTypes();
+        this.validateAnnotations();
         return true;
     }
     public void validateAnnotations() throws ValidationException {
