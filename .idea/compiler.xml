@@ -6,6 +6,7 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="chat_app" />
         <module name="Shared" />
         <module name="Apps.Apps" />
         <module name="rabbitMQ" />
@@ -16,6 +17,7 @@
     <bytecodeTargetLevel>
       <module name="Apps.Apps" target="11" />
       <module name="Apps.user_app" target="11" />
+      <module name="chat_app" target="11" />
       <module name="NettyServer" target="11" />
       <module name="rabbitmq" target="11" />
       <module name="rabbitMQ" target="11" />
