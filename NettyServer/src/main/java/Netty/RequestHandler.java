@@ -20,6 +20,7 @@ import org.json.JSONObject;
 import Netty.Server;
 import scalable.com.shared.classes.JWTHandler;
 
+import java.awt.desktop.SystemEventListener;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -103,9 +104,12 @@ public class RequestHandler extends SimpleChannelInboundHandler<HttpObject> {
         request.put(JWTHandler.IS_AUTHENTICATED,token.get(JWTHandler.IS_AUTHENTICATED));
         request.put(JWTHandler.TOKEN_PAYLOAD,token.get(JWTHandler.TOKEN_PAYLOAD));
 
-        System.out.println(request.toString());
+        
         if (requestDecoder != null) {
+            System.out.println(6);
             JSONObject httpData = readHttpData();
+            System.out.println(7);
+            //System.out.println(httpData.getString("email")+"httpdataaaa");
             httpData.keySet().forEach(key -> request.put(key, httpData.getJSONObject(key)));
         }
              System.out.println(request);
@@ -137,7 +141,7 @@ public class RequestHandler extends SimpleChannelInboundHandler<HttpObject> {
             isFormData = headers.getString("Content-Type").split(";")[0].equals("multipart/form-data");
         }
         if (msg instanceof HttpContent && !isFormData) {
-            
+                 System.out.println(1);
             HttpContent content = (HttpContent) msg;
             if (isEmptyHttpContent(content))
                 return;
@@ -153,18 +157,20 @@ public class RequestHandler extends SimpleChannelInboundHandler<HttpObject> {
             }
         }
         if (msg instanceof FullHttpRequest) {
-            
+            System.out.println(2);
             if (!methodType.equals("GET") && isFormData) {
+                System.out.println(3);
                 requestDecoder = new HttpPostRequestDecoder((FullHttpRequest) msg);
+                
                 requestDecoder.setDiscardThreshold(0);
             }
         }
         if (msg instanceof LastHttpContent) {
-            
+            System.out.println(4);
             if (queueName != null && Server.apps.contains(queueName.toLowerCase())) {
                 ctx.channel().attr(Server.QUEUE_KEY).set(queueName);
                 try {
-                   
+                    System.out.println(5);
                     JSONObject request = packRequest();
                               System.out.println(request);
                     ByteBuf content = Unpooled.copiedBuffer(request.toString(), CharsetUtil.UTF_8);
@@ -203,8 +209,11 @@ public class RequestHandler extends SimpleChannelInboundHandler<HttpObject> {
         while (requestDecoder.hasNext()) {
             InterfaceHttpData httpData = requestDecoder.next();
             if (httpData.getHttpDataType() == HttpDataType.Attribute) {
+
                 Attribute attribute = (Attribute) httpData;
-                data.put(attribute.getName(), new JSONObject(attribute.getValue()));
+                System.out.println(attribute.getName()+"readHTTPDATA");
+                body.put(attribute.getName(),attribute.getValue());
+                //data.put(attribute.getName(), new JSONObject(attribute.getValue()));
             } else if (httpData.getHttpDataType() == HttpDataType.FileUpload) {
                 FileUpload fileUpload = (FileUpload) httpData;
                 JSONObject jsonFile = new JSONObject();

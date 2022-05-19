@@ -152,7 +152,8 @@ public void appHook(String consumerTag, Delivery delivery) throws IOException {
             final Command commandInstance = (Command) commandClass.getDeclaredConstructor().newInstance();
             // callback responsible for invoking the required method of the command class
             return (String) commandClass.getMethod("execute", req.getClass()).invoke(commandInstance, req);
-        } catch (ClassNotFoundException e) {
+        } 
+        catch (ClassNotFoundException e) {
             
             return "{\"statusCode\": 404, \"msg\": \"Function-Name class: (" + functionName + ") not found\"}";
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException e) {
