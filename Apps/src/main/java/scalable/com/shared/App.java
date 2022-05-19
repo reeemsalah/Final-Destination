@@ -29,6 +29,7 @@ protected ThreadPoolManager threadsManager;
 protected ClassManager classManager=new ClassManager();
 
 
+
 //read the .properties file and set the properties variable
 public RabbitMQCommunicatorApp getRabbitMQCommunicatorApp(){
         return  this.rabbitMQCommunicatorApp;
