@@ -1,18 +1,17 @@
-package main.java.scalable.com.recommendations.commands;
+package com.scalabe.recommendations.commands;
 
 import scalable.com.exceptions.ValidationException;
-import scalable.com.shared.classes.Responder;
 
-public class GetRecommendedMusicTracks extends RecommendationsCommand{
-
+public class GetRecommendedArtists extends  RecommendationsCommand
+{
     @Override
     public String getCommandName() {
-        return "GetRecommendedMusicTracks";
+        return "GetRecommendedArtists";
     }
 
     @Override
     public String execute() {
-        return Responder.makeMsgResponse("Recommended Music Tracks");
+        return null;
     }
 
     @Override
