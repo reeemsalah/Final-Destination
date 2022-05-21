@@ -11,20 +11,14 @@ public  class RecommendationsApp extends App {
     public static Arango arangoPool;
     public static void main(String[] args)throws TimeoutException, IOException, ClassNotFoundException, SQLException {
         RecommendationsApp app=new RecommendationsApp();
-        arangoPool = new Arango();
         app.dbInit();
+        arangoPool =Arango.getConnectedInstance() ;
+        arangoPool.createCollectionIfNotExists("spotifyArangoDb","usersss",true);
+        System.out.println(arangoPool.containsCollection("spotifyArangoDb","usersss"));
         app.start();
 
     }
-    @Override
-    protected void dbInit() throws IOException {
-        Arango arango = Arango.getInstance();
-        arango.createPool(15);
-        arango.createDatabaseIfNotExists("Spotify");
-        arango.createCollectionIfNotExists("Spotify","users",true);
-        arango.createCollectionIfNotExists("Spotify","music_tracks",true);
 
-    }
 
     @Override
     protected String getAppName() {
