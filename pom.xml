@@ -17,6 +17,7 @@
     <module>user_app</module>
     <module>recommendations-app</module>
     <module>notifications-app</module>
+      <module>user_to_user_app</module>
   </modules>
 
   <name>Spotify</name>
