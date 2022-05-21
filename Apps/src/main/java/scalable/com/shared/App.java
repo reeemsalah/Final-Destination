@@ -28,6 +28,8 @@ protected Controller appController;
 protected ThreadPoolManager threadsManager;
 protected ClassManager classManager=new ClassManager();
 protected PostgresConnection sqlDb;
+public static String ARANGO_DB_NAME="spotifyArangoDb";
+
 
 
 //read the .properties file and set the properties variable

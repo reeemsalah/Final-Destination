@@ -69,17 +69,22 @@ public class SignUp extends UserCommand  {
             PostgresConnection.disconnect(null, preparedStatement, connection);
         }
         //System.out.println("db " + dbConn);
-//        
 
-//        Arango arango=Arango.getInstance();
-//        arango.createCollectionIfNotExists("spotifyArangoDb","user",false);
-//        Map<String,Object> attributes=new HashMap<String,Object>();
-//        attributes.put("username",username);
-//        attributes.put("password",password);
-//        BaseDocument baseDocument=new BaseDocument(attributes);
-//
-//        arango.createDocument("spotifyArangoDb","user",baseDocument);
+        try {
+            Arango arango = Arango.getInstance();
+            arango.createCollectionIfNotExists("spotifyArangoDb", "user", false);
+            Map<String, Object> attributes = new HashMap<String, Object>();
+            attributes.put("username", username);
+            attributes.put("password", password);
+            BaseDocument baseDocument = new BaseDocument(attributes);
 
+            arango.createDocument("spotifyArangoDb", "user", baseDocument);
+
+            return null;
+        }catch (Exception e){
+             System.out.println(e.getMessage());
+             Responder.makeErrorResponse(e.getMessage(),400);
+        }
         return null;
     }
 
