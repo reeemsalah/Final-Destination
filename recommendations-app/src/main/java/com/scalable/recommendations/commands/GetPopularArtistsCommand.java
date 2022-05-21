@@ -1,4 +1,4 @@
-package com.scalabe.recommendations.commands;
+package com.scalable.recommendations.commands;
 
 import scalable.com.exceptions.ValidationException;
 import scalable.com.shared.classes.Responder;
@@ -14,6 +14,8 @@ public class GetPopularArtistsCommand extends RecommendationsCommand{
 
     @Override
     public String execute() {
+
+        System.out.println("Respondingg");
         return Responder.makeMsgResponse("Popular Artists");
     }
 
