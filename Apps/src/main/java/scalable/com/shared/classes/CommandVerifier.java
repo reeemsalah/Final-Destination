@@ -55,18 +55,24 @@ public abstract class CommandVerifier extends Command {
 
    
     public void validateAttributesNumber() throws IOException, ValidationException {
+        System.out.println("validating");
+        try {
+            Properties prop = new Properties();
+            prop.load(CommandVerifier.class.getClassLoader().getResourceAsStream(this.getCommandName() + ".properties"));
+            for (Map.Entry<Object, Object> e : prop.entrySet()) {
+                System.out.println("\"" +e.getValue()+"\"");
+                if (!body.has( (String) e.getValue() )) {
 
-        Properties prop = new Properties();
-        prop.load(CommandVerifier.class.getClassLoader().getResourceAsStream(this.getCommandName() + ".properties"));
-        
-
-        for (Map.Entry<Object, Object> e : prop.entrySet()) {
-            System.out.println("\"" +e.getValue()+"\"");
-            if (!body.has( (String) e.getValue() )) {
-
-                throw new ValidationException("Attribute: "+e.toString()+" is missing");
+                    throw new ValidationException("Attribute: "+e.toString()+" is missing");
+                }
             }
         }
+        catch (NullPointerException e){
+           
+            throw new ValidationException("It seems you forgot to create "+this.getCommandName()+".properties file");
+        }
+
+     
 
 
 
@@ -86,6 +92,7 @@ public abstract class CommandVerifier extends Command {
             String errorMessage = violations.stream()
                     .map(cv -> cv.getMessage())
                     .collect(Collectors.joining(", "));
+            System.out.println(errorMessage);
             throw new ValidationException(errorMessage);
         }
     }
