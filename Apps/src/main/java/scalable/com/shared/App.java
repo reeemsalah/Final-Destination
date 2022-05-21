@@ -2,12 +2,17 @@ package scalable.com.shared;
 
 import com.rabbitmq.client.Delivery;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.util.CharsetUtil;
 import org.json.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import scalable.com.Interfaces.Hook;
 import scalable.com.rabbitMQ.RabbitMQApp;
 import scalable.com.rabbitMQ.RabbitMQCommunicatorApp;
+import scalable.com.rabbitMQ.RabbitMQCommunicatorServer;
+import scalable.com.rabbitMQ.RabbitMQServer;
 import scalable.com.shared.classes.*;
 
 import java.io.IOException;
@@ -29,6 +34,8 @@ protected ThreadPoolManager threadsManager;
 protected ClassManager classManager=new ClassManager();
 protected PostgresConnection sqlDb;
 
+
+protected static RabbitMQServer rabbitMQInterAppCommunication;
 
 //read the .properties file and set the properties variable
 public RabbitMQCommunicatorApp getRabbitMQCommunicatorApp(){
@@ -85,6 +92,7 @@ protected  void initRabbitMQ() throws IOException, TimeoutException {
     Hook hook=this::appHook;
     this.rabbitMQApp=new RabbitMQApp(properties.getProperty("rabbitMQ_host"));
     this.rabbitMQCommunicatorApp=this.rabbitMQApp.getNewCommunicator(this.getAppName().toUpperCase()+"Server",hook);
+    rabbitMQInterAppCommunication=new RabbitMQServer(properties.getProperty("rabbitmq_host"));
     
 }
 public void appHook(String consumerTag, Delivery delivery) throws IOException {
@@ -168,6 +176,39 @@ public void appHook(String consumerTag, Delivery delivery) throws IOException {
 public  ThreadPoolManager getThreadPool(){
     return threadsManager;
 }
+
+
+
+public static JSONObject communicateWithApp(String myAppName,String appToCommunicateWith,JSONObject originalRequest,String methodType,String commandName,JSONObject uriParams,JSONObject body){
+
+        appToCommunicateWith=appToCommunicateWith.toUpperCase()+"Server";
+        myAppName=myAppName.toUpperCase();
+        String responseQueueName=myAppName+" InterAppCommunication "+appToCommunicateWith;
+
+        JSONObject newRequestObject=new JSONObject(originalRequest.toString());
+        newRequestObject.put("body",body==null?new JSONObject():body);
+        newRequestObject.put("uriParams",uriParams==null?new JSONObject():uriParams);
+        newRequestObject.put("methodType",methodType);
+        JSONObject authenticated=new JSONObject();
+        authenticated.put("isAuthenticated",true);
+        newRequestObject.put("authenticationParams",authenticated);
+        newRequestObject.put("commandName",commandName);
+
+        
+       
+        try (RabbitMQCommunicatorServer channel = App.rabbitMQInterAppCommunication.getNewCommunicator()) {
+            String response = channel.placeRequestInQueue(newRequestObject.toString(), appToCommunicateWith, responseQueueName);
+            ByteBuf content = Unpooled.copiedBuffer(response, CharsetUtil.UTF_8);
+            return new JSONObject(response);
+            
+        } catch (IOException | TimeoutException | InterruptedException | NullPointerException e) {
+            e.printStackTrace();
+        }
+            return null;
+    }
+
+
+
 }
 
 

@@ -1,7 +1,9 @@
 package scalable.com.user.commands;
 
 import com.arangodb.entity.BaseDocument;
+import org.json.JSONObject;
 import scalable.com.exceptions.ValidationException;
+import scalable.com.shared.App;
 import scalable.com.shared.classes.Arango;
 import scalable.com.shared.classes.PostgresConnection;
 import scalable.com.shared.classes.Responder;
@@ -36,16 +38,27 @@ public class SignUp extends UserCommand  {
 
         System.out.println("iam in execute");
         //cases 1- username already exists 2- email already exists
-
+        
 
         PreparedStatement preparedStatement = null;
         Connection connection = null;
         try {
-            // call userregister(username=>'fady',email=>'fady@guc.com',password=>'123',first_name=>'fady',last_name=>'aziz',isartist=>true)
+//            JSONObject communcateWithApp=new JSONObject(this.origRequest.toString());
+//
+//            communcateWithApp.put("commandName","Test");
+//            System.out.println(communcateWithApp);
+//            communcateWithApp=App.communicateWithApp(
+//                    "user",
+//                    "music",
+//                    this.origRequest,
+//                    "GET",
+//                    "Test",
+//                    null,
+//                    null);
+//            System.out.println(communcateWithApp+"message!!!!");
             String procCall = "call userregister(?,?,?,?,?,?)";
             connection = PostgresConnection.getDataSource().getConnection();
             connection.setAutoCommit(true);
-
             preparedStatement = connection.prepareStatement(procCall);
             preparedStatement.setString(1, this.username);
             preparedStatement.setString(2, this.email);
@@ -53,11 +66,9 @@ public class SignUp extends UserCommand  {
             preparedStatement.setString(4, this.firstName);
             preparedStatement.setString(5, this.lastName);
             preparedStatement.setBoolean(6, this.isArtist);
-
-
             preparedStatement.executeUpdate();
-             return Responder.makeMsgResponse("successfully registered!!!");
-            //System.out.println(result.first());
+
+             
         } catch (SQLException e) {
             if (e.getMessage().contains("(username)"))
                 return Responder.makeErrorResponse("username already exists", 406);
@@ -68,19 +79,9 @@ public class SignUp extends UserCommand  {
 
             PostgresConnection.disconnect(null, preparedStatement, connection);
         }
-        //System.out.println("db " + dbConn);
-//        
 
-//        Arango arango=Arango.getInstance();
-//        arango.createCollectionIfNotExists("spotifyArangoDb","user",false);
-//        Map<String,Object> attributes=new HashMap<String,Object>();
-//        attributes.put("username",username);
-//        attributes.put("password",password);
-//        BaseDocument baseDocument=new BaseDocument(attributes);
-//
-//        arango.createDocument("spotifyArangoDb","user",baseDocument);
-
-        return null;
+        return Responder.makeMsgResponse("successfully registered");
+        
     }
 
     @Override
