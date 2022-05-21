@@ -1,4 +1,4 @@
-package main.java.scalable.com.recommendations;
+package com.scalabe.recommendations;
 
 import scalable.com.shared.App;
 

@@ -1,4 +1,4 @@
-package main.java.scalable.com.recommendations.commands;
+package com.scalabe.recommendations.commands;
 
 import scalable.com.shared.classes.CommandVerifier;
 
