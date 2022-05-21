@@ -9,7 +9,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class DatabaseHelper {
-          public static void createSchema() throws SQLException, FileNotFoundException {
+
+    public static void createSchema() throws SQLException, FileNotFoundException {
+
               Connection connection = PostgresConnection.getDataSource().getConnection();
               //connection.
 
@@ -19,6 +21,7 @@ public class DatabaseHelper {
                  Reader reader = new BufferedReader(new FileReader(getAbsolutePath(tables[i])));
                  sr.runScript(reader);
              }
+             
           }
 
           public static void createProcs() throws IOException, SQLException {

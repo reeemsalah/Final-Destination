@@ -5,6 +5,7 @@ import org.json.JSONObject;
 import scalable.com.exceptions.ValidationException;
 import scalable.com.shared.App;
 import scalable.com.shared.classes.Arango;
+import scalable.com.shared.classes.ByCryptHelper;
 import scalable.com.shared.classes.PostgresConnection;
 import scalable.com.shared.classes.Responder;
 
@@ -56,13 +57,15 @@ public class SignUp extends UserCommand  {
 //                    null,
 //                    null);
 //            System.out.println(communcateWithApp+"message!!!!");
+            String password= ByCryptHelper.hash(this.password);
+            System.out.println(password+" this is the hashed password");
             String procCall = "call userregister(?,?,?,?,?,?)";
             connection = PostgresConnection.getDataSource().getConnection();
             connection.setAutoCommit(true);
             preparedStatement = connection.prepareStatement(procCall);
             preparedStatement.setString(1, this.username);
             preparedStatement.setString(2, this.email);
-            preparedStatement.setString(3, this.password);
+            preparedStatement.setString(3, password);
             preparedStatement.setString(4, this.firstName);
             preparedStatement.setString(5, this.lastName);
             preparedStatement.setBoolean(6, this.isArtist);
@@ -75,6 +78,7 @@ public class SignUp extends UserCommand  {
             if (e.getMessage().contains("(email)"))
                 return Responder.makeErrorResponse("email already registerd", 406);
             System.out.println("here" + e.getMessage());
+            return  Responder.makeErrorResponse(e.getMessage(),400);
         } finally {
 
             PostgresConnection.disconnect(null, preparedStatement, connection);
