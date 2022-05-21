@@ -29,7 +29,7 @@ public class DatabaseHelper {
              
 
               ScriptRunner sr = new ScriptRunner(connection);
-              String[] tables=new String[]{"blockUser","deleteAccount","subscribeToPremium","unsubscribeToPremium","updateAccount","userRegister"};
+              String[] tables=new String[]{"blockUser","DeleteAccount","subscribeToPremium","unsubscribeToPremium","updateAccount","userRegister"};
               for(int i=0;i< tables.length;i++) {
                       String statement="";
                   BufferedReader reader = new BufferedReader(new FileReader(getAbsolutePath(tables[i])));
