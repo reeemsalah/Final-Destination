@@ -121,9 +121,9 @@ public class Login extends UserCommand{
             this.password = body.getString("password");
         }
         catch (Exception e){
-            throw new ValidationException("attributes data types are wrong");
+            throw new ValidationException("attributes data types are wrong: "+e.getMessage());
         }
-        this.validateAnnotations();
+       
 
     }
 
