@@ -1,4 +1,4 @@
-package main.java.scalable.com.recommendations.commands;
+package com.scalable.recommendations.commands;
 
 import scalable.com.exceptions.ValidationException;
 

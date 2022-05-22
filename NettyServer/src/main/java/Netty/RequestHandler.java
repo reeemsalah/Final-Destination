@@ -61,6 +61,7 @@ public class RequestHandler extends SimpleChannelInboundHandler<HttpObject> {
         
         String authHeader = headers.has("Authorization") ? headers.getString("Authorization") : null;
         JSONObject authenticationParams = JWTHandler.getUnauthorizedAuthParams();
+        
         if (authHeader != null) {
             String[] auth = authHeader.split(" ");
             if (auth.length > 1) {
@@ -68,9 +69,10 @@ public class RequestHandler extends SimpleChannelInboundHandler<HttpObject> {
             }
         }
          JSONObject returnObject=new JSONObject();
-        returnObject.put(JWTHandler.TOKEN_PAYLOAD,authenticationParams.get(JWTHandler.TOKEN_PAYLOAD));
+         Object tokenPayload=authenticationParams.has(JWTHandler.TOKEN_PAYLOAD)?authenticationParams.get(JWTHandler.TOKEN_PAYLOAD):new JSONObject();
+        returnObject.put(JWTHandler.TOKEN_PAYLOAD,tokenPayload);
         returnObject.put(JWTHandler.IS_AUTHENTICATED,authenticationParams.get(JWTHandler.IS_AUTHENTICATED));
-        System.out.println(returnObject.toString());
+        System.out.println(returnObject.toString()+"mkfmd");
         return returnObject ;
     }
     private String getQueueName(){

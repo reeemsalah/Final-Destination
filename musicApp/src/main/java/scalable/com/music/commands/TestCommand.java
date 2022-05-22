@@ -1,20 +1,20 @@
-package main.java.scalable.com.recommendations.commands;
+package scalable.com.music.commands;
 
 import scalable.com.exceptions.ValidationException;
 import scalable.com.shared.classes.Responder;
 
-import javax.validation.constraints.NotBlank;
-
-public class GetPopularMusicTracksCommand extends RecommendationsCommand{
-
+public class TestCommand extends MusicCommand{
     @Override
     public String getCommandName() {
-        return "GetPopularArtists";
+        return "Test";
     }
 
     @Override
     public String execute() {
-        return Responder.makeMsgResponse("Popular Music Tracks");
+
+             System.out.println("executing test commands");
+
+        return Responder.makeMsgResponse("ya walaaaaaaaaaa");
     }
 
     @Override

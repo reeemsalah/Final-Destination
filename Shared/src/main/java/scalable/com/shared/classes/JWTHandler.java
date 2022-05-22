@@ -1,5 +1,12 @@
 package scalable.com.shared.classes;
 
+
+import com.auth0.jwt.JWTCreator;
+
+
+
+
+
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -8,6 +15,7 @@ import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.json.JSONObject;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -52,5 +60,15 @@ public class JWTHandler {
             }
         }
         return claims;
+    }
+    public static String generateToken(Map<String, String> claims) {
+        return createJwtWithClaims(claims).sign(ALGORITHM);
+    }
+    private static JWTCreator.Builder createJwtWithClaims(Map<String, String> claims) {
+        JWTCreator.Builder builder = JWT.create();
+        for (String key : claims.keySet()) {
+            builder.withClaim(key, claims.get(key));
+        }
+        return builder;
     }
 }

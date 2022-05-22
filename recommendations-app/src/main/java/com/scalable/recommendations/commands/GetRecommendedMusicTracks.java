@@ -1,4 +1,4 @@
-package main.java.scalable.com.recommendations.commands;
+package com.scalable.recommendations.commands;
 
 import scalable.com.exceptions.ValidationException;
 import scalable.com.shared.classes.Responder;
@@ -22,7 +22,8 @@ public class GetRecommendedMusicTracks extends RecommendationsCommand{
 
     @Override
     public boolean isAuthNeeded() {
-        return true;
+        return true
+                ;
     }
 
     @Override
