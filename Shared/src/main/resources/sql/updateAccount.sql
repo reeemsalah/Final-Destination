@@ -1,7 +1,7 @@
 CREATE or replace PROCEDURE  edit_Account(
 UserId INTEGER,
-newPassword VARCHAR(45),
-newPhoto varchar(45))
+newPassword VARCHAR,
+newPhoto VARCHAR)
 language plpgsql
 as $$
 BEGIN

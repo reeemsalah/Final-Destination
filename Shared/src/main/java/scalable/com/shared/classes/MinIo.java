@@ -19,10 +19,10 @@ public class MinIo {
 
     static {
         CONFIG = new HashMap<>();
-        String minioHost=System.getenv("http://127.0.0.1");
-        String minioRootUser=System.getenv("MINIO_HOST");
+        String minioHost=System.getenv("MINIO_HOST");
+        String minioRootUser=System.getenv("MINIO_ROOT_USER");
         String minioRootPassword=System.getenv("MINIO_ROOT_PASSWORD");
-        CONFIG.put("MINIO_HOST",minioHost==null?"localhost":minioHost );
+        CONFIG.put("MINIO_HOST",minioHost==null?"http://127.0.0.1:9000":minioHost );
         CONFIG.put("MINIO_ROOT_USER", minioRootUser==null?"minioadmin":minioRootUser);
         CONFIG.put("MINIO_ROOT_PASSWORD", minioRootPassword==null?"minioadmin":minioRootPassword);
     }
@@ -32,7 +32,7 @@ public class MinIo {
 
     private MinIo()  {
       
-
+                     
         MINIO_CLIENT = MinioClient.builder()
                 .endpoint(CONFIG.get("MINIO_HOST"))
                 .credentials(CONFIG.get("MINIO_ROOT_USER"), CONFIG.get("MINIO_ROOT_PASSWORD"))

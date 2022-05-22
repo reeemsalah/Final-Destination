@@ -56,11 +56,12 @@ public class EditProfilePicture extends UserCommand{
 
         preparedStatement = connection.prepareStatement(procCall);
         preparedStatement.setInt(1, Integer.parseInt(this.tokenPayload.getString("id")));
+        preparedStatement.setString(2,null);
         preparedStatement.setString(3,photoUrl);
         preparedStatement.executeUpdate();
         
     } catch (SQLException e) {
-
+          
         return  Responder.makeErrorResponse(e.getMessage(),400);
     } finally {
 
