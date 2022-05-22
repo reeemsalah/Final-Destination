@@ -34,7 +34,7 @@ public class Login extends UserCommand{
         
         Connection connection = null;
         ResultSet result=null;
-        PreparedStatement preparedStatement;
+        PreparedStatement preparedStatement=null;
         String username= null;
         String last_name=null;
         String first_name=null;
@@ -95,7 +95,7 @@ public class Login extends UserCommand{
             return  Responder.makeErrorResponse("Something went wrong",400);
         } finally {
 
-            PostgresConnection.disconnect(result, null, connection);
+            PostgresConnection.disconnect(result, preparedStatement, connection);
         }
         return Responder.makeDataResponse(response);
     }

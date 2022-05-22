@@ -83,7 +83,8 @@ public class RequestHandler extends SimpleChannelInboundHandler<HttpObject> {
     private String getCommandName(){
        
         String[] queueName=this.uri.split("/");
-        return queueName[2];
+       
+        return queueName[2].split("\\?")[0];
     }
     JSONObject getURIParams() {
         QueryStringDecoder decoder = new QueryStringDecoder(uri);
@@ -140,7 +141,9 @@ public class RequestHandler extends SimpleChannelInboundHandler<HttpObject> {
             commandName=getCommandName();
             //System.out.println("token: " +token+" queueName: "+queueName+" command name: "+commandName);
             ctx.channel().attr(Server.REQ_KEY).set(req);
-            isFormData = headers.getString("Content-Type").split(";")[0].equals("multipart/form-data");
+            if(headers.has("Content-Type")) {
+                isFormData = headers.getString("Content-Type").split(";")[0].equals("multipart/form-data");
+            }
         }
         if (msg instanceof HttpContent && !isFormData) {
                  System.out.println(1);
