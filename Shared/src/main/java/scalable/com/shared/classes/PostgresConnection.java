@@ -40,7 +40,7 @@ public class PostgresConnection {
     private String DB_PASSWORD; //your db password
     private String DB_PORT;
     private String DB_HOST;
-    private String DB_NAME;
+    private String DB_NAME="postgres";
     private String DB_INIT_CONNECTIONS = "10";
     private String DB_MAX_CONNECTIONS = "15";
     private String DB_URL;

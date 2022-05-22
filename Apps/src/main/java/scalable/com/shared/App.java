@@ -26,15 +26,15 @@ import java.util.concurrent.TimeoutException;
 
 public abstract class App  {
 
-protected Properties properties;
+public Properties properties;
 protected RabbitMQApp rabbitMQApp;
 protected RabbitMQCommunicatorApp rabbitMQCommunicatorApp;
 protected Controller appController;
 protected ThreadPoolManager threadsManager;
 protected ClassManager classManager=new ClassManager();
-protected PostgresConnection sqlDb;
+public PostgresConnection sqlDb;
 
-
+protected BackdoorServer backDoorServer=null;
 protected static RabbitMQServer rabbitMQInterAppCommunication;
 
 //read the .properties file and set the properties variable
@@ -43,13 +43,12 @@ public RabbitMQCommunicatorApp getRabbitMQCommunicatorApp(){
     }
 protected abstract String getAppName();
   
-    protected void dbInit() throws IOException {
-        Properties properties=new Properties();
-        properties.load(App.class.getClassLoader().getResourceAsStream("db.properties"));
+public void dbInit() throws IOException {
+       
                 if(properties.contains("arangodb")) {
                     System.out.println(" i created arango db !!!!");
                     Arango arango = Arango.getInstance();
-                    arango.createPool(1);
+                    arango.createPool(10);
                     arango.createDatabaseIfNotExists("spotifyArangoDb");
                 }
                 if(properties.contains("postgres")){
@@ -64,9 +63,9 @@ protected abstract String getAppName();
 protected  void start() throws IOException, TimeoutException, ClassNotFoundException {
     
       initProperties();
-
-     this.classManager.init();
-    appController=new Controller(this);
+      this.dbInit();
+      this.classManager.init();
+      appController=new Controller(this);
    
     this.initRabbitMQ();
     
@@ -74,25 +73,47 @@ protected  void start() throws IOException, TimeoutException, ClassNotFoundExcep
     this.threadsManager.initThreadPool(10);
      
     appController.start();
+
+    createBackDoorServer();
+}
+
+private void createBackDoorServer()  {
+    new Thread(() -> {
+        try {
+            int portNumber=System.getenv("backDoorPort")==null?9090:Integer.parseInt(System.getenv("backDoorPort"));
+            this.backDoorServer=new BackdoorServer(portNumber,appController);
+            this.backDoorServer.start();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }).start();
+
 }
 protected void initProperties() {
-        Properties properties=new Properties();
+        this.properties=new Properties();
         try {
-            properties.load(App.class.getClassLoader().getResourceAsStream("app.properties"));
-            this.properties=properties;
-            
-
+            this.properties.load(App.class.getClassLoader().getResourceAsStream("db.properties"));
+            readDefaultProperties();
         }
         catch (Exception e){
             System.out.println(e.getMessage());
             System.exit(0);
         }
     }
+protected void readDefaultProperties(){
+    String rabbitmqHost=System.getenv(AppsConstants.RabbitMQ_Host_PropertyName);
+    this.properties.put(AppsConstants.RabbitMQ_Host_PropertyName,rabbitmqHost==null?AppsConstants.RABBITMQ_HOST_DEFAULT_VALUE:rabbitmqHost);
+
+     String backDoorPort=System.getenv(AppsConstants.BACKDOOR_PORT_PROPERTY_NAME);
+     this.properties.put(AppsConstants.BACKDOOR_PORT_PROPERTY_NAME,backDoorPort==null?AppsConstants.RABBITMQ_HOST_DEFAULT_VALUE:Integer.parseInt(backDoorPort));
+    
+
+}
 protected  void initRabbitMQ() throws IOException, TimeoutException {
     Hook hook=this::appHook;
-    this.rabbitMQApp=new RabbitMQApp(properties.getProperty("rabbitMQ_host"));
+    this.rabbitMQApp=new RabbitMQApp(properties.getProperty(AppsConstants.RabbitMQ_Host_PropertyName));
     this.rabbitMQCommunicatorApp=this.rabbitMQApp.getNewCommunicator(this.getAppName().toUpperCase()+"Server",hook);
-    rabbitMQInterAppCommunication=new RabbitMQServer(properties.getProperty("rabbitmq_host"));
+    rabbitMQInterAppCommunication=new RabbitMQServer(properties.getProperty(AppsConstants.RabbitMQ_Host_PropertyName));
     
 }
 public void appHook(String consumerTag, Delivery delivery) throws IOException {

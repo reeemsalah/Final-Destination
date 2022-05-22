@@ -13,15 +13,14 @@ import java.util.Properties;
 import java.util.concurrent.TimeoutException;
 
 public class UserApp extends App {
-    public Arango arangoPool;
+    
     public static String MinioBucketName="user-app-photosbucket";
-        public static void main(String[] args) throws TimeoutException, IOException, ClassNotFoundException, SQLException {
+        public static void main(String[] args) throws TimeoutException, IOException, ClassNotFoundException, SQLException{
 
 
             UserApp app=new UserApp();
-            app.dbInit();
             app.start();
-           //comment this line after development
+           //TODO comment this line after development
             DatabaseHelper.createSchema();
             DatabaseHelper.createProcs();
 
