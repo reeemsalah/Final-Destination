@@ -29,7 +29,7 @@ public class MusicApp extends App {
         Arango arango = Arango.getInstance();
         arango.createPool(15);
         arango.createDatabaseIfNotExists("Spotify");
-        arango.createCollectionIfNotExists("Spotify","Playlists",true);
+        arango.createCollectionIfNotExists("Spotify","Playlists",false);
 
     }
 
