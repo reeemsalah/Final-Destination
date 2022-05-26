@@ -5,7 +5,7 @@ import scalable.com.shared.classes.Responder;
 
 import javax.validation.constraints.NotBlank;
 
-public class GetBockedUsersCommand extends UserToUserCommand{
+public class GetBlockedUsersCommand extends UserToUserCommand{
 
     @Override
     public String getCommandName() {
