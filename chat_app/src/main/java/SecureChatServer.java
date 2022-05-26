@@ -1,3 +1,4 @@
+import com.google.firebase.cloud.FirestoreClient;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -8,11 +9,24 @@ import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.firestore.Firestore;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
+import com.google.firebase.*;
+
+
+import java.io.IOException;
 
 
 public final class SecureChatServer {
 
     static final int PORT = Integer.parseInt(System.getProperty("port", "8080"));
+
+
+
+    public SecureChatServer() throws IOException {
+    }
 
     public static void main(String[] args) throws Exception {
         SelfSignedCertificate ssc = new SelfSignedCertificate();
