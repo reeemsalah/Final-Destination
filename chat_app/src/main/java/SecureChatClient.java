@@ -84,3 +84,15 @@ public final class SecureChatClient {
         }
     }
 }
+
+//TODO:
+//1- identify for each server instance a unique port(?) and a unique server ID (create server ID for each instance of SecureChatServer)
+//2- Each Instance should act as a group chat room? (should think about that. Because we dont want to create 2 different servers for the same group chat)
+//3- Each message sent by a client and received by a server, is stored inside the "messages" collection on Firebase
+//4-
+
+
+//List of different collections: 1- Server   2- Messages {serverid_userid_messaage_timestamp}
+// To start creating a group chat , The user creates a securechatserver instance with a unique ID. IT's created in the database ith a unique port as well
+// The user sends the id to other contacts/people
+// 
