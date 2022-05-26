@@ -1,5 +1,6 @@
 package scalable.com.shared.classes;
 
+import Netty.ServerInitializer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -27,12 +28,7 @@ public class BackdoorServer {
             b.group(group) // Bootstrap the server to a specific group
                     .channel(NioServerSocketChannel.class) // Specifies transport protocol for channel
                     .localAddress(new InetSocketAddress(port)) // Specifies address for channel
-                    .childHandler(new ChannelInitializer<SocketChannel>() { // Specifies channel handler to call when connection is accepted
-                        @Override
-                        public void initChannel(SocketChannel ch) throws Exception {
-                            ch.pipeline().addLast(new BackdoorServerHandler(controller)); // Adds channel handler to pipeline
-                        }
-                    });
+                    .childHandler(new BackDoorServerInitializer(controller));
 
             ChannelFuture f = b.bind().sync(); // Bind server to address, and block (sync method) until it does so
 

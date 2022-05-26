@@ -1,6 +1,4 @@
 package Netty;
-
-
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
@@ -8,10 +6,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.Headers;
 import io.netty.handler.codec.base64.Base64;
 import io.netty.handler.codec.http.*;
-import io.netty.handler.codec.http.multipart.Attribute;
-import io.netty.handler.codec.http.multipart.FileUpload;
-import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
-import io.netty.handler.codec.http.multipart.InterfaceHttpData;
+import io.netty.handler.codec.http.multipart.*;
 import io.netty.handler.codec.http.multipart.InterfaceHttpData.HttpDataType;
 import io.netty.util.CharsetUtil;
 import org.json.JSONException;
@@ -40,7 +35,8 @@ public class RequestHandler extends SimpleChannelInboundHandler<HttpObject> {
     HttpPostRequestDecoder requestDecoder;
     boolean isFormData;
     String commandName;
-
+    private static final HttpDataFactory factory =
+            new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE);
     private static boolean isEmptyHttpContent(HttpContent httpContent) {
         return httpContent.equals(LastHttpContent.EMPTY_LAST_CONTENT);
     }
@@ -58,38 +54,37 @@ public class RequestHandler extends SimpleChannelInboundHandler<HttpObject> {
     }
 
     private JSONObject getToken() {
-        
+
         String authHeader = headers.has("Authorization") ? headers.getString("Authorization") : null;
         JSONObject authenticationParams = JWTHandler.getUnauthorizedAuthParams();
-        
+
         if (authHeader != null) {
             String[] auth = authHeader.split(" ");
             if (auth.length > 1) {
                 authenticationParams = JWTHandler.decodeToken(auth[1]);
             }
         }
-         JSONObject returnObject=new JSONObject();
-         Object tokenPayload=authenticationParams.has(JWTHandler.TOKEN_PAYLOAD)?authenticationParams.get(JWTHandler.TOKEN_PAYLOAD):new JSONObject();
+        JSONObject returnObject=new JSONObject();
+        Object tokenPayload=authenticationParams.has(JWTHandler.TOKEN_PAYLOAD)?authenticationParams.get(JWTHandler.TOKEN_PAYLOAD):new JSONObject();
         returnObject.put(JWTHandler.TOKEN_PAYLOAD,tokenPayload);
         returnObject.put(JWTHandler.IS_AUTHENTICATED,authenticationParams.get(JWTHandler.IS_AUTHENTICATED));
         System.out.println(returnObject.toString()+"mkfmd");
         return returnObject ;
     }
     private String getQueueName(){
-      
+
         String[] queueName=this.uri.split("/");
         return queueName[1];
     }
     private String getCommandName(){
-       
+
         String[] queueName=this.uri.split("/");
-       
-        return queueName[2].split("\\?")[0];
+        return queueName[2];
     }
     JSONObject getURIParams() {
         QueryStringDecoder decoder = new QueryStringDecoder(uri);
         String[] uriPathFields = decoder.path().substring(1).split("/");
-        
+
         uriParams = new JSONObject();
         Set<Map.Entry<String, List<String>>> uriParamsSet = decoder.parameters().entrySet();
         uriParamsSet.forEach(entry -> uriParams.put(entry.getKey(), entry.getValue().get(0)));
@@ -107,7 +102,7 @@ public class RequestHandler extends SimpleChannelInboundHandler<HttpObject> {
         request.put(JWTHandler.IS_AUTHENTICATED,token.get(JWTHandler.IS_AUTHENTICATED));
         request.put(JWTHandler.TOKEN_PAYLOAD,token.get(JWTHandler.TOKEN_PAYLOAD));
 
-        
+
         if (requestDecoder != null) {
             System.out.println(6);
             JSONObject httpData = readHttpData();
@@ -115,7 +110,7 @@ public class RequestHandler extends SimpleChannelInboundHandler<HttpObject> {
             //System.out.println(httpData.getString("email")+"httpdataaaa");
             httpData.keySet().forEach(key -> request.put(key, httpData.getJSONObject(key)));
         }
-             System.out.println(request);
+        System.out.println(request);
         return request;
     }
 
@@ -128,10 +123,11 @@ public class RequestHandler extends SimpleChannelInboundHandler<HttpObject> {
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, HttpObject msg) {
+        System.out.println("in channel read request handler");
         if (msg instanceof HttpRequest) {
             req = (HttpRequest) msg;
             uri = req.uri();
-            
+
             methodType = req.method().toString();
             uriParams = getURIParams();
             queueName= getQueueName();
@@ -141,12 +137,10 @@ public class RequestHandler extends SimpleChannelInboundHandler<HttpObject> {
             commandName=getCommandName();
             //System.out.println("token: " +token+" queueName: "+queueName+" command name: "+commandName);
             ctx.channel().attr(Server.REQ_KEY).set(req);
-            if(headers.has("Content-Type")) {
-                isFormData = headers.getString("Content-Type").split(";")[0].equals("multipart/form-data");
-            }
+            isFormData = headers.getString("Content-Type").split(";")[0].equals("multipart/form-data");
         }
         if (msg instanceof HttpContent && !isFormData) {
-                 System.out.println(1);
+            System.out.println(1);
             HttpContent content = (HttpContent) msg;
             if (isEmptyHttpContent(content))
                 return;
@@ -161,12 +155,13 @@ public class RequestHandler extends SimpleChannelInboundHandler<HttpObject> {
                 }
             }
         }
+       
         if (msg instanceof FullHttpRequest) {
             System.out.println(2);
             if (!methodType.equals("GET") && isFormData) {
                 System.out.println(3);
                 requestDecoder = new HttpPostRequestDecoder((FullHttpRequest) msg);
-                
+
                 requestDecoder.setDiscardThreshold(0);
             }
         }
@@ -177,7 +172,7 @@ public class RequestHandler extends SimpleChannelInboundHandler<HttpObject> {
                 try {
                     System.out.println(5);
                     JSONObject request = packRequest();
-                              System.out.println(request);
+                    System.out.println(request);
                     ByteBuf content = Unpooled.copiedBuffer(request.toString(), CharsetUtil.UTF_8);
                     ctx.fireChannelRead(content.copy());
                 } catch (IOException | JSONException e) {
@@ -187,6 +182,7 @@ public class RequestHandler extends SimpleChannelInboundHandler<HttpObject> {
             } else
                 errorResponse(ctx, 404, "Not Found");
         }
+        
     }
 
     @Override

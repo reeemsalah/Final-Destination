@@ -48,13 +48,14 @@ public void dbInit() throws IOException {
                 if(properties.contains("arangodb")) {
                     System.out.println(" i created arango db !!!!");
                     Arango arango = Arango.getInstance();
-                    arango.createPool(10);
-                    arango.createDatabaseIfNotExists("spotifyArangoDb");
+                    arango.createPool(Integer.parseInt(this.properties.getProperty(AppsConstants.DEFAULT_NUMBER_OF_ARANGO_DB_PROPERTY_Name)));
+                    arango.createDatabaseIfNotExists(properties.getProperty("arangodb"));
                 }
                 if(properties.contains("postgres")){
                     //TODO initialize postgres
                     System.out.println("I created postgres db");
                     sqlDb=new PostgresConnection();
+                    sqlDb.setDbMaxConnections(this.properties.getProperty(AppsConstants.DEFAULT_NUMBER_OF_POSTGRES_DB_PROPERTY_Name));
                     sqlDb.initSource();
                 }
 
@@ -105,8 +106,13 @@ protected void readDefaultProperties(){
     this.properties.put(AppsConstants.RabbitMQ_Host_PropertyName,rabbitmqHost==null?AppsConstants.RABBITMQ_HOST_DEFAULT_VALUE:rabbitmqHost);
 
      String backDoorPort=System.getenv(AppsConstants.BACKDOOR_PORT_PROPERTY_NAME);
-     this.properties.put(AppsConstants.BACKDOOR_PORT_PROPERTY_NAME,backDoorPort==null?AppsConstants.RABBITMQ_HOST_DEFAULT_VALUE:Integer.parseInt(backDoorPort));
-    
+     this.properties.put(AppsConstants.BACKDOOR_PORT_PROPERTY_NAME,backDoorPort==null?AppsConstants.BACKDOOR_PORT_VALUE:Integer.parseInt(backDoorPort));
+
+
+     this.properties.put(AppsConstants.DEFAULT_NUMBER_OF_ARANGO_DB_PROPERTY_Name,""+AppsConstants.DEFAULT_NUMBER_OF_ARANGO_DB_CONNECTIONS);
+     this.properties.put(AppsConstants.DEFAULT_NUMBER_OF_POSTGRES_DB_PROPERTY_Name,""+AppsConstants.DEFAULT_NUMBER_OF_POSTGRES_DB_CONNECTIONS);
+     
+     this.properties.put(AppsConstants.DEFAULT_MAX_Threads_PROPERTY_NAME,""+AppsConstants.DEFAULT_MAX_THREADS_VALUE);
 
 }
 protected  void initRabbitMQ() throws IOException, TimeoutException {
