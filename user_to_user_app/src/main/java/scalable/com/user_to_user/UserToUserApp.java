@@ -18,7 +18,7 @@ public class UserToUserApp extends App{
     }
 
     @Override
-    protected void dbInit() throws IOException {
+    public void dbInit() throws IOException {
         Arango arango = Arango.getInstance();
         arango.createPool(15);
         arango.createDatabaseIfNotExists("user_to_user");
