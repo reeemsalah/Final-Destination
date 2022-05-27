@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import org.json.JSONObject;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -19,15 +18,9 @@ public class UserToUserTest {
             arango = Arango.getConnectedInstance();
             UserToUserApp app= new UserToUserApp();
             app.dbInit();
-            // arango.createDatabaseIfNotExists("test_user_to_user");
-            // arango.createCollectionIfNotExists("test_user_to_user","reports",false);
         } catch (Exception e) {
             fail(e.getMessage());
         }
-    }
-    @AfterClass
-    public static void tearDown() {
-        // arango.dropDatabase("test_user_to_user");
     }
 
     public static String reportUser(int reported_Id, String comment) {
