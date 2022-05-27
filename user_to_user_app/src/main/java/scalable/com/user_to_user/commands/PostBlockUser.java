@@ -1,12 +1,14 @@
 package scalable.com.user_to_user.commands;
 
+import javax.validation.constraints.NotNull;
+
+import com.arangodb.entity.BaseDocument;
+
 import scalable.com.exceptions.ValidationException;
-import scalable.com.shared.classes.CommandVerifier;
+import scalable.com.shared.classes.Arango;
 import scalable.com.shared.classes.Responder;
 
-import java.io.IOException;
-import java.util.Map;
-import java.util.Properties;
+
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -14,19 +16,31 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-import javax.validation.constraints.NotBlank;
 
 public class PostBlockUser extends UserToUserCommand{
 
-    @NotBlank(message="username should not be empty")
-    private String username;
-    @NotBlank(message="blocked user username should not be empty")
-    private String user;
+    @NotNull(message="blocked user username should not be empty")
+    private int blocked_id;
 
 
     @Override
     public String execute() {
-        return Responder.makeMsgResponse(" ha implement el block 7ader ");
+
+        int id=Integer.parseInt(this.tokenPayload.getString("id"));
+        Arango arango = null;
+        try {
+            arango = Arango.getInstance();
+            arango.createCollectionIfNotExists("user_to_user","blocked_ids",false);
+            BaseDocument dbBlock = new BaseDocument();
+            dbBlock.addAttribute("user_id",id);
+            dbBlock.addAttribute("blocked_id", this.blocked_id);
+            BaseDocument res = arango.createDocument("user_to_user","blocked_ids", dbBlock);
+            System.out.println("Block "+res+" added");
+            return Responder.makeMsgResponse("Blocked: "+blocked_id);
+        } catch (Exception e) {
+            return Responder.makeErrorResponse(e.getMessage(), 404);
+        }
+
     }
 
 
@@ -45,9 +59,7 @@ public class PostBlockUser extends UserToUserCommand{
     @Override
     public void validateAttributeTypes() throws ValidationException {
         try {
-
-            this.username = body.getString("username");
-            this.user = body.getString("user");
+            this.blocked_id = body.getInt("blocked_id");
         }
         catch (Exception e){
             throw new ValidationException("attributes data types are wrong");
