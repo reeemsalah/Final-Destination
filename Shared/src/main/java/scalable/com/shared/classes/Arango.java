@@ -313,6 +313,19 @@ public class Arango implements PooledDatabaseClient {
         return query(DB_Name, query, bindVars);
     }
 
+    public ArangoCursor<BaseDocument> filterCollection(String DB_Name, String collectionName, String attributeName, int attributeValue) {
+        JSONArray data = new JSONArray();
+        String query = """
+                FOR obj IN %s
+                    FILTER obj.%s == @attributeValue
+                    RETURN obj
+                """.formatted(collectionName, attributeName);
+
+        Map<String, Object> bindVars = new HashMap<>();
+        bindVars.put("attributeValue", attributeValue);
+        return query(DB_Name, query, bindVars);
+    }
+
     public ArangoCursor<BaseDocument> filterEdgeCollection(String DB_Name, String collectionName, String fromNodeId) {
         String query = """
                 FOR node IN 1..1 OUTBOUND @fromNodeId @collectionName
@@ -330,6 +343,7 @@ public class Arango implements PooledDatabaseClient {
         cursor.forEachRemaining(document -> {
             JSONObject object = new JSONObject();
             for (String attribute : attributeNames) {
+                System.out.println(attribute + " : " + document.getProperties().get(attribute));
                 object.put(attribute, document.getProperties().get(attribute));
             }
             object.put(keyName, document.getKey());

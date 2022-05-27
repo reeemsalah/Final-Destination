@@ -16,7 +16,7 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import javax.validation.constraints.NotBlank;
 
-public class GetTotalListenersCommand extends UserToUserCommand{
+public class GetTotalListeners extends UserToUserCommand{
 
     @NotBlank(message="Artist name should not be empty")
     private String artist;
