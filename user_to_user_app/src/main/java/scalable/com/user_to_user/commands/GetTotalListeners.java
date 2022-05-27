@@ -1,8 +1,14 @@
 package scalable.com.user_to_user.commands;
 
+import com.beust.jcommander.Parameter;
+import org.hibernate.validator.constraints.URL;
+import org.jboss.logging.annotations.Param;
+import org.json.JSONObject;
 import scalable.com.exceptions.ValidationException;
+import scalable.com.shared.App;
 import scalable.com.shared.classes.Responder;
 import scalable.com.shared.classes.CommandVerifier;
+import scalable.com.user_to_user.UserToUserApp;
 
 import java.io.IOException;
 import java.util.Map;
@@ -28,12 +34,17 @@ public class GetTotalListeners extends UserToUserCommand{
 
     @Override
     public String execute() {
+        JSONObject communicateWithApp = new JSONObject(this.origRequest.toString());
+        communicateWithApp.put("commandName", "Test");
+        System.out.println(communicateWithApp);
+
+        // communicateWithApp = App.communicateWithApp("UserToUser", "StreamMusic", origRequest, getRestAPIMethod(), "PLACEHOLDER", null, body);
         return Responder.makeMsgResponse("total is 0 for now");
     }
 
     @Override
     public String getRestAPIMethod() {
-        return "GET";
+        return "POST";
     }
 
     @Override
@@ -44,7 +55,6 @@ public class GetTotalListeners extends UserToUserCommand{
     @Override
     public void validateAttributeTypes() throws ValidationException {
         try {
-
             this.artist = body.getString("artist");
         }
         catch (Exception e){
