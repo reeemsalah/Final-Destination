@@ -12,7 +12,7 @@ import scalable.com.shared.classes.MinIo;
 import scalable.com.shared.classes.Responder;
 import javax.validation.constraints.NotBlank;
 
-public class GetSongNumberOfStreams  extends CommandVerifier {
+public class GetSongNumberOfStreams  extends MusicCommand {
 //    @NotBlank(message = "song_id should not be empty")
     private String song_id;
 
