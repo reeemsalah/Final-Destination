@@ -16,7 +16,8 @@ import java.util.stream.Collectors;
 public abstract class CommandVerifier extends Command {
 
 
-    protected JSONObject body, uriParams, authenticationParams, files;
+    protected JSONObject body, uriParams, authenticationParams, files,tokenPayload;
+
     
     protected  final String IS_AUTHENTICATED = "isAuthenticated";
     public  final String GOOD_REQUEST_BODY = "goodRequest";
@@ -38,8 +39,10 @@ public abstract class CommandVerifier extends Command {
 
         authenticationParams = request.has("authenticationParams") ? request.getJSONObject("authenticationParams") : new JSONObject();
         files = request.has("files") ? request.getJSONObject("files") : new JSONObject();
+
         //did the server authenticate this request?
-        if (isAuthNeeded() && !authenticationParams.getBoolean(IS_AUTHENTICATED))
+
+        if (isAuthNeeded() && !request.getBoolean(IS_AUTHENTICATED))
             return Responder.makeErrorResponse("Unauthorized action! Please Login!", 401);
                try {
                   this.verifyBody();
@@ -47,6 +50,10 @@ public abstract class CommandVerifier extends Command {
                catch(Exception e){
                    return Responder.makeErrorResponse(e.getMessage(), 400);
                }
+        if (isAuthNeeded()){
+            tokenPayload=request.getJSONObject("tokenPayload");
+        }
+
         return execute();
     }
     

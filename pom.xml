@@ -18,6 +18,8 @@
     <module>recommendations-app</module>
     <module>notifications-app</module>
     <module>musicApp</module>
+    <module>user_to_user_app</module>
+
   </modules>
 
   <name>Spotify</name>

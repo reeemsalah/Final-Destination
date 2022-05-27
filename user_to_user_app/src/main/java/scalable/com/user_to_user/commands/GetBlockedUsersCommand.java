@@ -1,20 +1,20 @@
-package com.scalable.recommendations.commands;
+package scalable.com.user_to_user.commands;
 
 import scalable.com.exceptions.ValidationException;
 import scalable.com.shared.classes.Responder;
 
 import javax.validation.constraints.NotBlank;
 
-public class GetPopularMusicTracksCommand extends RecommendationsCommand{
+public class GetBlockedUsersCommand extends UserToUserCommand{
 
     @Override
     public String getCommandName() {
-        return "GetPopularArtists";
+        return "GetBlockedUsers";
     }
 
     @Override
     public String execute() {
-        return Responder.makeMsgResponse("Popular Music Tracks");
+        return Responder.makeMsgResponse("blocked users for now");
     }
 
     @Override

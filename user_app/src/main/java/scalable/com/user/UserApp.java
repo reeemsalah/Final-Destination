@@ -14,7 +14,7 @@ import java.util.concurrent.TimeoutException;
 
 public class UserApp extends App {
     public Arango arangoPool;
-
+    public static String MinioBucketName="user-app-photosbucket";
         public static void main(String[] args) throws TimeoutException, IOException, ClassNotFoundException, SQLException {
 
 

@@ -1,22 +1,20 @@
-package com.scalable.recommendations.commands;
+package scalable.com.user_to_user.commands;
 
 import scalable.com.exceptions.ValidationException;
 import scalable.com.shared.classes.Responder;
 
 import javax.validation.constraints.NotBlank;
 
-public class GetPopularArtistsCommand extends RecommendationsCommand{
-    
+public class GetFollowersCommand extends UserToUserCommand{
+
     @Override
     public String getCommandName() {
-        return "GetPopularArtists";
+        return "GetFollowers";
     }
 
     @Override
     public String execute() {
-
-        System.out.println("Respondingg");
-        return Responder.makeMsgResponse("Popular Artists");
+        return Responder.makeMsgResponse("followers for now");
     }
 
     @Override
