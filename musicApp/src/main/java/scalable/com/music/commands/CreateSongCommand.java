@@ -2,12 +2,14 @@ package scalable.com.music.commands;
 
 import com.arangodb.entity.BaseEdgeDocument;
 import org.json.JSONArray;
+import org.json.JSONML;
+import org.json.simple.JSONObject;
 import scalable.com.exceptions.ValidationException;
 import scalable.com.shared.classes.Arango;
 import scalable.com.shared.classes.CommandVerifier;
 import com.arangodb.entity.BaseDocument;
+import scalable.com.shared.classes.MinIo;
 import scalable.com.shared.classes.Responder;
-
 import javax.validation.constraints.NotBlank;
 
 public class CreateSongCommand  extends CommandVerifier {
@@ -36,31 +38,47 @@ public class CreateSongCommand  extends CommandVerifier {
             arango.createCollectionIfNotExists("Spotify","Songs",false);
             //extract name
             this.name = body.getString("name");
-            //extract artists array
-            JSONArray artistsJson = body.getJSONArray("artists");
-            this.artists = new String[artistsJson.length()];
-            for(int i = 0; i < artistsJson.length(); i++)
-                this.artists[i] = artistsJson.getString(i);
-            //extract genres array
-            JSONArray genresJson = body.getJSONArray("genres");
-            this.genres = new String[genresJson.length()];
-            for(int i = 0; i < genresJson.length(); i++)
-                this.genres[i] = genresJson.getString(i);
             //extract album id
             this.album_id = body.getString("album_id");
-            
+            //extract artists
+            this.artists = body.getString("artists").split(",");
+            //extract album id
+            this.genres = body.getString("genres").split(",");
+
+            //name for song/cover files
+            String coverAndAudioName=body.getString("name")+body.getString("artists");
+
+            //UPLOADING SONG
+            String songUrl;
+            try {
+                songUrl = MinIo.uploadObject("music-app-songbucket", coverAndAudioName, files.getJSONObject("song"));
+                if (songUrl.isEmpty())
+                    return Responder.makeErrorResponse("Error Occurred While Uploading Your Song!", 404);
+            } catch (Exception e) {
+                return Responder.makeErrorResponse(e.getMessage(), 400);
+            }
+            //UPLOADING COVER
+            String coverUrl;
+            try {
+                coverUrl = MinIo.uploadObject("music-app-coverbucket", coverAndAudioName, files.getJSONObject("cover"));
+                if (coverUrl.isEmpty())
+                    return Responder.makeErrorResponse("Error Occurred While Uploading Your Cover Image!", 404);
+            } catch (Exception e) {
+                return Responder.makeErrorResponse(e.getMessage(), 400);
+            }
+
             BaseDocument myDocument = new BaseDocument();
             myDocument.addAttribute("name", this.name);
             myDocument.addAttribute("artists", this.artists);
             myDocument.addAttribute("genres", this.genres);
             myDocument.addAttribute("album_id", this.album_id);
+            myDocument.addAttribute("audio", songUrl);
+            myDocument.addAttribute("cover", coverUrl);
 
             //Default attributes
-
-            myDocument.addAttribute("rating", 0.0);
+            myDocument.addAttribute("rating", 0);
             myDocument.addAttribute("number_of_streams", 0);
             myDocument.addAttribute("likes", 0);
-            myDocument.addAttribute("audio", "");
 
             BaseDocument res = arango.createDocument("Spotify", "Songs", myDocument);
 
@@ -87,21 +105,16 @@ public class CreateSongCommand  extends CommandVerifier {
         try {
             //extract name
             this.name = body.getString("name");
-            //extract artists array
-            JSONArray artistsJson = body.getJSONArray("artists");
-            this.artists = new String[artistsJson.length()];
-            for(int i = 0; i < artistsJson.length(); i++)
-                this.artists[i] = artistsJson.getString(i);
-            //extract genres array
-            JSONArray genresJson = body.getJSONArray("genres");
-            this.genres = new String[genresJson.length()];
-            for(int i = 0; i < genresJson.length(); i++)
-                this.genres[i] = genresJson.getString(i);
             //extract album id
             this.album_id = body.getString("album_id");
+            //extract artists
+            this.artists = body.getString("artists").split(",");
+            //extract album id
+            this.genres = body.getString("genres").split(",");
 
         }
         catch (Exception e){
+            System.out.println(body);
             throw new ValidationException("attributes data types are wrong: "+e.getMessage());
         }
     }
