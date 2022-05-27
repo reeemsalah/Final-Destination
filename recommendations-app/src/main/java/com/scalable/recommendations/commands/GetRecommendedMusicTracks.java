@@ -22,8 +22,7 @@ public class GetRecommendedMusicTracks extends RecommendationsCommand{
 
     @Override
     public boolean isAuthNeeded() {
-        return true
-                ;
+        return true;
     }
 
     @Override

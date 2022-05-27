@@ -12,7 +12,8 @@ public  class RecommendationsApp extends App {
     public static void main(String[] args)throws TimeoutException, IOException, ClassNotFoundException, SQLException {
         RecommendationsApp app=new RecommendationsApp();
         app.dbInit();
-        arangoPool =Arango.getConnectedInstance() ;
+        //arangoPool =Arango.getConnectedInstance() ;
+        arangoPool =Arango.getInstance() ;
         arangoPool.createCollectionIfNotExists("spotifyArangoDb","usersss",true);
         System.out.println(arangoPool.containsCollection("spotifyArangoDb","usersss"));
         app.start();
