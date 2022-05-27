@@ -193,24 +193,21 @@ public class Quickstart {
         // [END fs_add_query]
     }
 
-    void retrieveAllDocuments() throws Exception {
+    ArrayList<QueryDocumentSnapshot> retrieveAllDocuments(String collection) throws Exception {
         // [START fs_get_all]
         // asynchronously retrieve all users
-        ApiFuture<QuerySnapshot> query = db.collection("users").get();
+        ApiFuture<QuerySnapshot> query = db.collection(collection).get();
         // ...
         // query.get() blocks on response
         QuerySnapshot querySnapshot = query.get();
+        ArrayList<QueryDocumentSnapshot> finalArr = new ArrayList<>();
         List<QueryDocumentSnapshot> documents = querySnapshot.getDocuments();
         for (QueryDocumentSnapshot document : documents) {
-            System.out.println("User: " + document.getId());
-            System.out.println("First: " + document.getString("first"));
-            if (document.contains("middle")) {
-                System.out.println("Middle: " + document.getString("middle"));
-            }
-            System.out.println("Last: " + document.getString("last"));
-            System.out.println("Born: " + document.getLong("born"));
+            finalArr.add(document);
+
         }
         // [END fs_get_all]
+        return finalArr;
     }
 
     void run() throws Exception {
@@ -234,7 +231,7 @@ public class Quickstart {
 
         // retrieve all users
         System.out.println("########## All users ##########");
-        retrieveAllDocuments();
+        //retrieveAllDocuments();
         System.out.println("###################################");
     }
 
