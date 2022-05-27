@@ -111,7 +111,9 @@ private void createBackDoorServer()  {
 protected void initProperties() {
         this.properties=new Properties();
         try {
+            System.out.println(" BEFORE LOADING");
             this.properties.load(App.class.getClassLoader().getResourceAsStream("db.properties"));
+            System.out.println(" AFTER LOADING");
             readDefaultProperties();
         }
         catch (Exception e){
