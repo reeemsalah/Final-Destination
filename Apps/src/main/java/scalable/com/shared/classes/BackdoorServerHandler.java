@@ -209,8 +209,8 @@ public class BackdoorServerHandler extends ChannelInboundHandlerAdapter {
         if (msg instanceof HttpContent && !isFormData) {
             System.out.println(1);
             HttpContent content = (HttpContent) msg;
-            if (isEmptyHttpContent(content))
-                return;
+//            if (isEmptyHttpContent(content))
+//                return;
             ByteBuf jsonBuf = content.content();
             String jsonStr = jsonBuf.toString(CharsetUtil.UTF_8);
             if (!methodType.equals("GET") && !jsonStr.isEmpty()) {

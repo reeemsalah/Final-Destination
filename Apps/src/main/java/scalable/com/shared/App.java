@@ -5,6 +5,7 @@ import com.rabbitmq.client.Delivery;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.util.CharsetUtil;
+import io.quarkus.arc.impl.Reflections;
 import org.json.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -15,14 +16,23 @@ import scalable.com.rabbitMQ.RabbitMQCommunicatorServer;
 import scalable.com.rabbitMQ.RabbitMQServer;
 import scalable.com.shared.classes.*;
 
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Enumeration;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 public abstract class App  {
 
@@ -62,7 +72,15 @@ public void dbInit() throws IOException {
     }
 
 protected  void start() throws IOException, TimeoutException, ClassNotFoundException {
-    
+
+       
+
+    //Set<String> resourceList = this.getClass().getClassLoader().getResources(Pattern.compile(".*\\.properties"));
+    //System.out.println(enumeration.count());
+
+         
+   
+   System.out.println("resources");
       initProperties();
       this.dbInit();
       this.classManager.init();
@@ -186,6 +204,7 @@ public void appHook(String consumerTag, Delivery delivery) throws IOException {
           
             final Command commandInstance = (Command) commandClass.getDeclaredConstructor().newInstance();
             // callback responsible for invoking the required method of the command class
+            commandInstance.validationProperties=classManager.validationMap.get(commandInstance.getCommandName());
             return (String) commandClass.getMethod("execute", req.getClass()).invoke(commandInstance, req);
         } 
         catch (ClassNotFoundException e) {

@@ -7,11 +7,13 @@ import org.json.JSONObject;
 import scalable.com.rabbitMQ.RabbitMQCommunicatorServer;
 
 import java.io.IOException;
+import java.util.Properties;
 import java.util.concurrent.TimeoutException;
 
 public abstract class Command {
      public abstract String getCommandName();
     public abstract String execute(JSONObject request);
+    public Properties validationProperties;
 
 
     

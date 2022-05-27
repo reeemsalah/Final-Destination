@@ -16,7 +16,7 @@ import io.netty.handler.stream.ChunkedWriteHandler;
 public class ServerInitializer extends ChannelInitializer<SocketChannel> {
 
     private final SslContext sslCtx;
-    private static final int MAX_CONTENT_LENGTH = 1 * (1 << 20);    // 10MB
+    private static final int MAX_CONTENT_LENGTH = 10 * (1 << 20);    // 10MB
     
     public ServerInitializer(SslContext sslCtx) {
         this.sslCtx = sslCtx;
@@ -42,7 +42,7 @@ public class ServerInitializer extends ChannelInitializer<SocketChannel> {
         p.addLast(new HttpServerExpectContinueHandler());
         p.addLast(new CorsHandler(corsConfig));
         //p.addLast(new ChunkedWriteHandler());
-        p.addLast(new HttpObjectAggregator(100*1024*1024,false));
+        p.addLast(new HttpObjectAggregator(MAX_CONTENT_LENGTH));
         p.addLast(new RequestHandler());
         p.addLast(Server.queueExecutorGroup, "QueueHandler", new QueueHandler());
         p.addLast(new ResponseHandler());

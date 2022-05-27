@@ -25,7 +25,7 @@ public class BackDoorServerInitializer extends ChannelInitializer<SocketChannel>
 
     
          p.addLast(new HttpRequestDecoder());
-
+        p.addLast(new HttpObjectAggregator(10*(1<<20)));
         p.addLast(new BackdoorServerHandler(controller));
 
         

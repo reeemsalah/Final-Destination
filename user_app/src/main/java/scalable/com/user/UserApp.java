@@ -20,6 +20,7 @@ public class UserApp extends App {
 
             UserApp app=new UserApp();
             app.start();
+            
            //TODO comment this line after development
             DatabaseHelper.createSchema();
             DatabaseHelper.createProcs();

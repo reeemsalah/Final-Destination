@@ -1,10 +1,13 @@
 package scalable.com.shared.classes;
 
+import org.apache.ibatis.ognl.ObjectElementsAccessor;
 import org.json.JSONObject;
 import scalable.com.shared.App;
 import scalable.com.shared.AppsConstants;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.concurrent.*;
 
@@ -20,7 +23,45 @@ public boolean isFrozen=false;
 public void handleControllerMessage(JSONObject request){
        System.out.println("Mum Look I am controlling the app remotely !!!!"+request);
        
+       String methodName=request.getString("commandName");
+       Method methodToBeCalled=null;
+     
        
+    try {
+        Method[] methods = Controller.class.getMethods();
+        for (Method method : methods) {
+            if (method.getName().equalsIgnoreCase(methodName)) {
+                methodToBeCalled=method;
+            }
+
+        }
+        if (methodToBeCalled!=null){
+            System.out.println("got message successfully"+request.get("body"));
+           
+            JSONObject files=request.has("files")?(JSONObject)request.get("files"):new JSONObject();
+            JSONObject combinedObject =new JSONObject(files.toString());
+            combinedObject.put("body",request.get("body"));
+           
+            
+
+                System.out.println("method not var args");
+                methodToBeCalled.invoke(this,combinedObject);
+                
+
+
+
+
+
+        }
+    } catch (SecurityException e) {
+        e.printStackTrace();
+    } catch (InvocationTargetException e) {
+        throw new RuntimeException(e);
+    } catch (IllegalAccessException e) {
+        throw new RuntimeException(e);
+    }
+
+
 }
 public void start(){
     ThreadPoolManager threadPool=this.app.getThreadPool();
@@ -34,8 +75,8 @@ public void start(){
     }
 }
 
-    public void freeze() {
-    
+    public void freeze(Object body) {
+           System.out.println("freezing the app");
         if (isFrozen) {
             return;
         }
@@ -51,7 +92,7 @@ public void start(){
     }
 
     
-    public void resume() {
+    public void resume(Object body) {
         if (!isFrozen) {
             return;
         }
@@ -75,7 +116,11 @@ public void start(){
         System.out.println("Accepting requests from queue.");
         isFrozen = false;
     }
-    public void setMaxThreadsCount(int maxThreadsCount) throws IOException {
+    public void setMaxThreadsCount(Object body) throws IOException {
+    JSONObject request=(JSONObject) body;
+    request=(JSONObject) request.get("body");
+
+    int maxThreadsCount=request.getInt("maxNumber");
         System.out.println("setting threads count to: "+maxThreadsCount);
         this.app.properties.setProperty(AppsConstants.DEFAULT_MAX_Threads_PROPERTY_NAME,""+maxThreadsCount);
         try {
@@ -86,7 +131,10 @@ public void start(){
         }
         System.out.println("successfully set the threads count");
     }
-    public void setMaxDbConnectionsCount(int maxDbConnectionsCount) throws IOException {
+    public void setMaxDbConnectionsCount(Object body) throws IOException {
+        JSONObject request=(JSONObject) body;
+        request=(JSONObject) request.get("body");
+        int maxDbConnectionsCount=request.getInt("maxNumber");
         System.out.println("setting max db connections count"+maxDbConnectionsCount);
         if(this.app.properties.contains("arangodb")) {
             this.app.properties.put(AppsConstants.DEFAULT_NUMBER_OF_ARANGO_DB_PROPERTY_Name,""+maxDbConnectionsCount);
