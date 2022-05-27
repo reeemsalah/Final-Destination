@@ -1,3 +1,4 @@
+import com.google.cloud.firestore.QueryDocumentSnapshot;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -12,7 +13,10 @@ import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Scanner;
+import java.security.KeyStore;
+import java.sql.Timestamp;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 public final class SecureChatClient {
@@ -20,6 +24,7 @@ public final class SecureChatClient {
     static final String HOST = System.getProperty("host", "0.0.0.0");
     int PORT = Integer.parseInt(System.getProperty("port", "4040"));
     public  String clientUsername;
+    public ArrayList<MessageRecord> messages = new ArrayList<>();
     Quickstart qs;
 
     public SecureChatClient(String clientUsername, int port) throws IOException {
@@ -48,6 +53,34 @@ public final class SecureChatClient {
         if(scanner.hasNext()){
             clientUsername =     scanner.nextLine();
             System.out.println("Welcome "+ clientUsername + " :D");
+        }
+
+        System.out.println("here is the past chat history in this server : ");
+        ArrayList<QueryDocumentSnapshot> arr = qs.retrieveAllDocuments("Messages");
+        ArrayList<HashMap<String,Object>> records = new ArrayList<>();
+        for (int i = 0; i < arr.size(); i++) {
+            QueryDocumentSnapshot document = arr.get(i);
+             System.out.println(document.get("server"));
+             if((document.get("server")+"").equals(PORT+""))
+             {
+                records.add((HashMap<String, Object>) document.getData());
+             }
+        }
+
+
+        for (int i = 0; i <records.size() ; i++) {
+
+            String message = (String) records.get(i).get("message");
+            String date = (String) records.get(i).get("date");
+            String user = (String) records.get(i).get("user");
+
+            MessageRecord messagerec = new MessageRecord(message , date , user);
+            this.messages.add(messagerec);
+
+        }
+        Collections.sort(messages, (o1, o2) -> o1.date.compareTo(o2.date));
+        for (int i = 0; i < messages.size(); i++) {
+           System.out.println("[" + messages.get(i).date + "] " + messages.get(i).user + " : " + messages.get(i).message);
         }
 
         // Configure SSL.
@@ -81,7 +114,14 @@ public final class SecureChatClient {
 
                 // Sends the received line to the server.
                 //create a document of type message
-
+                Date date = new Date();
+                HashMap<String, Object> data = new HashMap<>();
+                Timestamp timestamp2 = new Timestamp(date.getTime());
+                data.put("message", line);
+                data.put("date",timestamp2.toString() );
+                data.put("server", this.PORT);
+                data.put("user" , this.clientUsername);
+                qs.addDocument("Messages" , this.clientUsername+this.PORT+ timestamp2.toString(),data);
                 lastWriteFuture = ch.writeAndFlush(clientUsername +": " +line + "\r\n");
 
                 // If user typed the 'bye' command, wait until the server closes
@@ -101,6 +141,39 @@ public final class SecureChatClient {
             // The connection is closed automatically on shutdown.
             group.shutdownGracefully();
         }
+    }
+
+    private static <K extends Comparable<K>, V extends Comparable<V>> Map<K, V> sort(
+            final Map<K, V> unsorted,
+            final boolean order) {
+        final var list = new LinkedList<>(unsorted.entrySet());
+
+        list.sort((o1, o2) -> order
+                ? o1.getValue().compareTo(o2.getValue()) == 0
+                ? o1.getKey().compareTo(o2.getKey())
+                : o1.getValue().compareTo(o2.getValue())
+                : o2.getValue().compareTo(o1.getValue()) == 0
+                ? o2.getKey().compareTo(o1.getKey())
+                : o2.getValue().compareTo(o1.getValue()));
+        return list.stream().collect(
+                Collectors.toMap(
+                        Map.Entry::getKey, Map.Entry::getValue, (a, b) -> b, LinkedHashMap::new
+                )
+        );
+    }
+
+    class MessageRecord{
+        String message;
+        String date;
+        String user;
+
+        public MessageRecord(String message, String date, String user){
+            this.message = message;
+            this.date = date;
+            this.user = user;
+
+        }
+
     }
 }
 
