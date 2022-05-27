@@ -69,7 +69,6 @@ public abstract class CommandVerifier extends Command {
             for (Map.Entry<Object, Object> e : prop.entrySet()) {
                 System.out.println("\"" +e.getValue()+"\"");
                 if (!body.has( (String) e.getValue() )) {
-
                     throw new ValidationException("Attribute: "+e.toString()+" is missing");
                 }
             }
