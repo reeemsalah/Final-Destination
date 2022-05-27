@@ -20,6 +20,7 @@ public boolean isFrozen=false;
 public void handleControllerMessage(JSONObject request){
        System.out.println("Mum Look I am controlling the app remotely !!!!"+request);
        
+       
 }
 public void start(){
     ThreadPoolManager threadPool=this.app.getThreadPool();
