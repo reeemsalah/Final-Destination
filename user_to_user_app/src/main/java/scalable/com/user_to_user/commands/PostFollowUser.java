@@ -9,14 +9,6 @@ import scalable.com.shared.classes.Arango;
 import scalable.com.shared.classes.Responder;
 
 
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
-
 public class PostFollowUser extends UserToUserCommand{
 
     @NotNull(message="followed user id should not be empty")
@@ -64,15 +56,7 @@ public class PostFollowUser extends UserToUserCommand{
         catch (Exception e){
             throw new ValidationException("attributes data types are wrong");
         }
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        Validator validator = factory.getValidator();
-        Set<ConstraintViolation<Object>> violations = validator.validate(this);
-        if(!violations.isEmpty()) {
-            String errorMessage = violations.stream()
-                    .map(cv -> cv.getMessage())
-                    .collect(Collectors.joining(", "));
-            throw new ValidationException(errorMessage);
-        }
+        this.validateAnnotations();
 
     }
 
