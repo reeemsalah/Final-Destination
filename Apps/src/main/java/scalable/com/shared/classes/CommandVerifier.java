@@ -13,7 +13,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public abstract class CommandVerifier extends Command {
+public abstract class  CommandVerifier extends Command {
 
 
     protected JSONObject body, uriParams, authenticationParams, files,tokenPayload;
@@ -64,8 +64,10 @@ public abstract class CommandVerifier extends Command {
     public void validateAttributesNumber() throws IOException, ValidationException {
         System.out.println("validating");
         try {
-            Properties prop = new Properties();
-            prop.load(CommandVerifier.class.getClassLoader().getResourceAsStream(this.getCommandName() + ".properties"));
+           if(this.validationProperties==null){
+               throw new NullPointerException();
+           }
+             Properties prop=this.validationProperties;
             for (Map.Entry<Object, Object> e : prop.entrySet()) {
                 System.out.println("\"" +e.getValue()+"\"");
                 if (!body.has( (String) e.getValue() )) {

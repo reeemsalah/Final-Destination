@@ -34,12 +34,13 @@ public class Login extends UserCommand{
         
         Connection connection = null;
         ResultSet result=null;
-        PreparedStatement preparedStatement;
+        PreparedStatement preparedStatement=null;
         String username= null;
         String last_name=null;
         String first_name=null;
         String image_url=null;
         String id=null;
+        boolean isArtist;
         JSONObject response=new JSONObject();
         try {
 
@@ -48,7 +49,7 @@ public class Login extends UserCommand{
             connection = PostgresConnection.getDataSource().getConnection();
             connection.setAutoCommit(true);
             
-            preparedStatement=connection.prepareStatement("select id,username,first_name,last_name,profile_photo,password from users where email=?", ResultSet.TYPE_SCROLL_SENSITIVE,
+            preparedStatement=connection.prepareStatement("select id,username,first_name,last_name,profile_photo,password,isartist from users where email=?", ResultSet.TYPE_SCROLL_SENSITIVE,
                     ResultSet.CONCUR_UPDATABLE);
            
             preparedStatement.setString(1,this.email);
@@ -65,10 +66,13 @@ public class Login extends UserCommand{
                        last_name = result.getString("last_name");
                        first_name = result.getString("first_name");
                        image_url = result.getString("profile_photo");
+                       isArtist=result.getBoolean("isartist");
+
                        id = result.getString("id");
 
                        Map<String, String> claims = new HashMap<String, String>();
                        claims.put("id", id);
+                       claims.put("isArtist",""+isArtist);
 
                        String token = JWTHandler.generateToken(claims);
 
@@ -95,7 +99,7 @@ public class Login extends UserCommand{
             return  Responder.makeErrorResponse("Something went wrong",400);
         } finally {
 
-            PostgresConnection.disconnect(result, null, connection);
+            PostgresConnection.disconnect(result, preparedStatement, connection);
         }
         return Responder.makeDataResponse(response);
     }
@@ -121,9 +125,9 @@ public class Login extends UserCommand{
             this.password = body.getString("password");
         }
         catch (Exception e){
-            throw new ValidationException("attributes data types are wrong");
+            throw new ValidationException("attributes data types are wrong: "+e.getMessage());
         }
-        this.validateAnnotations();
+       
 
     }
 

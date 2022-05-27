@@ -1,17 +1,24 @@
 package scalable.com.shared.classes;
 
+import com.fasterxml.jackson.databind.annotation.JsonAppend;
+
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
-import java.util.Properties;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ClassManager {
     private final ClassRegistry classRegistry = ClassRegistry.getInstance();
     private final Map<String, String> commandMap = new ConcurrentHashMap<>();
+    public  Map<String, Properties> validationMap=new ConcurrentHashMap<>();
 
     private static Properties readPropertiesFile(String path) throws IOException {
         final InputStream inputStream = ClassManager.class.getClassLoader().getResourceAsStream(path);
+        if(inputStream==null){
+            return null;
+        }
         final Properties properties = new Properties();
         properties.load(inputStream);
         return properties;
@@ -21,8 +28,39 @@ public class ClassManager {
         loadCommandMap();
         
         loadCommandClasses();
-    }
+        System.out.println("loading validations");
+        loadValidations();
 
+       
+    }
+    private void loadValidations() throws ClassNotFoundException {
+
+        for (Map.Entry<String,String> entry : commandMap.entrySet()){
+            final Class<?> commandClass = this.getCommand(entry.getKey());
+            // creating an instance of the command class
+
+            try {
+                final Command commandInstance = (Command) commandClass.getDeclaredConstructor().newInstance();
+                String name=(String)commandClass.getMethod("getCommandName").invoke(commandInstance, null);
+                Properties commandProperties = readPropertiesFile(name+ ".properties");
+                if (commandProperties==null){
+                    continue;
+                }
+                validationMap.put(name,commandProperties);
+            } catch (InstantiationException e) {
+                throw new RuntimeException(e);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            } catch (InvocationTargetException e) {
+                throw new RuntimeException(e);
+            } catch (NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+        }
+    }
     private void loadCommandMap() throws IOException {
         final Properties commandProperties = readPropertiesFile(ServiceConstants.COMMAND_MAP_FILENAME);
         for (final String key : commandProperties.stringPropertyNames()) {

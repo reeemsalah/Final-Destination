@@ -15,7 +15,7 @@
       <module>Shared</module>
     
     <module>user_app</module>
-    <module>recommendations-app</module>
+    
     <module>notifications-app</module>
     <module>musicApp</module>
     <module>user_to_user_app</module>
@@ -47,7 +47,7 @@
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-all</artifactId>
-      <version>4.1.60.Final</version>
+      <version>4.1.77.Final</version>
     </dependency>
     <dependency>
       <groupId>org.json</groupId>

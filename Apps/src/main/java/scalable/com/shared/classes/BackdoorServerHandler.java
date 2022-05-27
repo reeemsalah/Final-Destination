@@ -1,29 +1,39 @@
-package Netty;
+package scalable.com.shared.classes;
+
+import Netty.Server;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.Headers;
-import io.netty.handler.codec.base64.Base64;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.*;
-import io.netty.handler.codec.http.multipart.*;
-import io.netty.handler.codec.http.multipart.InterfaceHttpData.HttpDataType;
+import io.netty.handler.codec.http.multipart.HttpData;
+import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
 import io.netty.util.CharsetUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import Netty.Server;
-import scalable.com.shared.classes.JWTHandler;
 
-import java.awt.desktop.SystemEventListener;
 import java.io.IOException;
+ 
+
+import io.netty.handler.codec.base64.Base64;
+
+import io.netty.handler.codec.http.multipart.*;
+import io.netty.handler.codec.http.multipart.InterfaceHttpData.HttpDataType;
+
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 
-public class RequestHandler extends SimpleChannelInboundHandler<HttpObject> {
+
+@ChannelHandler.Sharable
+public class BackdoorServerHandler extends ChannelInboundHandlerAdapter {
+    private final Controller controller;
+
     String methodType;
     String uri;
     JSONObject body = new JSONObject();
@@ -114,86 +124,9 @@ public class RequestHandler extends SimpleChannelInboundHandler<HttpObject> {
         return request;
     }
 
-    @Override
-    public void channelReadComplete(ChannelHandlerContext ctx) {
-        cleanUp();
-        ctx.flush();
-        ctx.fireChannelReadComplete();
-    }
 
-    @Override
-    public void channelRead0(ChannelHandlerContext ctx, HttpObject msg) {
-        System.out.println("in channel read request handler");
-        if (msg instanceof HttpRequest) {
-            req = (HttpRequest) msg;
-            uri = req.uri();
 
-            methodType = req.method().toString();
-            uriParams = getURIParams();
-            queueName= getQueueName();
 
-            headers = getHeaders();
-            token=getToken();
-            commandName=getCommandName();
-            //System.out.println("token: " +token+" queueName: "+queueName+" command name: "+commandName);
-            ctx.channel().attr(Server.REQ_KEY).set(req);
-            
-            if(headers.has("Content-Type")) {
-                isFormData = headers.getString("Content-Type").split(";")[0].equals("multipart/form-data");
-            }
-        }
-        if (msg instanceof HttpContent && !isFormData) {
-            System.out.println(1);
-            HttpContent content = (HttpContent) msg;
-            if (isEmptyHttpContent(content))
-                return;
-            ByteBuf jsonBuf = content.content();
-            String jsonStr = jsonBuf.toString(CharsetUtil.UTF_8);
-            if (!methodType.equals("GET") && !jsonStr.isEmpty()) {
-                try {
-                    body = new JSONObject(jsonStr);
-                } catch (JSONException e) {
-                    errorResponse(ctx, 400, "Incorrect Body");
-                    return;
-                }
-            }
-        }
-       
-        if (msg instanceof FullHttpRequest) {
-            System.out.println(2);
-            if (!methodType.equals("GET") && isFormData) {
-                System.out.println(3);
-                requestDecoder = new HttpPostRequestDecoder((FullHttpRequest) msg);
-
-                requestDecoder.setDiscardThreshold(0);
-            }
-        }
-        if (msg instanceof LastHttpContent) {
-            System.out.println(4);
-            if (queueName != null && Server.apps.contains(queueName.toLowerCase())) {
-                ctx.channel().attr(Server.QUEUE_KEY).set(queueName);
-                try {
-                    System.out.println(5);
-                    JSONObject request = packRequest();
-                    System.out.println(request);
-                    ByteBuf content = Unpooled.copiedBuffer(request.toString(), CharsetUtil.UTF_8);
-                    ctx.fireChannelRead(content.copy());
-                } catch (IOException | JSONException e) {
-                    System.out.println(e.getMessage());
-                    errorResponse(ctx, 400, e.getMessage());
-                }
-            } else
-                errorResponse(ctx, 404, "Not Found");
-        }
-        
-    }
-
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        cleanUp();
-        cause.printStackTrace();
-        ctx.close();
-    }
 
     @Override
     public String toString() {
@@ -236,4 +169,97 @@ public class RequestHandler extends SimpleChannelInboundHandler<HttpObject> {
             requestDecoder = null;
         }
     }
+
+
+    public
+    BackdoorServerHandler(Controller controller) {
+        this.controller = controller;
+    }
+
+    private String toString(Object msg) {
+        ByteBuf buf = (ByteBuf) msg;
+        StringBuilder sb = new StringBuilder();
+        while (buf.isReadable()) {
+            sb.append((char) buf.readByte());
+        }
+        return sb.toString();
+
+    }
+
+    @Override
+    public void channelRead(ChannelHandlerContext ctx, Object msg) {
+        System.out.println("in channel read request handler");
+        if (msg instanceof HttpRequest) {
+            req = (HttpRequest) msg;
+            uri = req.uri();
+
+            methodType = req.method().toString();
+            uriParams = getURIParams();
+            queueName= getQueueName();
+
+            headers = getHeaders();
+            token=getToken();
+            commandName=getCommandName();
+            //System.out.println("token: " +token+" queueName: "+queueName+" command name: "+commandName);
+            ctx.channel().attr(Server.REQ_KEY).set(req);
+            if(headers.has("Content-Type")) {
+                isFormData = headers.getString("Content-Type").split(";")[0].equals("multipart/form-data");
+            }
+        }
+        if (msg instanceof HttpContent && !isFormData) {
+            System.out.println(1);
+            HttpContent content = (HttpContent) msg;
+//            if (isEmptyHttpContent(content))
+//                return;
+            ByteBuf jsonBuf = content.content();
+            String jsonStr = jsonBuf.toString(CharsetUtil.UTF_8);
+            if (!methodType.equals("GET") && !jsonStr.isEmpty()) {
+                try {
+                    body = new JSONObject(jsonStr);
+                } catch (JSONException e) {
+                    errorResponse(ctx, 400, "Incorrect Body");
+                    return;
+                }
+            }
+        }
+
+        if (msg instanceof FullHttpRequest) {
+            System.out.println(2);
+            if (!methodType.equals("GET") && isFormData) {
+                System.out.println(3);
+                requestDecoder = new HttpPostRequestDecoder((FullHttpRequest) msg);
+
+                requestDecoder.setDiscardThreshold(0);
+            }
+        }
+        if (msg instanceof LastHttpContent) {
+            System.out.println(4);
+           
+                try {
+                    System.out.println(5);
+                    JSONObject request = packRequest();
+                    System.out.println(request);
+                   this.controller.handleControllerMessage(request);
+                } catch (IOException | JSONException e) {
+                    System.out.println(e.getMessage());
+                    errorResponse(ctx, 400, e.getMessage());
+                }
+
+        }
+
+
+    }
+
+    @Override
+    public void channelReadComplete(ChannelHandlerContext ctx) {
+        ctx.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        cause.printStackTrace();
+        ctx.close();
+    }
+
+
 }
