@@ -2,6 +2,7 @@ package com.scalable.recommendations.commands;
 
 import com.arangodb.entity.BaseDocument;
 import com.arangodb.entity.BaseEdgeDocument;
+import com.scalable.recommendations.constants.DatabaseConstants;
 import scalable.com.exceptions.ValidationException;
 import scalable.com.shared.classes.Arango;
 import scalable.com.shared.classes.Responder;
@@ -28,15 +29,10 @@ public class CreateUserNode extends  RecommendationsCommand {
         try{
 
             arango=Arango.getInstance();
-            System.out.println("Got instance");
-
-            System.out.println(arango.containsCollection("spotifyArangoDb","users"));
-
             BaseDocument userNode = new BaseDocument();
             userNode.setKey(user_id);
             userNode.addAttribute("is_artist",is_artist);
-
-             arango.createDocument("spotifyArangoDb","users",userNode) ;
+             arango.createDocument(DatabaseConstants.DATABASE_NAME,DatabaseConstants.USER_DOCUMENT_COLLECTION,userNode) ;
         } catch (Exception e){
             Responder.makeErrorResponse(e.getMessage(),404);
         }

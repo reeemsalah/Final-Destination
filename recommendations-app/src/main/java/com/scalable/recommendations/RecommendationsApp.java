@@ -1,7 +1,9 @@
 package com.scalable.recommendations;
 
+import com.scalable.recommendations.constants.DatabaseConstants;
 import scalable.com.shared.App;
 import scalable.com.shared.classes.Arango;
+
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -13,10 +15,10 @@ public  class RecommendationsApp extends App {
         RecommendationsApp app=new RecommendationsApp();
         app.dbInit();
         arangoPool =Arango.getInstance() ;
-        arangoPool.createCollectionIfNotExists("spotifyArangoDb","users",false);
-        arangoPool.createCollectionIfNotExists("spotifyArangoDb","music_tracks",false);
-
-
+        arangoPool.createCollectionIfNotExists(DatabaseConstants.DATABASE_NAME,DatabaseConstants.USER_DOCUMENT_COLLECTION,false);
+        arangoPool.createCollectionIfNotExists(DatabaseConstants.DATABASE_NAME,DatabaseConstants.MUSIC_DOCUMENT_COLLECTION,false);
+        arangoPool.createCollectionIfNotExists(DatabaseConstants.DATABASE_NAME,DatabaseConstants.USER_EDGE_COLLECTION,true);
+        arangoPool.createCollectionIfNotExists(DatabaseConstants.DATABASE_NAME,DatabaseConstants.MUSIC_EDGE_COLLECTION,true);
         app.start();
 
     }
