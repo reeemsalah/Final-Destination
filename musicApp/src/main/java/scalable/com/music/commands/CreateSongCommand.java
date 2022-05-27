@@ -12,7 +12,7 @@ import scalable.com.shared.classes.MinIo;
 import scalable.com.shared.classes.Responder;
 import javax.validation.constraints.NotBlank;
 
-public class CreateSongCommand  extends CommandVerifier {
+public class CreateSongCommand  extends MusicCommand {
     //@NotBlank(message = "name should not be empty")
     private String name;
     //@NotBlank(message = "artists should not be empty")
@@ -33,6 +33,10 @@ public class CreateSongCommand  extends CommandVerifier {
         Arango arango = Arango.getInstance();
 
         try {
+            if (this.tokenPayload==null)
+                return Responder.makeErrorResponse("No token provided", 404);
+            if (this.tokenPayload.get("isArtist").equals("false"))
+                return Responder.makeErrorResponse("Only artists can create songs", 404);
 
             arango.createDatabaseIfNotExists("Spotify");
             arango.createCollectionIfNotExists("Spotify","Songs",false);
@@ -86,7 +90,7 @@ public class CreateSongCommand  extends CommandVerifier {
         } catch (Exception e) {
             return Responder.makeErrorResponse(e.getMessage(), 404);
         }
-        return Responder.makeMsgResponse("SUCCESS!");
+        return Responder.makeMsgResponse("Song created!");
     }
 
     @Override
@@ -96,7 +100,7 @@ public class CreateSongCommand  extends CommandVerifier {
 
     @Override
     public boolean isAuthNeeded() {
-        return false;
+        return true;
     }
 
     @Override
