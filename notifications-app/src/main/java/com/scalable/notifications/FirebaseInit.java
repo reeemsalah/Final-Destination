@@ -14,7 +14,7 @@ public class FirebaseInit {
         try {
             if (!initialized) {
                 FileInputStream serviceAccount =
-                        new FileInputStream("/Users/abdelrahman.sweilam/Desktop/GUC/Semester 10/Scalable Apps/2-Project/Final-Destination/notifications-app/src/main/resources/firebase-service-account.json");
+                        new FileInputStream(System.getProperty("user.dir") + "/src/main/resources/firebase-service-account.json");
 
                 FirebaseOptions firebaseOptions = new FirebaseOptions.Builder()
                         .setCredentials(GoogleCredentials.fromStream(serviceAccount))
