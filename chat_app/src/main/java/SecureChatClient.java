@@ -10,6 +10,7 @@ import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Scanner;
 
@@ -17,14 +18,30 @@ import java.util.Scanner;
 public final class SecureChatClient {
 
     static final String HOST = System.getProperty("host", "0.0.0.0");
-    static final int PORT = Integer.parseInt(System.getProperty("port", "8080"));
-    private static String clientUsername;
+    int PORT = Integer.parseInt(System.getProperty("port", "4040"));
+    public  String clientUsername;
+    Quickstart qs;
 
-    public SecureChatClient(String clientUsername) {
+    public SecureChatClient(String clientUsername, int port) throws IOException {
         this.clientUsername = clientUsername;
+        Quickstart qs = new Quickstart();
+        this.qs = qs;
+        this.PORT = Integer.parseInt(System.getProperty("port", port+""));
     }
 
     public static void main(String[] args) throws Exception {
+        //THIS IS A SIMULATION TO WHAT SHOULD HAPPEN WHEN A CLIENT INSTANCE IS CREATED
+        String username = "Ahmed";
+        int port = 4040;
+        SecureChatClient client = new SecureChatClient(username, port);
+        client.execute();
+
+
+    }
+
+
+    public void execute() throws Exception
+    {
         // tale user nickname
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter nickname :)");
@@ -42,7 +59,7 @@ public final class SecureChatClient {
             Bootstrap b = new Bootstrap();
             b.group(group)
                     .channel(NioSocketChannel.class)
-                    .handler(new SecureChatClientInitializer(sslCtx));
+                    .handler(new SecureChatClientInitializer(sslCtx,this.PORT));
 
             // Start the connection attempt.
             Channel ch = b.connect(HOST, PORT).sync().channel();
@@ -63,6 +80,8 @@ public final class SecureChatClient {
                 }
 
                 // Sends the received line to the server.
+                //create a document of type message
+
                 lastWriteFuture = ch.writeAndFlush(clientUsername +": " +line + "\r\n");
 
                 // If user typed the 'bye' command, wait until the server closes

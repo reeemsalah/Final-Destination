@@ -13,9 +13,11 @@ import io.netty.handler.ssl.SslContext;
 public class SecureChatClientInitializer extends ChannelInitializer<SocketChannel> {
 
     private final SslContext sslCtx;
+    private int port;
 
-    public SecureChatClientInitializer(SslContext sslCtx) {
+    public SecureChatClientInitializer(SslContext sslCtx, int port) {
         this.sslCtx = sslCtx;
+        this.port = port;
     }
 
     @Override
@@ -27,7 +29,7 @@ public class SecureChatClientInitializer extends ChannelInitializer<SocketChanne
         // and accept any invalid certificates in the client side.
         // You will need something more complicated to identify both
         // and server in the real world.
-        pipeline.addLast(sslCtx.newHandler(ch.alloc(), SecureChatClient.HOST, SecureChatClient.PORT));
+        pipeline.addLast(sslCtx.newHandler(ch.alloc(), SecureChatClient.HOST, this.port));
 
         // On top of the SSL handler, add the text line codec.
         pipeline.addLast(new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter()));

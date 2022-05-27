@@ -17,18 +17,38 @@ import com.google.firebase.*;
 
 
 import java.io.IOException;
+import java.security.cert.CertificateException;
 
 
 public final class SecureChatServer {
 
-    static final int PORT = Integer.parseInt(System.getProperty("port", "8080"));
+
+     int PORT = 0;
+     //should the port change? should it be static for all servers? idk. we will find out.
+    Quickstart qs;
+    int serverID;
 
 
 
-    public SecureChatServer() throws IOException {
+    public SecureChatServer(int serverID , int port ) throws IOException {
+        Quickstart qs = new Quickstart();
+        this.qs = qs;
+        this.serverID = serverID;
+        this.PORT =    Integer.parseInt(System.getProperty("port", port+""));
+
+        
+
+        
     }
 
     public static void main(String[] args) throws Exception {
+        int port = 4040;
+        SecureChatServer server = new SecureChatServer(0,port)   ;
+        server.execute();
+
+    }
+
+    public void execute() throws IOException, CertificateException, InterruptedException {
         SelfSignedCertificate ssc = new SelfSignedCertificate();
         SslContext sslCtx = SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey())
                 .build();
@@ -42,7 +62,7 @@ public final class SecureChatServer {
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(new SecureChatServerInitializer(sslCtx));
 
-            b.bind(PORT).sync().channel().closeFuture().sync();
+            b.bind(this.PORT).sync().channel().closeFuture().sync();
         } finally {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();

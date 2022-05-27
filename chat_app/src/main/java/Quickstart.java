@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -136,6 +137,41 @@ public class Quickstart {
         }
     }
 
+
+    void addDocument(String collection, String docName , HashMap<String, Object> documentObject)throws Exception
+    {
+        DocumentReference docRef = db.collection(collection).document(docName);
+        ApiFuture<WriteResult> result = docRef.set(documentObject);
+        System.out.println("Added document " + docName + "into collection " + collection);
+        System.out.println("adding time : " + result.get().getUpdateTime());
+
+
+    }
+
+    ArrayList runQuery(String collection, String condition , String field , Object value) throws  Exception{
+        ApiFuture<QuerySnapshot> query= db.collection(collection).whereEqualTo(field, value).get();
+        switch (condition){
+            case ("equal") :  query =
+                    db.collection(collection).whereEqualTo(field, value).get();  break;
+            case ("less") :  query =
+                    db.collection(collection).whereLessThan(field, value).get();  break;
+
+            case ("more") :  query =
+                    db.collection(collection).whereGreaterThan(field, value).get();  break;
+        }
+
+        // query.get() blocks on response
+        QuerySnapshot querySnapshot = query.get();
+        List<QueryDocumentSnapshot> documents = querySnapshot.getDocuments();
+        ArrayList<QueryDocumentSnapshot> ArrayOfQueries = new ArrayList<>();
+        for (QueryDocumentSnapshot document : documents) {
+            System.out.println("Result : " + document.getId());
+            ArrayOfQueries.add(document);
+
+        }
+        return ArrayOfQueries;
+
+    }
     void runQuery() throws Exception {
         // [START fs_add_query]
         // asynchronously query for all users born before 1900
