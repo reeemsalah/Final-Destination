@@ -137,7 +137,7 @@ public class RequestHandler extends SimpleChannelInboundHandler<HttpObject> {
             commandName=getCommandName();
             //System.out.println("token: " +token+" queueName: "+queueName+" command name: "+commandName);
             ctx.channel().attr(Server.REQ_KEY).set(req);
-            isFormData = headers.getString("Content-Type").split(";")[0].equals("multipart/form-data");
+            
             if(headers.has("Content-Type")) {
                 isFormData = headers.getString("Content-Type").split(";")[0].equals("multipart/form-data");
             }
