@@ -13,14 +13,10 @@ public  class RecommendationsApp extends App {
         RecommendationsApp app=new RecommendationsApp();
         app.dbInit();
         arangoPool =Arango.getInstance() ;
-        System.out.println(arangoPool.databaseExists("spotifyArangoDB"));
         arangoPool.createCollectionIfNotExists("spotifyArangoDb","users",false);
+        arangoPool.createCollectionIfNotExists("spotifyArangoDb","music_tracks",false);
 
-//        arangoPool.createCollectionIfNotExists("spotifyArangoDb","users",true);
-//        System.out.println(arangoPool.containsCollection("spotifyArangoDb","users"));
-        arangoPool =Arango.getConnectedInstance() ;
-        arangoPool.createCollectionIfNotExists("spotifyArangoDb","usersss",true);
-        System.out.println(arangoPool.containsCollection("spotifyArangoDb","usersss"));
+
         app.start();
 
     }
