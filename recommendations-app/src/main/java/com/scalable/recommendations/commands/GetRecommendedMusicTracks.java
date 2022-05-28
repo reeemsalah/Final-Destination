@@ -39,8 +39,6 @@ public class GetRecommendedMusicTracks extends RecommendationsCommand{
             ArangoCursor<List> cursor = arango.query2( DatabaseConstants.DATABASE_NAME, aqlQuery, bindVars);
             for (List element : cursor) {
                 System.out.println(element.toString());
-
-
             }
         }
 
