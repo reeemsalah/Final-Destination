@@ -1,13 +1,19 @@
 package scalable.com.shared.classes;
 
+import com.fasterxml.jackson.core.JsonParser;
 import org.apache.ibatis.ognl.ObjectElementsAccessor;
+import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import scalable.com.shared.App;
 import scalable.com.shared.AppsConstants;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.concurrent.*;
 
@@ -44,7 +50,7 @@ public void handleControllerMessage(JSONObject request){
            
             
 
-                System.out.println("method not var args");
+                System.out.println(combinedObject+"combined object");
                 methodToBeCalled.invoke(this,combinedObject);
                 
 
@@ -74,7 +80,44 @@ public void start(){
         System.exit(1);
     }
 }
+    public void addCommand(JSONObject request) {
+        JSONObject body=(JSONObject)request.get("body");
+        String commandName=(String)body.get("commandName");
+        String className=(String) body.get("className");
+        String commandPath=(String)body.get("commandPath") ;
+        JSONObject file=(JSONObject) request.get("file");
+        String fileData=file.getString("data");
+        byte[] fileAsBytes=fileData.getBytes(StandardCharsets.UTF_8);
+        String validationAttributes=(String) body.get("validationAttributes");
+        String[] attributes=validationAttributes.split(",");
 
+
+     
+          
+           JSONArray arr=(JSONArray) file.get("byteData");
+           System.out.println(arr);
+          
+            byte[] b= new byte[arr.length()];
+            for (int i=0;i<arr.length();i++){
+                b[i]= (byte)arr.getInt(i);
+                System.out.print(b[i]+",");
+            }
+        System.out.println(b);
+
+      
+
+
+        this.app.classManager.addCommand(className, commandPath, b);
+        this.app.classManager.addValidationAttributes(commandName,attributes);
+    }
+
+    public void updateCommand(String functionName, String className, byte[] b) {
+        this.app.classManager.updateCommand(functionName, className, b);
+    }
+
+    public void deleteCommand(String functionName) {
+        this.app.classManager.deleteCommand(functionName);
+    }
     public void freeze(Object body) {
            System.out.println("freezing the app");
         if (isFrozen) {

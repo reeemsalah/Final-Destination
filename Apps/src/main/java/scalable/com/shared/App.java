@@ -41,7 +41,7 @@ protected RabbitMQApp rabbitMQApp;
 protected RabbitMQCommunicatorApp rabbitMQCommunicatorApp;
 protected Controller appController;
 protected ThreadPoolManager threadsManager;
-protected ClassManager classManager=new ClassManager();
+public ClassManager classManager=new ClassManager();
 public PostgresConnection sqlDb;
 
 protected BackdoorServer backDoorServer=null;
@@ -111,8 +111,11 @@ private void createBackDoorServer()  {
 protected void initProperties() {
         this.properties=new Properties();
         try {
+            
             this.properties.load(App.class.getClassLoader().getResourceAsStream("db.properties"));
+          
             readDefaultProperties();
+           
         }
         catch (Exception e){
             System.out.println(e.getMessage());

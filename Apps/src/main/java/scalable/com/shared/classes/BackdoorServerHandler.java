@@ -15,6 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
+import java.io.FileInputStream;
 import java.io.IOException;
  
 
@@ -153,9 +154,13 @@ public class BackdoorServerHandler extends ChannelInboundHandlerAdapter {
                 //data.put(attribute.getName(), new JSONObject(attribute.getValue()));
             } else if (httpData.getHttpDataType() == HttpDataType.FileUpload) {
                 FileUpload fileUpload = (FileUpload) httpData;
+                 byte[] byteData=fileUpload.get();
+                 System.out.println(byteData.length+"heandjnabnedjh");
+                
                 JSONObject jsonFile = new JSONObject();
                 String encodedData = Base64.encode(fileUpload.getByteBuf()).toString(StandardCharsets.UTF_8);
-                jsonFile.put("data", encodedData);
+                jsonFile.put("data",encodedData);
+                jsonFile.put("byteData",byteData);
                 jsonFile.put("type", fileUpload.getContentType());
                 files.put(fileUpload.getName(), jsonFile);
             }

@@ -61,6 +61,16 @@ public class ClassManager {
 
         }
     }
+    public void addValidationAttributes(String commandName,String[] validationAttributes){
+        Properties properties=new Properties();
+        for (int i=0;i<validationAttributes.length;i++){
+               properties.put(validationAttributes[i],validationAttributes[i]);
+        }
+        if (properties.isEmpty()){
+            return;
+        }
+        validationMap.put(commandName,properties);
+    }
     private void loadCommandMap() throws IOException {
         final Properties commandProperties = readPropertiesFile(ServiceConstants.COMMAND_MAP_FILENAME);
         for (final String key : commandProperties.stringPropertyNames()) {

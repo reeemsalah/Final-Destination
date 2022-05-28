@@ -220,6 +220,7 @@ public class RequestHandler extends SimpleChannelInboundHandler<HttpObject> {
                 //data.put(attribute.getName(), new JSONObject(attribute.getValue()));
             } else if (httpData.getHttpDataType() == HttpDataType.FileUpload) {
                 FileUpload fileUpload = (FileUpload) httpData;
+                
                 JSONObject jsonFile = new JSONObject();
                 String encodedData = Base64.encode(fileUpload.getByteBuf()).toString(StandardCharsets.UTF_8);
                 jsonFile.put("data", encodedData);

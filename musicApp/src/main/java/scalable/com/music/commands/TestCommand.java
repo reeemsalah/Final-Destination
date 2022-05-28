@@ -4,6 +4,7 @@ import scalable.com.exceptions.ValidationException;
 import scalable.com.shared.classes.Responder;
 
 public class TestCommand extends MusicCommand{
+    String fady;
     @Override
     public String getCommandName() {
         return "Test";
@@ -29,6 +30,12 @@ public class TestCommand extends MusicCommand{
 
     @Override
     public void validateAttributeTypes() throws ValidationException {
+        try {
+            this.fady=this.body.getString("fady");
+        }
 
+        catch (Exception e){
+            throw new ValidationException("attributes data types are wrong: "+e.getMessage());
+        }
     }
 }
