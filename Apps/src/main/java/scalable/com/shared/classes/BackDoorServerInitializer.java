@@ -4,6 +4,7 @@ package scalable.com.shared.classes;
 
 import Netty.RequestHandler;
 
+import Netty.ResponseHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
@@ -22,14 +23,15 @@ public class BackDoorServerInitializer extends ChannelInitializer<SocketChannel>
     public void initChannel(SocketChannel ch) {
         
         ChannelPipeline p = ch.pipeline();
-    
 
-    
-         p.addLast(new HttpRequestDecoder());
+
+        p.addLast(new HttpRequestDecoder());
+        p.addLast(new HttpResponseEncoder());
         p.addLast("chunkedWriteHandler", new ChunkedWriteHandler());
         
-        p.addLast(new HttpObjectAggregator(10*(1<<20)));
+        p.addLast(new HttpObjectAggregator(100*(1<<20)));
         p.addLast(new BackdoorServerHandler(controller));
+        p.addLast(new ResponseHandler());
 
         
 

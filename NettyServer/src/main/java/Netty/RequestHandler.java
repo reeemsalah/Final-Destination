@@ -125,6 +125,7 @@ public class RequestHandler extends SimpleChannelInboundHandler<HttpObject> {
     public void channelRead0(ChannelHandlerContext ctx, HttpObject msg) {
         System.out.println("in channel read request handler");
         if (msg instanceof HttpRequest) {
+            System.out.println("here");
             req = (HttpRequest) msg;
             uri = req.uri();
 

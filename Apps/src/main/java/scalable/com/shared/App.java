@@ -52,6 +52,8 @@ public RabbitMQCommunicatorApp getRabbitMQCommunicatorApp(){
         return  this.rabbitMQCommunicatorApp;
     }
 protected abstract String getAppName();
+
+public  String loggingLevel="normal";
   
 public void dbInit() throws IOException {
        
