@@ -18,7 +18,7 @@ public class FavoriteAlbumCommand extends CommandVerifier {
     public String execute() {
         Arango arango = null;
         try {
-            int album_id = body.getInt("album_id");
+            String album_id = body.getString("album_id");
             String user_id = this.tokenPayload.getString("id");
 
             // TODO:String UserId = authenticationParams.getString(ThreadCommand.USERNAME);

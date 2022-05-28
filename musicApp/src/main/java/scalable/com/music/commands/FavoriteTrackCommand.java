@@ -16,7 +16,7 @@ public class FavoriteTrackCommand extends CommandVerifier {
     public String execute() {
         Arango arango = null;
         try {
-            int track_id = body.getInt("track_id");
+            String track_id = body.getString("track_id");
             String user_id = this.tokenPayload.getString("id");
 
             // TODO:String UserId = authenticationParams.getString(ThreadCommand.USERNAME);

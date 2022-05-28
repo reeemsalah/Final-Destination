@@ -19,14 +19,14 @@ public class PlaylistVisibilityCommand extends CommandVerifier {
         try {
             String key = body.getString("id");
             arango = Arango.getInstance();
-            BaseDocument oldDoc = arango.readDocument("Spotify","Playlists", key) ;
+            BaseDocument oldDoc = arango.readDocument("spotifyArangoDb","Playlists", key) ;
             if((Boolean) oldDoc.getAttribute("isVisible")){          // if true set to false and vice versa
                 oldDoc.updateAttribute("isVisible",false);
             }
             else {
                 oldDoc.updateAttribute("isVisible",true);
             }
-            arango.updateDocument("Spotify","Playlists",oldDoc,key);
+            arango.updateDocument("spotifyArangoDb","Playlists",oldDoc,key);
             return Responder.makeMsgResponse("UpdatedPlaylist");
 
 
