@@ -25,6 +25,7 @@ public abstract class  CommandVerifier extends Command {
 
     @Override
     public final String execute(JSONObject request) {
+        System.out.println("executing ..."+this.getCommandName());
         origRequest = request;
         //setting this objects uriParams
         uriParams = request.getJSONObject("uriParams");
@@ -32,6 +33,7 @@ public abstract class  CommandVerifier extends Command {
         String methodType = getRestAPIMethod();
         //check the request made has the correct restfull api method
         if (!methodType.toUpperCase().equals(request.getString("methodType"))) {
+            System.out.println("wrong method type");
             return Responder.makeErrorResponse(String.format("%s expects a %s Request!", getClass().getSimpleName(), methodType), 500);
         }
          //get the body of this request if found
@@ -42,9 +44,12 @@ public abstract class  CommandVerifier extends Command {
 
         //did the server authenticate this request?
 
-        if (isAuthNeeded() && !request.getBoolean(IS_AUTHENTICATED))
+        if (isAuthNeeded() && !request.getBoolean(IS_AUTHENTICATED)) {
+            System.out.println("not authenticated!");
             return Responder.makeErrorResponse("Unauthorized action! Please Login!", 401);
+        }
                try {
+                 
                   this.verifyBody();
                }
                catch(Exception e){

@@ -137,7 +137,17 @@ public class PostgresConnection {
 
             } catch (Exception e1){
                 try {
-                    readConfFile();
+                    //readConfFile();
+                    setDBHost();
+                    setDBPassword();
+                    setDBName();
+                    setDBPort();
+                    setDBUser();
+                    if (!formatURL()) {
+
+                     //   throw  new Exception("Wrong Format in Postgres.conf");
+                    }
+
                 } catch ( Exception e2 ) {
                     e2.printStackTrace();
                 }
@@ -177,19 +187,23 @@ public class PostgresConnection {
         }
     }
 
-    public  void setDBUser(String name) {
-        DB_USERNAME = name;
+    public  void setDBUser() {
+        String username=System.getenv("postgres_username")==null?"postgres":System.getenv("postgres_username");
+        DB_USERNAME = username;
     }
 
-    public void setDBPassword(String pass) {
-        DB_PASSWORD = pass;
+    public void setDBPassword() {
+        String password=System.getenv("postgres_password")==null?"root":System.getenv("postgres_password");
+        DB_PASSWORD = password;
     }
 
-    public void setDBPort(String port) {
+    public void setDBPort() {
+        String port=System.getenv("postgres_port")==null?"5432":System.getenv("postgres_port");
         DB_PORT = port;
     }
 
-    public void setDBHost(String host) {
+    public void setDBHost() {
+        String host=System.getenv("postgres_host")==null?"localhost":System.getenv("postgres_host");
         DB_HOST = host;
     }
 
@@ -197,8 +211,9 @@ public class PostgresConnection {
         DB_URL = url;
     }
 
-    public void setDBName(String name) {
-        DB_NAME = name;
+    public void setDBName() {
+        String dbName=System.getenv("postgres_dbName")==null?"postgres":System.getenv("postgres_dbName");
+        DB_NAME = dbName;
     }
 
     public void setDbInitConnections (String initConnections){ DB_INIT_CONNECTIONS = initConnections;}
@@ -217,65 +232,66 @@ public class PostgresConnection {
         return matcher.matches();
     }
 
-    public void readConfFile() throws Exception {
-        String file = System.getProperty("user.dir") + "/Postgres.conf";
-        java.util.List<String> lines = new ArrayList<String>();
-        //extract string between square brackets and compile regex for faster performance
-        Pattern pattern = Pattern.compile("\\[(.+)\\]");
-        Matcher matcher;
-        Exception e;
-        Stream<String> stream = Files.lines(Paths.get(file));
-        lines = stream.filter(line -> !line.startsWith("#")).collect(Collectors.toList());
+//    public void readConfFile() throws Exception {
+//        String file = System.getProperty("user.dir") + "/Postgres.conf";
+//        System.out.println(file);
+//        java.util.List<String> lines = new ArrayList<String>();
+//        //extract string between square brackets and compile regex for faster performance
+//        Pattern pattern = Pattern.compile("\\[(.+)\\]");
+//        Matcher matcher;
+//        Exception e;
+//        Stream<String> stream = Files.lines(Paths.get(file));
+//        lines = stream.filter(line -> !line.startsWith("#")).collect(Collectors.toList());
+//
+//        //set variables based on matches
+//        for (int i = 0; i < lines.size(); i++) {
+//            System.out.println(lines.get(i));
+//            if (lines.get(i).contains("user")) {
+//                matcher = pattern.matcher(lines.get(i));
+//                if(matcher.find()){
+//                    setDBUser(matcher.group(1));}
+//                else
+//                    throw  e = new Exception("empty user in Postgres.conf");
+//            }
+//            if (lines.get(i).contains("database")) {
+//                matcher = pattern.matcher(lines.get(i));
+//                if(matcher.find())
+//                    setDBName(matcher.group(1));
+//                else
+//                    throw  e = new Exception("empty database name in Postgres.conf");
+//            }
+//            if (lines.get(i).contains("pass")) {
+//                matcher = pattern.matcher(lines.get(i));
+//                matcher.find();
+//                setDBPassword(matcher.group(1));
+//            }
+//            if (lines.get(i).contains("host")) {
+//                matcher = pattern.matcher(lines.get(i));
+//                if (matcher.find())
+//                    setDBHost(matcher.group(1));
+//                else
+//                    setDBHost("localhost");
+//            }
+//            if (lines.get(i).contains("port")) {
+//                matcher = pattern.matcher(lines.get(i));
+//                if (matcher.find())
+//                    setDBPort(matcher.group(1));
+//                else
+//                    setDBPort("5432");
+//            }
+//        }
+//        if (!formatURL()) {
+//            e = new Exception("Wrong Format in Postgres.conf");
+//            throw e;
+//        }
+//    }
 
-        //set variables based on matches
-        for (int i = 0; i < lines.size(); i++) {
-            System.out.println(lines.get(i));
-            if (lines.get(i).contains("user")) {
-                matcher = pattern.matcher(lines.get(i));
-                if(matcher.find()){
-                    setDBUser(matcher.group(1));}
-                else
-                    throw  e = new Exception("empty user in Postgres.conf");
-            }
-            if (lines.get(i).contains("database")) {
-                matcher = pattern.matcher(lines.get(i));
-                if(matcher.find())
-                    setDBName(matcher.group(1));
-                else
-                    throw  e = new Exception("empty database name in Postgres.conf");
-            }
-            if (lines.get(i).contains("pass")) {
-                matcher = pattern.matcher(lines.get(i));
-                matcher.find();
-                setDBPassword(matcher.group(1));
-            }
-            if (lines.get(i).contains("host")) {
-                matcher = pattern.matcher(lines.get(i));
-                if (matcher.find())
-                    setDBHost(matcher.group(1));
-                else
-                    setDBHost("localhost");
-            }
-            if (lines.get(i).contains("port")) {
-                matcher = pattern.matcher(lines.get(i));
-                if (matcher.find())
-                    setDBPort(matcher.group(1));
-                else
-                    setDBPort("5432");
-            }
-        }
-        if (!formatURL()) {
-            e = new Exception("Wrong Format in Postgres.conf");
-            throw e;
-        }
-    }
-    
     public static void main(String[] args) {
         try {
-           PostgresConnection db = new PostgresConnection();
-           db.initSource();
-           Connection dbConn = PostgresConnection.getDataSource().getConnection();
-           System.out.println(dbConn);
+            PostgresConnection db = new PostgresConnection();
+            db.initSource();
+            Connection dbConn = PostgresConnection.getDataSource().getConnection();
+            System.out.println(dbConn);
         }
         catch (Exception e){
             e.printStackTrace();
@@ -285,3 +301,4 @@ public class PostgresConnection {
 
 
 }
+

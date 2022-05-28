@@ -125,6 +125,7 @@ public class RequestHandler extends SimpleChannelInboundHandler<HttpObject> {
     public void channelRead0(ChannelHandlerContext ctx, HttpObject msg) {
         System.out.println("in channel read request handler");
         if (msg instanceof HttpRequest) {
+            System.out.println("here");
             req = (HttpRequest) msg;
             uri = req.uri();
 
@@ -220,6 +221,7 @@ public class RequestHandler extends SimpleChannelInboundHandler<HttpObject> {
                 //data.put(attribute.getName(), new JSONObject(attribute.getValue()));
             } else if (httpData.getHttpDataType() == HttpDataType.FileUpload) {
                 FileUpload fileUpload = (FileUpload) httpData;
+                
                 JSONObject jsonFile = new JSONObject();
                 String encodedData = Base64.encode(fileUpload.getByteBuf()).toString(StandardCharsets.UTF_8);
                 jsonFile.put("data", encodedData);

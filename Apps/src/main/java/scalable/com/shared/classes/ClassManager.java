@@ -61,6 +61,15 @@ public class ClassManager {
 
         }
     }
+    public void addValidationAttributes(String commandName,String[] validationAttributes){
+        Properties properties=new Properties();
+        if (!validationAttributes[0].equals("")) {
+            for (int i = 0; i < validationAttributes.length; i++) {
+                properties.put(validationAttributes[i], validationAttributes[i]);
+            }
+        }
+        validationMap.put(commandName,properties);
+    }
     private void loadCommandMap() throws IOException {
         final Properties commandProperties = readPropertiesFile(ServiceConstants.COMMAND_MAP_FILENAME);
         for (final String key : commandProperties.stringPropertyNames()) {
@@ -93,19 +102,25 @@ public class ClassManager {
     }
 
 
-    public void addCommand(String functionName, String className, byte[] b) {
-        commandMap.put(functionName, className);
-        classRegistry.addClassByBytes(className, b);
+   // funtionName is className
+    public void addCommand(String className, String commandPath, byte[] b) {
+        commandMap.put(className, commandPath);
+        classRegistry.addClassByBytes(commandPath, b);
     }
 
-    public void updateCommand(String functionName, String className, byte[] b) {
-        addCommand(functionName, className, b);
+    public void updateCommand(String className, String commandPath, byte[] b) {
+        addCommand(className, commandPath, b);
     }
 
-    public void deleteCommand(String functionName) {
-        final String className = commandMap.get(functionName);
-        commandMap.remove(functionName);
-        classRegistry.removeClass(className);
+    public void deleteCommand(String className,String commandName) {
+        final String temp = commandMap.get(className);
+        System.out.println(temp);
+        commandMap.remove(className);
+        System.out.println(1);
+        classRegistry.removeClass(temp);
+        System.out.println(2);
+        validationMap.remove(commandName);
+        System.out.println(3);
     }
 
 }

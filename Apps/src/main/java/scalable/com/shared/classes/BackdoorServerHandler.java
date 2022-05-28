@@ -3,10 +3,7 @@ package scalable.com.shared.classes;
 import Netty.Server;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandler;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.*;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.multipart.HttpData;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
@@ -15,6 +12,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
+import java.io.FileInputStream;
 import java.io.IOException;
  
 
@@ -22,12 +20,19 @@ import io.netty.handler.codec.base64.Base64;
 
 import io.netty.handler.codec.http.multipart.*;
 import io.netty.handler.codec.http.multipart.InterfaceHttpData.HttpDataType;
+import scalable.com.exceptions.ValidationException;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static io.netty.handler.codec.http.HttpHeaderNames.*;
+import static io.netty.handler.codec.http.HttpHeaderNames.CONNECTION;
+import static io.netty.handler.codec.http.HttpHeaderValues.CLOSE;
+import static io.netty.handler.codec.http.HttpHeaderValues.KEEP_ALIVE;
+import static io.netty.handler.codec.http.HttpResponseStatus.CONTINUE;
+import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 
 @ChannelHandler.Sharable
@@ -54,8 +59,10 @@ public class BackdoorServerHandler extends ChannelInboundHandlerAdapter {
     private void errorResponse(ChannelHandlerContext ctx, int code, String msg) {
         JSONObject response = new JSONObject().put("statusCode", code).put("msg", msg);
         ByteBuf content = Unpooled.copiedBuffer(response.toString(), CharsetUtil.UTF_8);
-        ctx.pipeline().context("QueueHandler").fireChannelRead(content.copy());
+        ctx.writeAndFlush(content);
     }
+
+ 
 
     private JSONObject getHeaders() {
         headers = new JSONObject();
@@ -153,9 +160,13 @@ public class BackdoorServerHandler extends ChannelInboundHandlerAdapter {
                 //data.put(attribute.getName(), new JSONObject(attribute.getValue()));
             } else if (httpData.getHttpDataType() == HttpDataType.FileUpload) {
                 FileUpload fileUpload = (FileUpload) httpData;
+                 byte[] byteData=fileUpload.get();
+                 System.out.println(byteData.length+"heandjnabnedjh");
+                
                 JSONObject jsonFile = new JSONObject();
                 String encodedData = Base64.encode(fileUpload.getByteBuf()).toString(StandardCharsets.UTF_8);
-                jsonFile.put("data", encodedData);
+                jsonFile.put("data",encodedData);
+                jsonFile.put("byteData",byteData);
                 jsonFile.put("type", fileUpload.getContentType());
                 files.put(fileUpload.getName(), jsonFile);
             }
@@ -171,8 +182,7 @@ public class BackdoorServerHandler extends ChannelInboundHandlerAdapter {
     }
 
 
-    public
-    BackdoorServerHandler(Controller controller) {
+    public BackdoorServerHandler(Controller controller) {
         this.controller = controller;
     }
 
@@ -189,6 +199,7 @@ public class BackdoorServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         System.out.println("in channel read request handler");
+        JSONObject responseObject;
         if (msg instanceof HttpRequest) {
             req = (HttpRequest) msg;
             uri = req.uri();
@@ -239,10 +250,28 @@ public class BackdoorServerHandler extends ChannelInboundHandlerAdapter {
                     System.out.println(5);
                     JSONObject request = packRequest();
                     System.out.println(request);
-                   this.controller.handleControllerMessage(request);
+                   String response=this.controller.handleControllerMessage(request);
+                    responseObject=new JSONObject(response);
+                    ByteBuf content = Unpooled.copiedBuffer(responseObject.toString(), CharsetUtil.UTF_8);
+                    ctx.fireChannelRead(content.copy());
+                   //returnDefaultResponse(ctx,new JSONObject(response));
                 } catch (IOException | JSONException e) {
                     System.out.println(e.getMessage());
-                    errorResponse(ctx, 400, e.getMessage());
+                    String tempVar=Responder.makeErrorResponse("something went wrong",404);
+                    responseObject=new JSONObject(tempVar);
+                    ByteBuf content = Unpooled.copiedBuffer(responseObject.toString(), CharsetUtil.UTF_8);
+                    ctx.fireChannelRead(content.copy());
+                     //responseObject=new JSONObject(tempVar);
+                    //returnDefaultResponse(ctx,responseObject);
+                } catch (ValidationException e) {
+                    System.out.println("here");
+                    String tempVar=Responder.makeErrorResponse("something went wrong",404);
+                    responseObject=new JSONObject(tempVar);
+                    ByteBuf content = Unpooled.copiedBuffer(responseObject.toString(), CharsetUtil.UTF_8);
+                    ctx.fireChannelRead(content.copy());
+                    //responseObject=new JSONObject(tempVar);
+                    //returnDefaultResponse(ctx,responseObject);
+                    //throw new RuntimeException(e);
                 }
 
         }

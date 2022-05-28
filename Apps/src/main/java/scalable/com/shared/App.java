@@ -41,7 +41,7 @@ protected RabbitMQApp rabbitMQApp;
 protected RabbitMQCommunicatorApp rabbitMQCommunicatorApp;
 protected Controller appController;
 protected ThreadPoolManager threadsManager;
-protected ClassManager classManager=new ClassManager();
+public ClassManager classManager=new ClassManager();
 public PostgresConnection sqlDb;
 
 protected BackdoorServer backDoorServer=null;
@@ -52,6 +52,8 @@ public RabbitMQCommunicatorApp getRabbitMQCommunicatorApp(){
         return  this.rabbitMQCommunicatorApp;
     }
 protected abstract String getAppName();
+
+public  String loggingLevel="normal";
   
 public void dbInit() throws IOException {
        
@@ -71,7 +73,7 @@ public void dbInit() throws IOException {
 
     }
 
-protected  void start() throws IOException, TimeoutException, ClassNotFoundException {
+public  void start() throws IOException, TimeoutException, ClassNotFoundException {
 
        
 
@@ -111,8 +113,11 @@ private void createBackDoorServer()  {
 protected void initProperties() {
         this.properties=new Properties();
         try {
+            
             this.properties.load(App.class.getClassLoader().getResourceAsStream("db.properties"));
+          
             readDefaultProperties();
+           
         }
         catch (Exception e){
             System.out.println(e.getMessage());
@@ -252,7 +257,33 @@ public static JSONObject communicateWithApp(String myAppName,String appToCommuni
         }
             return null;
     }
+    public static void sendMessageToApp(String appToCommunicateWith,JSONObject originalRequest,String methodType,String commandName,JSONObject uriParams,JSONObject body){
 
+        appToCommunicateWith=appToCommunicateWith.toUpperCase()+"Server";
+      
+        
+
+        JSONObject newRequestObject=new JSONObject(originalRequest.toString());
+        newRequestObject.put("body",body==null?new JSONObject():body);
+        newRequestObject.put("uriParams",uriParams==null?new JSONObject():uriParams);
+        newRequestObject.put("methodType",methodType);
+        
+        newRequestObject.put("isAuthenticated",true);
+
+        newRequestObject.put("commandName",commandName);
+
+
+
+        try (RabbitMQCommunicatorServer channel = App.rabbitMQInterAppCommunication.getNewCommunicator()) {
+            channel.call_withoutResponse(newRequestObject.toString(), appToCommunicateWith);
+          
+          
+
+        } catch (IOException | TimeoutException  | NullPointerException e) {
+            e.printStackTrace();
+        }
+       
+    }
 
 
 }
