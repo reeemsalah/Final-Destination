@@ -9,6 +9,9 @@ import scalable.com.shared.classes.CommandVerifier;
 import scalable.com.shared.classes.Responder;
 
 import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Set;
 
 public class ViewFavoriteAlbumsCommand extends CommandVerifier {
     @Override
@@ -22,17 +25,32 @@ public class ViewFavoriteAlbumsCommand extends CommandVerifier {
         try {
             String user_id = this.tokenPayload.getString("id");
             //String w = this.uriParams.getString("user_id");
-                //changesssssss
+
             arango = Arango.getInstance();
             arango.createCollectionIfNotExists("spotifyArangoDb","FavoriteAlbums",false);
             var a = arango.filterCollection("spotifyArangoDb", "FavoriteAlbums", "user_id", user_id);
             JSONObject al = new JSONObject();
-            //Object[] albums = a.stream().toArray();
-//            for(int i = 0; i < albums.length; i++){
-//
-//            }
+            ArrayList<BaseDocument> docs = new ArrayList<>();
+            Object[] albums = a.stream().toArray();
+            JSONArray toCombine = new JSONArray();
+            for(int i = 0; i < albums.length; i++){
+                BaseDocument th = (BaseDocument) albums[i];
+                Map fordoc = th.getProperties();
+                JSONObject f = new JSONObject(fordoc);
+                toCombine.put(f);
+            }
+            JSONObject combined = new JSONObject();
+            for(int i = 0; i < toCombine.length(); i++){
+                JSONObject current = toCombine.getJSONObject(i);
+                Set<String> keys = current.keySet();
+                for(String s : keys){
+                    if(!s.equals("user_id"))
+                        combined.accumulate(s, current.get(s));
 
-            return Responder.makeMsgResponse("got so far");
+                }
+            }
+
+            return Responder.makeDataResponse(combined);
         } catch (Exception e) {
             return Responder.makeErrorResponse(e.getMessage(), 404);
         }
