@@ -13,7 +13,7 @@ import scalable.com.shared.classes.Arango;
 import scalable.com.user_to_user.UserToUserApp;
 
 public class UserToUserTest {
-    private static int userId1 = 1, userId2 = 2, userId3 = 3;
+    private static String userId1 = "1", userId2 = "2", userId3 = "3";
     private static Arango arango;
     @BeforeClass
     public static void setUp() {
@@ -26,9 +26,49 @@ public class UserToUserTest {
         }
     }
 
-    @AfterClass
-    public static void deleteDatabase() {
-        arango.dropDatabase("user_to_user");
+    //@AfterClass
+    //public static void deleteDatabase() {
+    //    arango.dropDatabase("user_to_user");
+    //}
+
+    public static String blockUser(int blocked_id) {
+        JSONObject body = new JSONObject();
+        body.put("blocked_id", blocked_id);
+
+        JSONObject uriParams = new JSONObject();
+
+        JSONObject token= new JSONObject();
+        token.put("id", userId1);
+
+        JSONObject request = new JSONObject();
+        request.put("body", body);
+        request.put("methodType", "POST");
+        request.put("uriParams", uriParams);
+        request.put("isAuthenticated",true);
+        request.put("tokenPayload", token);
+
+        PostBlockUser blockUser= new PostBlockUser();
+        return blockUser.execute(request);
+    }
+
+    public static String followUser(int followed_id) {
+        JSONObject body = new JSONObject();
+        body.put("followed_id", followed_id);
+
+        JSONObject uriParams = new JSONObject();
+
+        JSONObject token= new JSONObject();
+        token.put("id", userId1);
+
+        JSONObject request = new JSONObject();
+        request.put("body", body);
+        request.put("methodType", "POST");
+        request.put("uriParams", uriParams);
+        request.put("isAuthenticated",true);
+        request.put("tokenPayload", token);
+
+        PostFollowUser followUser= new PostFollowUser();
+        return followUser.execute(request);
     }
 
     public static String reportUser(int reported_Id, String comment) {
@@ -56,8 +96,14 @@ public class UserToUserTest {
         GetBlockedUsers getBlockedUsers = new GetBlockedUsers();
         JSONObject body = new JSONObject();
 
+        JSONObject token= new JSONObject();
+        token.put("id", userId1);
+
         JSONObject uriParams = new JSONObject();
+
         JSONObject request = new JSONObject();
+        request.put("isAuthenticated",true);
+        request.put("tokenPayload", token);
         request.put("body", body);
         request.put("methodType", "GET");
         request.put("uriParams", uriParams);
@@ -69,8 +115,13 @@ public class UserToUserTest {
         GetFollowedUsers getFollowedUsers = new GetFollowedUsers();
         JSONObject body = new JSONObject();
 
+        JSONObject token= new JSONObject();
+        token.put("id", userId1);
+
         JSONObject uriParams = new JSONObject();
         JSONObject request = new JSONObject();
+        request.put("isAuthenticated",true);
+        request.put("tokenPayload", token);
         request.put("body", body);
         request.put("methodType", "GET");
         request.put("uriParams", uriParams);
@@ -90,8 +141,9 @@ public class UserToUserTest {
 
     @Test
     public void getBlockedUsersTest() {
-        // userBlockUser(userId1, userId2);
-        // userBlockUser(userId1, userId3);
+        blockUser(Integer.parseInt(userId2));
+        blockUser(Integer.parseInt(userId3));
+        
         String response = getBlockedUsers();
         JSONObject responseJson = new JSONObject(response);
         assertEquals(200, responseJson.getInt("statusCode"));
@@ -102,8 +154,9 @@ public class UserToUserTest {
 
     @Test
     public void getFollowedUsersTest() {
-        // userBlockUser(userId1, userId2);
-        // userBlockUser(userId1, userId3);
+        followUser(Integer.parseInt(userId2));
+        followUser(Integer.parseInt(userId3));
+
         String response = getFollowedUsers();
         JSONObject responseJson = new JSONObject(response);
         assertEquals(200, responseJson.getInt("statusCode"));
