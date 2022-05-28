@@ -5,6 +5,7 @@ import org.hibernate.validator.constraints.URL;
 import org.jboss.logging.annotations.Param;
 import org.json.JSONObject;
 import scalable.com.exceptions.ValidationException;
+import scalable.com.music.MusicApp;
 import scalable.com.shared.App;
 import scalable.com.shared.classes.Responder;
 import scalable.com.shared.classes.CommandVerifier;
@@ -34,12 +35,19 @@ public class GetTotalListeners extends UserToUserCommand{
 
     @Override
     public String execute() {
-        JSONObject communicateWithApp = new JSONObject(this.origRequest.toString());
-        communicateWithApp.put("commandName", "Test");
-        System.out.println(communicateWithApp);
+        //JSONObject communicateWithApp = new JSONObject(this.origRequest.toString());
+        //communicateWithApp.put("commandName", "Test");
+        //System.out.println(communicateWithApp);
+        origRequest.put("methodType", "GET");
+        System.out.println(origRequest.toString());
 
-        // communicateWithApp = App.communicateWithApp("UserToUser", "StreamMusic", origRequest, getRestAPIMethod(), "PLACEHOLDER", null, body);
-        return Responder.makeMsgResponse("total is 0 for now");
+        //UserToUserApp interactionsApp = new UserToUserApp();
+        //MusicApp streamMusicApp = new MusicApp();
+        System.out.println("here 1");
+        JSONObject communicateWithApp = App.communicateWithApp("Music", "Music",
+                origRequest, "GET", "Test", null, body);
+        System.out.println("here 2" + (communicateWithApp == null));
+        return Responder.makeMsgResponse("Response from message queue : " + communicateWithApp.get("msg"));
     }
 
     @Override
