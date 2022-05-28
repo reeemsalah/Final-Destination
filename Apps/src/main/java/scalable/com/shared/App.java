@@ -73,7 +73,7 @@ public void dbInit() throws IOException {
 
     }
 
-protected  void start() throws IOException, TimeoutException, ClassNotFoundException {
+public  void start() throws IOException, TimeoutException, ClassNotFoundException {
 
        
 

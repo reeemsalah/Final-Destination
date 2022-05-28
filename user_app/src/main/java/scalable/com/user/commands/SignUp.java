@@ -37,7 +37,7 @@ public class SignUp extends UserCommand  {
     public String execute() {
 
 
-        System.out.println("iam in execute");
+        System.out.println("iam in execute1");
         //cases 1- username already exists 2- email already exists
         
 
