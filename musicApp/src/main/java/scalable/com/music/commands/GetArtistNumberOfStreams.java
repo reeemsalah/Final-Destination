@@ -1,5 +1,6 @@
 package scalable.com.music.commands;
 
+import com.arangodb.ArangoCursor;
 import com.arangodb.entity.BaseEdgeDocument;
 import org.json.JSONArray;
 import org.json.JSONML;
@@ -11,31 +12,40 @@ import com.arangodb.entity.BaseDocument;
 import scalable.com.shared.classes.MinIo;
 import scalable.com.shared.classes.Responder;
 import javax.validation.constraints.NotBlank;
+import java.util.Collections;
+import java.util.Map;
 
-public class GetSongNumberOfStreams  extends MusicCommand {
-//    @NotBlank(message = "song_id should not be empty")
-    private String song_id;
+public class GetArtistNumberOfStreams  extends MusicCommand {
+    //    @NotBlank(message = "artist_id should not be empty")
+    private String artist_id;
+    private int number_of_streams;
 
     @Override
     public String getCommandName() {
-        return "GetSongNumberOfStreams";
+        return "GetArtistNumberOfStreams";
     }
 
     @Override
     public String execute() {
-        BaseDocument res;
-        Arango arango = Arango.getInstance();
-        org.json.JSONObject response=new JSONObject();
 
+        org.json.JSONObject response=new JSONObject();
+        Arango arango = Arango.getInstance();
         try {
 
             arango.createDatabaseIfNotExists("Spotify");
             arango.createCollectionIfNotExists("Spotify","Songs",false);
             //extract song id
-            this.song_id = body.getString("song_id");
-            res = arango.readDocument("Spotify","Songs",song_id);
+            this.artist_id = body.getString("artist_id");
 
-            response.put("number_of_streams", res.getAttribute("number_of_streams"));
+            String query = "FOR song IN Songs FILTER @artist_id IN song.artists RETURN song";
+            Map<String, Object> bindVars = Collections.singletonMap("artist_id", this.artist_id );
+            ArangoCursor<BaseDocument> cursor = arango.query("Spotify",query,bindVars);
+                    cursor.forEachRemaining(aDocument -> {
+                number_of_streams += Integer.parseInt(aDocument.getAttribute("number_of_streams")+"") ;
+            });
+
+            response.put("number_of_streams", number_of_streams);
+
         } catch (Exception e) {
             return Responder.makeErrorResponse(e.getMessage(), 404);
         }
@@ -57,7 +67,7 @@ public class GetSongNumberOfStreams  extends MusicCommand {
 
         try {
             //extract song id
-            this.song_id = body.getString("song_id");
+            this.artist_id = body.getString("artist_id");
 
         }
         catch (Exception e){
