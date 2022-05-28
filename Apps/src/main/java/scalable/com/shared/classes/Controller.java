@@ -194,9 +194,7 @@ public void start(){
         } catch (NoSuchMethodException e) {
             return Responder.makeErrorResponse("Something went wrong in instantiating the given class",400);
         }
-        // creating an instance of the command class
-
-
+      
     }
 
     public String freeze(Object body) {

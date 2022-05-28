@@ -14,13 +14,14 @@ public class TestCommand extends MusicCommand{
     public String execute() {
 
              System.out.println("executing test commands");
+             System.out.println(this.origRequest);
 
         return Responder.makeMsgResponse("ya walaaaaaaaaaa");
     }
 
     @Override
     public String getRestAPIMethod() {
-        return "GET";
+        return "POST";
     }
 
     @Override

@@ -44,6 +44,10 @@ public class SignUp extends UserCommand  {
         PreparedStatement preparedStatement = null;
         Connection connection = null;
         try {
+            JSONObject j=new JSONObject();
+            j.put("fady","sdsdas");
+            App.sendMessageToApp("Music",this.origRequest,"POST","Test",null,j);
+
 //            JSONObject communcateWithApp=new JSONObject(this.origRequest.toString());
 //
 //            communcateWithApp.put("commandName","Test");
