@@ -81,6 +81,8 @@ public class CreateSongCommand  extends MusicCommand {
 
             //Default attributes
             myDocument.addAttribute("rating", 0);
+            myDocument.addAttribute("number_times_rated", 0);
+            myDocument.addAttribute("people_rated",new int[0]);
             myDocument.addAttribute("number_of_streams", 0);
             myDocument.addAttribute("likes", 0);
 
