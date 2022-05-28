@@ -60,7 +60,6 @@ public final class SecureChatClient {
         ArrayList<HashMap<String,Object>> records = new ArrayList<>();
         for (int i = 0; i < arr.size(); i++) {
             QueryDocumentSnapshot document = arr.get(i);
-             System.out.println(document.get("server"));
              if((document.get("server")+"").equals(PORT+""))
              {
                 records.add((HashMap<String, Object>) document.getData());
