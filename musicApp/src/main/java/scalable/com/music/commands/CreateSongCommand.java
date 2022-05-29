@@ -11,6 +11,7 @@ import com.arangodb.entity.BaseDocument;
 import scalable.com.shared.classes.MinIo;
 import scalable.com.shared.classes.Responder;
 import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
 
 public class CreateSongCommand  extends MusicCommand {
     //@NotBlank(message = "name should not be empty")
@@ -82,7 +83,7 @@ public class CreateSongCommand  extends MusicCommand {
             //Default attributes
             myDocument.addAttribute("rating", 0);
             myDocument.addAttribute("number_times_rated", 0);
-            myDocument.addAttribute("people_rated",new int[0]);
+            myDocument.addAttribute("people_rated",new ArrayList<Integer>());
             myDocument.addAttribute("number_of_streams", 0);
             myDocument.addAttribute("likes", 0);
 

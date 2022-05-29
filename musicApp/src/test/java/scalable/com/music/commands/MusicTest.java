@@ -11,16 +11,22 @@ import org.junit.Test;
 
 import scalable.com.shared.classes.Arango;
 import scalable.com.music.MusicApp;
+import scalable.com.shared.testsHelper.TestHelper;
 
 public class MusicTest {
-    private String artist_id = "1", user_id ="1", song_id = "1";
+    private String artist_id = "1", user_id ="1", song_id = "22197";
     private static Arango arango;
     @BeforeClass
     public static void setUp() {
         try {
+
             arango = Arango.getConnectedInstance();
             MusicApp app= new MusicApp();
-            app.dbInit();
+            app.start();
+             TestHelper.appBeingTested=app;
+//            Arango arango = Arango.getInstance();
+            arango.createDatabaseIfNotExists("Spotify");
+            arango.createCollectionIfNotExists("Spotify","Songs",false);
         } catch (Exception e) {
             fail(e.getMessage());
         }
@@ -54,7 +60,24 @@ public class MusicTest {
         request.put("files", files);
 
         CreateSongCommand createSong= new CreateSongCommand();
-        return createSong.execute(request);
+       return  TestHelper.execute(createSong,request);
+    }
+    public static String getSong(String song_id, String user_id) {
+        JSONObject body = new JSONObject();
+        body.put("song_id", song_id);
+
+        JSONObject uriParams = new JSONObject();
+        JSONObject token= new JSONObject();
+        token.put("id", user_id);
+        JSONObject request = new JSONObject();
+        request.put("body", body);
+        request.put("methodType", "POST");
+        request.put("uriParams", uriParams);
+        request.put("isAuthenticated",true);
+        request.put("tokenPayload", token);
+
+        GetSong getSong= new GetSong();
+       return  TestHelper.execute(getSong,request);
     }
     public static String getSongNumberOfStreams(String song_id) {
         JSONObject body = new JSONObject();
@@ -70,7 +93,7 @@ public class MusicTest {
         request.put("tokenPayload", token);
 
         GetSongNumberOfStreams getSongNumberOfStreams= new GetSongNumberOfStreams();
-        return getSongNumberOfStreams.execute(request);
+        return  TestHelper.execute(getSongNumberOfStreams,request);
     }
     public static String getArtistNumberOfStreams(String artist_id) {
         JSONObject body = new JSONObject();
@@ -86,7 +109,7 @@ public class MusicTest {
         request.put("tokenPayload", token);
 
         GetArtistNumberOfStreams getArtistNumberOfStreams= new GetArtistNumberOfStreams();
-        return getArtistNumberOfStreams.execute(request);
+        return  TestHelper.execute(getArtistNumberOfStreams,request);
     }
 
     @Test
@@ -125,6 +148,18 @@ public class MusicTest {
         String response = getArtistNumberOfStreams(artist_id);
         JSONObject responseJson = new JSONObject(response);
         assertEquals(200, responseJson.getInt("statusCode"));
+    }
+    @Test
+    public void getSongTest() {
+
+        BaseDocument song = arango.readDocument("Spotify","Songs",song_id);
+        int streams_before =Integer.parseInt(song.getAttribute("number_of_streams")+"");
+        String response = getSong(song_id,user_id);
+        song = arango.readDocument("Spotify","Songs",song_id);
+        int streams_after =Integer.parseInt(song.getAttribute("number_of_streams")+"");
+        JSONObject responseJson = new JSONObject(response);
+        assertEquals(200, responseJson.getInt("statusCode"));
+        assertEquals(streams_before+1, streams_after);
     }
 
 }
