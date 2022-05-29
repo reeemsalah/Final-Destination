@@ -1,6 +1,7 @@
 package scalable.com.tests;
 
 import com.arangodb.entity.BaseDocument;
+import com.fasterxml.jackson.core.JsonParser;
 import org.json.JSONObject;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -25,11 +26,12 @@ public class UserAppTest {
     
     static String username = "fady"+ new Date().getTime();
     static String password = "12345678";
-    static String token="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjE1IiwiaXNBcnRpc3QiOiJ0cnVlIn0.7Ku_-aMNMxhD9T_3uiEEOeBGnkqFFyZrsNM2VU6Ng_s";
+    static String token;
     static String firstname="7amo";
     static String lastname="bikaaaa";
     static boolean isArtist=false;
     static String email=username+"@gmail.com";
+    static String id;
    
     @BeforeClass
     public static void createSetup() throws IOException, ClassNotFoundException, TimeoutException {
@@ -52,6 +54,7 @@ public class UserAppTest {
         JSONObject response = Requester.callSignUpCommand(username, email, password,firstname,lastname,false);
         System.out.println(response);
         assertEquals(200, response.getInt("statusCode"));
+        assertEquals("successfully registered", response.getString("msg"));
     }
 
     @Test
@@ -85,10 +88,42 @@ public class UserAppTest {
         assertTrue(msg.contains("missing") && msg.contains("lastname"));
 
     }
+    @Test
+    public void T04_Login() {
 
+
+        JSONObject response = Requester.login(email, password);
+
+        System.out.println(response);
+        assertEquals(200, response.getInt("statusCode"));
+        assertTrue(response.has("data"));
+        response=(JSONObject)response.get("data");
+       assertEquals(response.getString("first_name"),firstname);
+       assertEquals(response.getString("last_name"),lastname);
+       assertEquals(response.getString("username"),username);
+      
+
+       
+        assertTrue(response.has("token"));
+        token = response.getString("token");
+        id=response.getString("id");
+        
+    }
+    @Test
+    public void T05_Login_with_Wrong_Pass() {
+
+
+        JSONObject response = Requester.login(email, password+"wrong");
+
+        
+        assertEquals("wrong username or password", response.getString("msg"));
+        
+
+
+    }
      @Test
-     public void T04_ChangePassword(){
-
+     public void T06_ChangePassword(){
+            
      }
 
     @Test
