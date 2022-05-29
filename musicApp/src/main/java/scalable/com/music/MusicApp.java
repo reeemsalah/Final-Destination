@@ -13,10 +13,7 @@ public class MusicApp extends App {
 
     public static void main(String[] args) throws TimeoutException, IOException, ClassNotFoundException, SQLException {
         MusicApp app=new MusicApp();
-<<<<<<< HEAD
         //app.dbInit();
-=======
->>>>>>> 9bac178 (Create Song: uploading song left)
         arangoPool = new Arango();
         app.dbInit();
         app.start();
