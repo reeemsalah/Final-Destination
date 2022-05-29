@@ -18,7 +18,6 @@
     
     <module>notifications-app</module>
     <module>musicApp</module>
-    <module>user_to_user_app</module>
     <module>Test_App</module>
   </modules>
 

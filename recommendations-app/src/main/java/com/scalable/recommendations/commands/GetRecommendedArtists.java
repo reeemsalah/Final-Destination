@@ -28,7 +28,7 @@ public class GetRecommendedArtists extends  RecommendationsCommand
         System.out.println("I am executing the GetRecommendedArtists command");
         //TODO get user_id from token
         //String user_id =this.tokenPayload.getString("id");
-        String user_id = "user1";
+        String user_id = "user4";
         JSONObject response=new JSONObject();
         Arango arango = Arango.getInstance();
         ArrayList<String> artist_ids = new ArrayList<String>();
@@ -49,9 +49,8 @@ public class GetRecommendedArtists extends  RecommendationsCommand
                     System.out.println(artist_ids.toString());
                     response.put("recommended_artist_id", artist_ids);
                 }
-            }
-            if (response.isEmpty()) {
-                return Responder.makeMsgResponse("No Artists to Recommend for this user");
+            }  else{
+                return Responder.makeMsgResponse("No such user exists with that id");
             }
         }
         catch (Exception e){

@@ -27,7 +27,7 @@ public class GetRecommendedMusicTracks extends RecommendationsCommand{
         System.out.println("I am executing the GetRecommendedMusicTracks command");
         //TODO get user_id from token
         //String user_id =this.tokenPayload.getString("id");
-        String user_id = "user2";
+        String user_id = "user4";
         ArrayList<String> song_ids = new ArrayList<String>();
         JSONObject response=new JSONObject();
         int limitno = 3;
@@ -49,11 +49,9 @@ public class GetRecommendedMusicTracks extends RecommendationsCommand{
                 System.out.println(song_ids.toString());
                 response.put("recommended_song_id", song_ids);
             } else {
-                return Responder.makeMsgResponse("No User Exists");
+                return Responder.makeMsgResponse("No such User Exists with that id");
             }
-            if (response.isEmpty()) {
-                return Responder.makeMsgResponse("No Music Tracks to Recommend for this user");
-            }
+
         }
         catch (Exception e){
             System.out.println(e.toString());
