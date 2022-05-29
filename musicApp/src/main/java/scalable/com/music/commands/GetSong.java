@@ -62,6 +62,9 @@ public class GetSong  extends MusicCommand {
             response.put("can_skip",canSkip);
             response.put("has_ads",hasAds);
 
+            //SEND TO RECOMMENDATIONS APP
+            (this.origRequest.getJSONObject("body")).put("track_id",this.song_id);
+            App.sendMessageToApp("recommendations",this.origRequest,"POST","CreateMusicEdge",null,null) ;
 
         } catch (Exception e) {
             return Responder.makeErrorResponse(e.getMessage(), 404);

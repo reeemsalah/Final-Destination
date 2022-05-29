@@ -5,6 +5,7 @@ import org.json.JSONArray;
 import org.json.JSONML;
 import org.json.JSONObject;
 import scalable.com.exceptions.ValidationException;
+import scalable.com.shared.App;
 import scalable.com.shared.classes.Arango;
 import scalable.com.shared.classes.CommandVerifier;
 import com.arangodb.entity.BaseDocument;
@@ -95,6 +96,11 @@ public class CreateSongCommand  extends MusicCommand {
                     response.put(key, value)
             );
             response.put("id",res.getKey());
+
+            //SEND TO RECOMMENDATIONS APP
+            (this.origRequest.getJSONObject("body")).put("track_id",res.getKey());
+            (this.origRequest.getJSONObject("body")).put("track_name",this.name);
+            App.sendMessageToApp("recommendations",this.origRequest,"POST","CreateMusicTrackNode",null,null) ;
 
         } catch (Exception e) {
             return Responder.makeErrorResponse(e.getMessage(), 404);
