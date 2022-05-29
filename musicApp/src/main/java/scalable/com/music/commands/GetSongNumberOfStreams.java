@@ -34,6 +34,9 @@ public class GetSongNumberOfStreams  extends MusicCommand {
             //extract song id
             this.song_id = body.getString("song_id");
             res = arango.readDocument("Spotify","Songs",song_id);
+            if(res==null)  {
+                return Responder.makeErrorResponse("Song does not exist", 404);
+            }
 
             response.put("number_of_streams", res.getAttribute("number_of_streams"));
         } catch (Exception e) {
