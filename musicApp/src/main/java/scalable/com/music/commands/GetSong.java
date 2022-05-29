@@ -41,11 +41,21 @@ public class GetSong  extends MusicCommand {
             this.song_id = body.getString("song_id");
 
             //CHECK IF USER IS PREMIUM
+<<<<<<< HEAD
             JSONObject isPremiumRes = App.communicateWithApp("Music","User",this.origRequest,"GET","IsSubscribedToPremium",null,null);
             if(((JSONObject)isPremiumRes.get("data")).get("isSubscribed").equals(true)){
                 canSkip=true;
                 hasAds=false;
             }
+=======
+//            JSONObject isPremiumReq= new JSONObject();
+//            isPremiumReq.put("user_id",this.tokenPayload.get("id"));
+//            JSONObject isPremiumRes = App.communicateWithApp("musicApp","user_app",isPremiumReq,"POST","isPremium",null,null);
+//            if(isPremiumRes.get("is_premium").equals("true")){
+//                canSkip=true;
+//                hasAds=false;
+//            }
+>>>>>>> dd1bd749094cfbbba3e14dfd64f08993a2a9c1d0
 
             //GET SONG
             res = arango.readDocument("Spotify","Songs",song_id);
