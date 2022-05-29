@@ -45,7 +45,7 @@ public class ViewFavoriteAlbumsCommand extends CommandVerifier {
                 Set<String> keys = current.keySet();
                 for(String s : keys){
                     if(!s.equals("user_id"))
-                        combined.accumulate(s, current.get(s));
+                        combined.append(s, current.get(s));
 
                 }
             }

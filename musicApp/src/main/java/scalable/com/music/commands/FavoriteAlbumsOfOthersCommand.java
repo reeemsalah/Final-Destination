@@ -8,11 +8,13 @@ import scalable.com.shared.classes.Arango;
 import scalable.com.shared.classes.CommandVerifier;
 import scalable.com.shared.classes.Responder;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 
 public class FavoriteAlbumsOfOthersCommand extends CommandVerifier {
+    String user_id;
     @Override
     public String getCommandName() {
         return "FavoriteAlbumsOfOthers";
@@ -23,10 +25,11 @@ public class FavoriteAlbumsOfOthersCommand extends CommandVerifier {
         Arango arango = null;
         try {
             String user_id = this.uriParams.getString("user_id");
+            //String w = this.uriParams.getString("user_id");
 
             arango = Arango.getInstance();
-            arango.createCollectionIfNotExists("spotifyArangoDB","FavoriteAlbums",false);
-            var a = arango.filterCollection("spotifyArangoDB", "FavoriteAlbums", "user_id", user_id);
+            arango.createCollectionIfNotExists("spotifyArangoDb","FavoriteAlbums",false);
+            var a = arango.filterCollection("spotifyArangoDb", "FavoriteAlbums", "user_id", user_id);
             JSONObject al = new JSONObject();
             ArrayList<BaseDocument> docs = new ArrayList<>();
             Object[] albums = a.stream().toArray();
@@ -44,6 +47,7 @@ public class FavoriteAlbumsOfOthersCommand extends CommandVerifier {
                 for(String s : keys){
                     if(!s.equals("user_id"))
                         combined.append(s, current.get(s));
+
                 }
             }
 
@@ -65,6 +69,11 @@ public class FavoriteAlbumsOfOthersCommand extends CommandVerifier {
 
     @Override
     public void validateAttributeTypes() throws ValidationException {
+//        try{
+//            this.user_id= body.getString("user_id");
+//        }     catch(Exception e){
+//            e.printStackTrace();
+//        }
 
     }
 }

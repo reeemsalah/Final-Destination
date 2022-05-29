@@ -3,15 +3,10 @@ package scalable.com.music;
 
 import org.json.JSONObject;
 import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.testng.annotations.AfterTest;
 import scalable.com.music.commands.*;
 import scalable.com.music.constants.DatabaseConstants;
-import scalable.com.shared.classes.Arango;
-
-import javax.ejb.AfterCompletion;
-import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 public class MusicAppTest extends MusicTest {
     public static String user_id_1="1";
@@ -21,12 +16,12 @@ public class MusicAppTest extends MusicTest {
     public static boolean is_artist_2=true;
 
     public static String track_id = "1";
-    public static String playlist_name = "playlist1";
+    public static String playlist_name = "playlist6";
     public static String playlist_id = "3";
     public static String album_id = "3";
     public static String created_playlist1 = "";
     public static String created_playlist2 = "";
-
+   
     public static JSONObject RequestSimulatorCreatePlaylist(String playlist_name){
         JSONObject body = new JSONObject();
         JSONObject token= new JSONObject();
@@ -36,6 +31,7 @@ public class MusicAppTest extends MusicTest {
         System.out.println("Request " + request.toString());
         return new JSONObject(new CreatePlaylistCommand().execute(request));
     }
+
 
     //playlist ids are randomly generated
     public static JSONObject RequestSimulatorDeletePlaylist(String created_playlist1){
@@ -87,18 +83,18 @@ public class MusicAppTest extends MusicTest {
     public static JSONObject RequestSimulatorViewFavoriteAlbums(){
         JSONObject token= new JSONObject();
         JSONObject body= new JSONObject();
-        token.put("id", "1");
+        token.put("id", "2");
         JSONObject request = makeRequest(body, "GET", new JSONObject(),true,token);
         System.out.println("Request " + request.toString());
         return new JSONObject(new ViewFavoriteAlbumsCommand().execute(request));
     }
 
     public static JSONObject RequestSimulatorFavoriteAlbumsOfOthers(){
-        JSONObject uriParams= new JSONObject();
         JSONObject body= new JSONObject();
+        JSONObject uriParams= new JSONObject();
         JSONObject token= new JSONObject();
-        uriParams.put("user_id", "1");
-        JSONObject request = makeRequest(body, "GET", new JSONObject(),true,token);
+        uriParams.put("user_id", "2");
+        JSONObject request = makeRequest(body, "GET", uriParams,true,token);
         System.out.println("Request " + request.toString());
         return new JSONObject(new FavoriteAlbumsOfOthersCommand().execute(request));
     }
@@ -108,7 +104,8 @@ public class MusicAppTest extends MusicTest {
         JSONObject token= new JSONObject();
         JSONObject body= new JSONObject();
         uriParams.put("user_id", "1");
-        JSONObject request = makeRequest(body, "GET", new JSONObject(),true,token);
+        token.put("id","2");
+        JSONObject request = makeRequest(body, "GET", uriParams,true,token);
         System.out.println("Request " + request.toString());
         return new JSONObject(new FavoriteTracksOfOthersCommand().execute(request));
     }
@@ -125,36 +122,27 @@ public class MusicAppTest extends MusicTest {
         return request;
     }
     @Test
+    public void FavoriteTrack(){
+        JSONObject  response = RequestSimulatorFavoriteTrack(track_id);
+        System.out.println(response);
+        assert response.getInt("statusCode") ==200 ;
+        assert response.getString("msg").equals("Added Track to Favorites");
+    }
+    @Test
     public void FavoriteTracksOfOthers(){
         JSONObject  response = RequestSimulatorFavoriteTracksOfOthers();
-        assert arangoPool.documentExists(DatabaseConstants.DATABASE_NAME,DatabaseConstants.FAVORITE_TRACKS_COLLECTION,user_id_1);
+        JSONObject data = new JSONObject();
+        JSONObject correct = new JSONObject();
+        ArrayList<String> newdata = new ArrayList<>();
+        newdata.add(track_id);
+        data.put("track_id", newdata);
+        correct.put("data", data);
+        System.out.println(response.getJSONObject("data"));
+        System.out.println(data);
+        System.out.println(response);
         assert response.getInt("statusCode") ==200 ;
-        assert response.getString("msg").equals("Node User Created Successfully");
+        assert response.getJSONObject("data").toString().equals(data.toString());
 
-    }
-    @Test
-    public void FavoriteAlbumsOfOthers(){
-        JSONObject  response = RequestSimulatorFavoriteAlbumsOfOthers();
-        System.out.println(response);
-        assert arangoPool.documentExists(DatabaseConstants.DATABASE_NAME,DatabaseConstants.FAVORITE_ALBUMS_COLLECTION,user_id_2);
-        assert response.getInt("statusCode") ==200;
-        assert response.getString("msg").equals("Node User Created Successfully");
-    }
-    @Test
-    public void CreatePlaylist(){
-        JSONObject  response = RequestSimulatorCreatePlaylist(playlist_name);
-        System.out.println(response);
-        assert arangoPool.documentExists(DatabaseConstants.DATABASE_NAME,DatabaseConstants.PLAYLIST_COLLECTION,playlist_name);
-
-        assert response.getInt("statusCode") ==200 ;
-        assert response.getString("msg").equals("Created Playlist");
-    }
-    @Test
-    public void DeletePlaylist(){
-        JSONObject  response = RequestSimulatorDeletePlaylist(created_playlist1);
-        System.out.println(response);
-        assert response.getInt("statusCode") ==200 ;
-        assert response.getString("msg").equals("Deleted Playlist");
     }
     @Test
     public void FavoriteAlbum(){
@@ -163,18 +151,49 @@ public class MusicAppTest extends MusicTest {
         assert response.getInt("statusCode") ==200 ;
         assert response.getString("msg").equals("Added Album to Favorites");
     }
-
     @Test
-    public void FavoriteTrack(){
-        JSONObject  response = RequestSimulatorFavoriteTrack(track_id);
+    public void FavoriteAlbumsOfOthers(){
+        JSONObject  response = RequestSimulatorFavoriteAlbumsOfOthers();
+        JSONObject data = new JSONObject();
+        JSONObject correct = new JSONObject();
+        ArrayList<String> newdata = new ArrayList<>();
+        newdata.add(album_id);
+        data.put("album_id", newdata);
+        correct.put("data", data);
+        System.out.println(response.getJSONObject("data"));
+        System.out.println(data);
         System.out.println(response);
         assert response.getInt("statusCode") ==200 ;
-        assert response.getString("msg").equals("Added Track to Favorites");
+        assert response.getJSONObject("data").toString().equals(data.toString());
     }
+    @Test
+    public void CreatePlaylist(){
+        JSONObject  response = RequestSimulatorCreatePlaylist(playlist_name);
+        System.out.println(response);
+        assert response.getInt("statusCode") ==200 ;
+    }
+    @Test
+    public void DeletePlaylist(){
+        JSONObject playlist = RequestSimulatorCreatePlaylist(playlist_name);
+        JSONObject data = playlist.getJSONObject("data");
+        String key = data.getString("_key");
+        created_playlist1 = key;
+        JSONObject  response = RequestSimulatorDeletePlaylist(created_playlist1);
+        System.out.println(response);
+        assert response.getInt("statusCode") ==200 ;
+        assert response.getString("msg").equals("Deleted Playlist");
+    }
+
+
+
 
     @Test
     public void PlaylistVisibility(){
-        JSONObject  response = RequestSimulatorPlaylistVisibility(playlist_id);
+        JSONObject playlist = RequestSimulatorCreatePlaylist(playlist_name);
+        JSONObject data = playlist.getJSONObject("data");
+        String key = data.getString("_key");
+        created_playlist1 = key;
+        JSONObject  response = RequestSimulatorPlaylistVisibility(created_playlist1);
         System.out.println(response);
         assert response.getInt("statusCode") ==200 ;
         assert response.getString("msg").equals("UpdatedPlaylist");
@@ -183,21 +202,28 @@ public class MusicAppTest extends MusicTest {
     @Test
     public void ViewFavoriteAlbums(){
         JSONObject  response = RequestSimulatorViewFavoriteAlbums();
+        JSONObject data = new JSONObject();
+        JSONObject correct = new JSONObject();
+        ArrayList<String> newdata = new ArrayList<>();
+        newdata.add(album_id);
+        data.put("album_id", newdata);
+        correct.put("data", data);
+        System.out.println(response.getJSONObject("data"));
+        System.out.println(data);
         System.out.println(response);
         assert response.getInt("statusCode") ==200 ;
-        assert response.getString("msg").equals("UpdatedPlaylist");
+        assert response.getJSONObject("data").toString().equals(data.toString());
     }
     //response is an object
     @Test
     public void ViewFavoriteTracks(){
-        JSONObject favorite = RequestSimulatorFavoriteTrack(track_id);
         JSONObject  response = RequestSimulatorViewFavoriteTracks();
         JSONObject data = new JSONObject();
         JSONObject correct = new JSONObject();
         String[] tracks = {"1"};
         data.put("track_id", tracks);
         correct.put("data", data);
-        System.out.println(response.getJSONObject("data"));
+        System.out.println(response);
         System.out.println(data);
         assert response.getInt("statusCode") ==200 ;
         assert response.getJSONObject("data").toString().equals(data.toString());
@@ -205,6 +231,7 @@ public class MusicAppTest extends MusicTest {
     @AfterClass
     public static void dropAllCollections() {
         System.out.println("In after test");
+
         arangoPool.dropCollection(DatabaseConstants.DATABASE_NAME,DatabaseConstants.PLAYLIST_COLLECTION);
         arangoPool.dropCollection(DatabaseConstants.DATABASE_NAME,DatabaseConstants.FAVORITE_ALBUMS_COLLECTION);
         arangoPool.dropCollection(DatabaseConstants.DATABASE_NAME,DatabaseConstants.FAVORITE_TRACKS_COLLECTION);

@@ -14,8 +14,7 @@ import java.util.Set;
 
 public class FavoriteTracksOfOthersCommand extends CommandVerifier {
     @Override
-    public String getCommandName() {
-        return "FavoriteTracksOfOthers";
+    public String getCommandName() { return "FavoriteTracksOfOthers";
     }
 
     @Override
@@ -25,8 +24,8 @@ public class FavoriteTracksOfOthersCommand extends CommandVerifier {
             String user_id = this.uriParams.getString("user_id");
 
             arango = Arango.getInstance();
-            arango.createCollectionIfNotExists("spotifyArangoDB","FavoriteTracks",false);
-            var a = arango.filterCollection("spotifyArangoDB", "FavoriteTracks", "user_id", user_id);
+            arango.createCollectionIfNotExists("spotifyArangoDb","FavoriteTracks",false);
+            var a = arango.filterCollection("spotifyArangoDb", "FavoriteTracks", "user_id", user_id);
             JSONObject al = new JSONObject();
             ArrayList<BaseDocument> docs = new ArrayList<>();
             Object[] albums = a.stream().toArray();
