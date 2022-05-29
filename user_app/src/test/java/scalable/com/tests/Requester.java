@@ -25,17 +25,17 @@ public class Requester {
         return request;
     }
 
-    public static JSONObject signUp(String username, String email, String password, String birthdate) {
+    public static JSONObject callSignUpCommand(String username, String email, String password,String firstName,String lastName,boolean isArtist) {
         JSONObject body = new JSONObject();
         body.put("username", username);
         body.put("email", email);
         body.put("password", password);
-        body.put("firstname","fady12");
-        body.put("lastname","ibrahim2323");
-        body.put("isArtist",false);
+        body.put("firstname",firstName);
+        body.put("lastname",lastName);
+        body.put("isArtist",isArtist);
         JSONObject request = makeRequest(body, "POST", new JSONObject());
         SignUp signUp=new SignUp();
-        return new JSONObject(TestHelper.execute(UserAppTest.appBeingTested,signUp,request));
+        return new JSONObject(TestHelper.execute(TestHelper.appBeingTested,signUp,request));
     }
 
     public static JSONObject login(String username, String password) {
