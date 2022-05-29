@@ -9,6 +9,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import scalable.com.shared.classes.Arango;
+import scalable.com.shared.testsHelper.TestHelper;
 import scalable.com.user_to_user.UserToUserApp;
 
 public class UserToUserTest {
@@ -16,10 +17,17 @@ public class UserToUserTest {
     @BeforeClass
     public static void setUp() {
         try {
-            arango = Arango.getConnectedInstance();
+
 //            arango.dropDatabase("user_to_user");
             UserToUserApp app= new UserToUserApp();
-            app.dbInit();
+            app.start();
+            TestHelper.appBeingTested=app;
+            arango = Arango.getConnectedInstance();
+            arango.createDatabaseIfNotExists("user_to_user");
+            arango.createCollectionIfNotExists("user_to_user","blocked_ids",false);
+            arango.createCollectionIfNotExists("user_to_user","followed_ids",false);
+            arango.createCollectionIfNotExists("user_to_user","reports",false);
+
         } catch (Exception e) {
             fail(e.getMessage());
         }
@@ -43,7 +51,7 @@ public class UserToUserTest {
         request.put("tokenPayload", token);
 
         ReportUser reportUser= new ReportUser();
-        return reportUser.execute(request);
+        return TestHelper.execute(reportUser,request);
     }
 
     @Test
@@ -74,7 +82,7 @@ public class UserToUserTest {
         request.put("tokenPayload", token);
 
         PostFollowUser postFollowUser = new PostFollowUser();
-        return postFollowUser.execute(request);
+        return TestHelper.execute(postFollowUser,request);
     }
 
     @Test
@@ -105,7 +113,7 @@ public class UserToUserTest {
         request.put("tokenPayload", token);
 
         PostBlockUser postBlockUser = new PostBlockUser();
-        return postBlockUser.execute(request);
+        return TestHelper.execute(postBlockUser,request);
     }
 
     @Test
