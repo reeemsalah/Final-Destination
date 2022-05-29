@@ -25,7 +25,7 @@ public class UserAppTest {
     
     static String username = "fady"+ new Date().getTime();
     static String password = "12345678";
-    static String token;
+    static String token="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjE1IiwiaXNBcnRpc3QiOiJ0cnVlIn0.7Ku_-aMNMxhD9T_3uiEEOeBGnkqFFyZrsNM2VU6Ng_s";
     static String firstname="7amo";
     static String lastname="bikaaaa";
     static boolean isArtist=false;
@@ -112,7 +112,7 @@ public class UserAppTest {
     @Test
     public void T05_GetUserWithoutLogin() {
 
-        JSONObject response = Requester.getUser();
+        JSONObject response = Requester.callViewMyProfileCommand();
         int statusCode = response.getInt("statusCode");
         String msg = response.getString("msg");
         assertTrue(statusCode == 401 || statusCode == 403);
@@ -132,9 +132,9 @@ public class UserAppTest {
     }
 
     @Test
-    public void T07_GetUser() {
+    public void T07_viewMyProfile() {
 
-        JSONObject response = Requester.getUser();
+        JSONObject response = Requester.callViewMyProfileCommand();
         assertEquals(200, response.getInt("statusCode"));
         JSONObject data = response.getJSONObject("data");
         assertEquals(username, data.getString("username"));
@@ -153,7 +153,7 @@ public class UserAppTest {
 
         assertEquals("Account Updated Successfully!", response.getString("msg"));
 
-        JSONObject user = Requester.getUser().getJSONObject("data");
+        JSONObject user = Requester.callViewMyProfileCommand().getJSONObject("data");
         //assertTrue(Auth.verifyHash(newPassword, user.getString("password")));
     }
 
@@ -191,7 +191,7 @@ public class UserAppTest {
     public void T12_viewAnotherProfile() {
 
         JSONObject response = Requester.viewAnotherProfile(username);
-        JSONObject user = Requester.getUser().getJSONObject("data");
+        JSONObject user = Requester.callViewMyProfileCommand().getJSONObject("data");
         assertEquals(200, response.getInt("statusCode"));
         assertEquals(username, user.getString("username"));
         //assertTrue(!Utilities.isDevelopmentMode() || user.has("photoUrl"));
@@ -217,7 +217,7 @@ public class UserAppTest {
 
         assertEquals("Account Deleted Successfully!", response.getString("msg"));
 
-        JSONObject getUserResponse = Requester.getUser();
+        JSONObject getUserResponse = Requester.callViewMyProfileCommand();
         assertEquals("User not found!", getUserResponse.getString("msg"));
     }
 

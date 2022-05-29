@@ -21,8 +21,12 @@ public class TestHelper {
     public static void attachTokenPayLoad(String token,JSONObject request){
           
           Object tokenPayload=JWTHandler.decodeToken(token);
-          request.put(JWTHandler.TOKEN_PAYLOAD,tokenPayload);
+         
+          JSONObject temp=(JSONObject)tokenPayload;
+          request.put(JWTHandler.TOKEN_PAYLOAD,((JSONObject) tokenPayload).get(JWTHandler.TOKEN_PAYLOAD));
+
           request.put(JWTHandler.IS_AUTHENTICATED,true);
+
     }
 
 }

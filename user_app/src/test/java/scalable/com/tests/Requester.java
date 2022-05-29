@@ -46,9 +46,11 @@ public class Requester {
         return new JSONObject(new Login().execute(request));
     }
 
-    public static JSONObject getUser() {
-        JSONObject request = makeRequest(null, "GET", new JSONObject());
-        return new JSONObject(new ViewMyProfile().execute(request));
+    public static JSONObject callViewMyProfileCommand() {
+        JSONObject request = makeRequest(new JSONObject(), "GET", new JSONObject());
+        TestHelper.attachTokenPayLoad(UserAppTest.token,request);
+        ViewMyProfile viewMyProfile=new ViewMyProfile();
+        return new JSONObject(TestHelper.execute(viewMyProfile,request));
     }
 
     public static JSONObject viewAnotherProfile(String username) {
