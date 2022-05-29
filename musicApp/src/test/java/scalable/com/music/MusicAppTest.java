@@ -200,7 +200,7 @@ public class MusicAppTest extends MusicTest {
         System.out.println(response);
         System.out.println(correct);
         assert response.getInt("statusCode") ==200 ;
-        assert response.getJSONObject("data").equals(data);
+        assert response.getJSONObject("data").equals(correct);
     }
     @AfterClass
     public static void dropAllCollections() {
