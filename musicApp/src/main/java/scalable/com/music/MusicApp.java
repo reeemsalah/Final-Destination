@@ -28,8 +28,8 @@ public class MusicApp extends App {
     protected void dbInit() throws IOException {
         Arango arango = Arango.getInstance();
         arango.createPool(15);
-        arango.createDatabaseIfNotExists("Spotify");
-        arango.createCollectionIfNotExists("Spotify","Playlists",false);
+        arango.createDatabaseIfNotExists("spotifyArangoDb");
+        arango.createCollectionIfNotExists("spotifyArangoDb","Playlists",false);
 
     }
 

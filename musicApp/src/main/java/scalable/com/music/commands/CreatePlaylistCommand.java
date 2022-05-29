@@ -1,11 +1,13 @@
 package scalable.com.music.commands;
 
+import org.json.JSONObject;
 import scalable.com.exceptions.ValidationException;
 import scalable.com.shared.classes.Arango;
 import scalable.com.shared.classes.CommandVerifier;
 import com.arangodb.entity.BaseDocument;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.UUID;
 
 import scalable.com.shared.classes.Responder;
@@ -21,7 +23,7 @@ public class CreatePlaylistCommand extends CommandVerifier {
     public String execute() {
         Arango arango = null;
          try {
-             UUID id = UUID.randomUUID();
+             //UUID id = UUID.randomUUID();
             String name = body.getString("name");
             int user_id = Integer.parseInt(this.tokenPayload.getString("id"));
             // String user_id = body.getString("id");
@@ -47,7 +49,11 @@ public class CreatePlaylistCommand extends CommandVerifier {
             myDocument.addAttribute("number_times_rated", number_times_rated);
             myDocument.addAttribute("people_rated",people_rated);
            BaseDocument res = arango.createDocument("spotifyArangoDb","Playlists", myDocument);
-            return Responder.makeMsgResponse("Created Playlist");
+           Map fordoc = res.getProperties();
+
+           JSONObject f = new JSONObject(fordoc);
+           f.put("_key" , res.getKey());
+            return Responder.makeDataResponse(f);
         } catch (Exception e) {
             return Responder.makeErrorResponse(e.getMessage(), 404);
         }
