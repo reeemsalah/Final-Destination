@@ -35,7 +35,7 @@ public class Requester {
         body.put("isArtist",isArtist);
         JSONObject request = makeRequest(body, "POST", new JSONObject());
         SignUp signUp=new SignUp();
-        return new JSONObject(TestHelper.execute(TestHelper.appBeingTested,signUp,request));
+        return new JSONObject(TestHelper.execute(signUp,request));
     }
 
     public static JSONObject login(String username, String password) {

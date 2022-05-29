@@ -10,11 +10,11 @@ import java.util.Properties;
 
 public class TestHelper {
     public static App appBeingTested;
-    public static String execute(App app ,Command command,  JSONObject request){
+    public static String execute(Command command,  JSONObject request){
         if (!request.has(JWTHandler.IS_AUTHENTICATED)){
              request.put(JWTHandler.IS_AUTHENTICATED,false);
         }
-       Properties properties=  app.classManager.validationMap.get(command.getCommandName());
+       Properties properties=  appBeingTested.classManager.validationMap.get(command.getCommandName());
        command.validationProperties=properties;
        return command.execute(request);
     }
