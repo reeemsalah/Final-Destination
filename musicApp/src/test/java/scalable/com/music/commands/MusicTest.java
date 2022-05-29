@@ -62,13 +62,14 @@ public class MusicTest {
         CreateSongCommand createSong= new CreateSongCommand();
        return  TestHelper.execute(createSong,request);
     }
-    public static String getSong(String song_id, String user_id) {
+    public static String getSong(String song_id, String user_id, boolean isPremium) {
         JSONObject body = new JSONObject();
         body.put("song_id", song_id);
 
         JSONObject uriParams = new JSONObject();
         JSONObject token= new JSONObject();
         token.put("id", user_id);
+        token.put("isPremium", isPremium);
         JSONObject request = new JSONObject();
         request.put("body", body);
         request.put("methodType", "POST");
@@ -110,6 +111,22 @@ public class MusicTest {
 
         GetArtistNumberOfStreams getArtistNumberOfStreams= new GetArtistNumberOfStreams();
         return  TestHelper.execute(getArtistNumberOfStreams,request);
+    }
+    public static String searchSong(String search_for) {
+        JSONObject body = new JSONObject();
+        body.put("search_for", search_for);
+
+        JSONObject uriParams = new JSONObject();
+        JSONObject token= new JSONObject();
+        JSONObject request = new JSONObject();
+        request.put("body", body);
+        request.put("methodType", "POST");
+        request.put("uriParams", uriParams);
+        request.put("isAuthenticated",false);
+        request.put("tokenPayload", token);
+
+        SearchSong searchSong= new SearchSong();
+        return  TestHelper.execute(searchSong,request);
     }
 
     @Test
@@ -154,12 +171,18 @@ public class MusicTest {
 
         BaseDocument song = arango.readDocument("Spotify","Songs",song_id);
         int streams_before =Integer.parseInt(song.getAttribute("number_of_streams")+"");
-        String response = getSong(song_id,user_id);
+        String response = getSong(song_id,user_id,true);
         song = arango.readDocument("Spotify","Songs",song_id);
         int streams_after =Integer.parseInt(song.getAttribute("number_of_streams")+"");
         JSONObject responseJson = new JSONObject(response);
         assertEquals(200, responseJson.getInt("statusCode"));
         assertEquals(streams_before+1, streams_after);
+    }
+    @Test
+    public void searchSongTest() {
+        String response = searchSong("Yellow");
+        JSONObject responseJson = new JSONObject(response);
+        assertEquals(200, responseJson.getInt("statusCode"));
     }
 
 }
