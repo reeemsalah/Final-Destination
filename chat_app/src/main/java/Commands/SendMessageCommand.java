@@ -31,7 +31,7 @@ public class SendMessageCommand extends ChatAppCommand{
         data.put("user" , id);
         String uniqueID = UUID.randomUUID().toString();
         qs.addDocument("MessagesNew" , uniqueID+ timestamp2.toString(),data);
-        return null;
+        return null;        
     }
 
     @Override
