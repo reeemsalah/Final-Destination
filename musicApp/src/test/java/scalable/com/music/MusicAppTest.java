@@ -198,6 +198,7 @@ public class MusicAppTest extends MusicTest {
         data.put("track_id", tracks);
         correct.put("data", data);
         System.out.println(response);
+        System.out.println(correct);
         assert response.getInt("statusCode") ==200 ;
         assert response.getJSONObject("data").equals(data);
     }
