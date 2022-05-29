@@ -190,10 +190,11 @@ public class MusicAppTest extends MusicTest {
     //response is an object
     @Test
     public void ViewFavoriteTracks(){
+        JSONObject favorite = RequestSimulatorFavoriteTrack(track_id);
         JSONObject  response = RequestSimulatorViewFavoriteTracks();
         JSONObject data = new JSONObject();
         JSONObject correct = new JSONObject();
-        int[] tracks = {5, 9};
+        String[] tracks = {"1"};
         data.put("track_id", tracks);
         correct.put("data", data);
         System.out.println(response);
