@@ -44,29 +44,14 @@ public class SignUp extends UserCommand  {
         PreparedStatement preparedStatement = null;
         Connection connection = null;
         try {
-            JSONObject j=new JSONObject();
-            j.put("fady","sdsdas");
-            App.sendMessageToApp("Music",this.origRequest,"POST","Test",null,j);
 
-//            JSONObject communcateWithApp=new JSONObject(this.origRequest.toString());
-//
-//            communcateWithApp.put("commandName","Test");
-//            System.out.println(communcateWithApp);
-//            communcateWithApp=App.communicateWithApp(
-//                    "user",
-//                    "music",
-//                    this.origRequest,
-//                    "GET",
-//                    "Test",
-//                    null,
-//                    null);
-//            System.out.println(communcateWithApp+"message!!!!");
             String password= ByCryptHelper.hash(this.password);
-            System.out.println(password+" this is the hashed password");
+            
             String procCall = "call userregister(?,?,?,?,?,?)";
             connection = PostgresConnection.getDataSource().getConnection();
             connection.setAutoCommit(true);
-            preparedStatement = connection.prepareStatement(procCall);
+            preparedStatement = connection.prepareStatement(procCall,ResultSet.TYPE_SCROLL_SENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE);
             preparedStatement.setString(1, this.username);
             preparedStatement.setString(2, this.email);
             preparedStatement.setString(3, password);
@@ -74,14 +59,26 @@ public class SignUp extends UserCommand  {
             preparedStatement.setString(5, this.lastName);
             preparedStatement.setBoolean(6, this.isArtist);
             preparedStatement.executeUpdate();
+           preparedStatement= connection.prepareStatement(" SELECT currval(pg_get_serial_sequence('users','id'));",ResultSet.TYPE_SCROLL_SENSITIVE,
+                   ResultSet.CONCUR_UPDATABLE);
+           ResultSet resultSet=preparedStatement.executeQuery();
+             resultSet.last();
+           
+           
+            JSONObject j=new JSONObject();
+            j.put("is_artist",this.isArtist);
+            j.put("id",resultSet.getInt("currval"));
+            App.sendMessageToApp("Recommendations",this.origRequest,"POST","CreateUserNode",null,j);
+            
 
-             
+
         } catch (SQLException e) {
             if (e.getMessage().contains("(username)"))
                 return Responder.makeErrorResponse("username already exists", 406);
             if (e.getMessage().contains("(email)"))
                 return Responder.makeErrorResponse("email already registerd", 406);
-            System.out.println("here" + e.getMessage());
+            System.out.println("here");
+            e.printStackTrace();
             return  Responder.makeErrorResponse(e.getMessage(),400);
         } finally {
 

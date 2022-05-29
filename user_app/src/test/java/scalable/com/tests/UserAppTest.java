@@ -49,10 +49,6 @@ public class UserAppTest {
     public void T01_SignUpCreatesAnEntryInDB() {
 
 
-      
-        
-
-
         JSONObject response = Requester.callSignUpCommand(username, email, password,firstname,lastname,false);
         System.out.println(response);
         assertEquals(200, response.getInt("statusCode"));
@@ -90,22 +86,10 @@ public class UserAppTest {
 
     }
 
-//    @Test
-//    public void T04_SignUpIncorrectlyFormattedDate() {
-//
-//
-//        String email = username + "@gmail.com";
-//        String birthdate = "14-12-1997";
-//
-//
-//        JSONObject response = Requester.signUp(username, email, password, birthdate);
-//        int statusCode = response.getInt("statusCode");
-//        assertTrue(statusCode >= 400 && statusCode <= 500);
-//
-//        String msg = response.getString("msg");
-//        assertTrue(msg.contains("birthdate must be of type SQL_DATE"));
-//
-//    }
+     @Test
+     public void T04_ChangePassword(){
+
+     }
 
     @Test
     public void T05_GetUserWithoutLogin() {
