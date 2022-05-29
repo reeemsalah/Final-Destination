@@ -58,39 +58,37 @@ public class UserAppTest {
         assertEquals(200, response.getInt("statusCode"));
     }
 
-//    @Test
-//    public void T02_SignUpSameUser() {
-//
-//
-//        String email = username + "@gmail.com";
-//        String birthdate = "1997-12-14";
-//
-//
-//        JSONObject response = Requester.signUp(username, email, password, birthdate);
-//        int statusCode = response.getInt("statusCode");
-//        assertTrue(statusCode >= 500);
-//
-//        String msg = response.getString("msg");
-//        assertTrue(msg.contains("duplicate key"));
-//
-//    }
+    @Test
+    public void T02_SignUpSameUser() {
 
-//    @Test
-//    public void T03_SignUpMissingParam() {
-//
-//
-//        String email = username + "@gmail.com";
-//        String birthdate = null;
-//
-//
-//        JSONObject response = Requester.signUp(username, email, password, birthdate);
-//        int statusCode = response.getInt("statusCode");
-//        assertTrue(statusCode >= 400 && statusCode <= 500);
-//
-//        String msg = response.getString("msg");
-//        assertTrue(msg.contains("missing") && msg.contains("birthdate"));
-//
-//    }
+
+        
+        
+
+
+        JSONObject response = Requester.callSignUpCommand(username, email, password,firstname,lastname,isArtist);
+        int statusCode = response.getInt("statusCode");
+        assertTrue(statusCode == 406);
+
+        String msg = response.getString("msg");
+        assertTrue(msg.contains("username already exists"));
+
+    }
+
+    @Test
+    public void T03_SignUpMissingParam() {
+
+
+
+
+        JSONObject response = Requester.callSignUpCommand(username, email, password, firstname,null,false );
+        int statusCode = response.getInt("statusCode");
+        assertTrue(statusCode >= 400 && statusCode <= 500);
+
+        String msg = response.getString("msg");
+        assertTrue(msg.contains("missing") && msg.contains("lastname"));
+
+    }
 
 //    @Test
 //    public void T04_SignUpIncorrectlyFormattedDate() {
@@ -135,6 +133,7 @@ public class UserAppTest {
     public void T07_viewMyProfile() {
 
         JSONObject response = Requester.callViewMyProfileCommand();
+        System.out.println(response);
         assertEquals(200, response.getInt("statusCode"));
         JSONObject data = response.getJSONObject("data");
         assertEquals(username, data.getString("username"));
