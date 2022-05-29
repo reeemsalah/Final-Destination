@@ -1,21 +1,12 @@
 package scalable.com.music.commands;
 import com.arangodb.entity.BaseDocument;
-import org.json.JSONObject;
 import scalable.com.exceptions.ValidationException;
-import scalable.com.shared.App;
 import scalable.com.shared.classes.Arango;
-import scalable.com.shared.classes.PostgresConnection;
 import scalable.com.shared.classes.Responder;
-
-import javax.validation.constraints.NotBlank;
-import java.sql.*;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+
 public class RatePlaylistCommand extends MusicCommand {
-    @NotBlank(message = "please give a rating!")
-    private int rating;
-    private String playlist_id;
+
 
 
 
@@ -25,9 +16,9 @@ public class RatePlaylistCommand extends MusicCommand {
     }
     @Override
     public String execute(){
-        Arango arango = null;
+        Arango arango;
         try{
-            String playlistIdentifier = body.getString(playlist_id);
+            String playlistIdentifier = body.getString("playlist_id");
             int userId = Integer.parseInt(this.tokenPayload.getString("id"));
             int userRating = body.getInt("rating");
 
@@ -40,17 +31,23 @@ public class RatePlaylistCommand extends MusicCommand {
             ArrayList<Integer> peopleRated = (ArrayList<Integer>)
                     (toRead.getAttribute("people_rated"));
 
-            Double newRating = (oldRating*totalRatings+userRating)/(totalRatings+1);
-            int newtotalRatings = totalRatings +1;
-            peopleRated.add(userId);
+            if(peopleRated.contains(userId)){
+                return Responder.makeMsgResponse("You have already rated the playlist!");
+            }
+            else{
+                Double newRating = (oldRating*totalRatings+userRating)/(totalRatings+1);
+                int newtotalRatings = totalRatings +1;
+                peopleRated.add(userId);
 
-            toRead.updateAttribute("Rating", newRating);
-            toRead.updateAttribute("number_times_rated", newtotalRatings);
-            toRead.updateAttribute("people_rated", peopleRated);
+                toRead.updateAttribute("Rating", newRating);
+                toRead.updateAttribute("number_times_rated", newtotalRatings);
+                toRead.updateAttribute("people_rated", peopleRated);
 
-            arango.updateDocument("spotifyArangoDb", "Playlists", toRead, playlistIdentifier);
+                arango.updateDocument("spotifyArangoDb", "Playlists", toRead, playlistIdentifier);
 
-            return Responder.makeMsgResponse("successfully rated the playlist");
+                return Responder.makeMsgResponse("successfully rated the playlist");
+            }
+
         }
         catch (Exception e) {
             return Responder.makeErrorResponse(e.getMessage(), 404);
@@ -67,13 +64,6 @@ public class RatePlaylistCommand extends MusicCommand {
     }
     @Override
     public void validateAttributeTypes() throws ValidationException {
-        try{
-            this.rating = body.getInt("rating");
-        }
-        catch (Exception e){
-            throw new ValidationException("attributes data types are wrong");
-        }
-        this.validateAnnotations();
 
     }
 }
