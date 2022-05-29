@@ -25,17 +25,17 @@ public class Requester {
         return request;
     }
 
-    public static JSONObject signUp(String username, String email, String password, String birthdate) {
+    public static JSONObject callSignUpCommand(String username, String email, String password,String firstName,String lastName,boolean isArtist) {
         JSONObject body = new JSONObject();
         body.put("username", username);
         body.put("email", email);
         body.put("password", password);
-        body.put("firstname","fady12");
-        body.put("lastname","ibrahim2323");
-        body.put("isArtist",false);
+        body.put("firstname",firstName);
+        body.put("lastname",lastName);
+        body.put("isArtist",isArtist);
         JSONObject request = makeRequest(body, "POST", new JSONObject());
         SignUp signUp=new SignUp();
-        return new JSONObject(TestHelper.execute(UserAppTest.appBeingTested,signUp,request));
+        return new JSONObject(TestHelper.execute(signUp,request));
     }
 
     public static JSONObject login(String username, String password) {
@@ -46,9 +46,11 @@ public class Requester {
         return new JSONObject(new Login().execute(request));
     }
 
-    public static JSONObject getUser() {
-        JSONObject request = makeRequest(null, "GET", new JSONObject());
-        return new JSONObject(new ViewMyProfile().execute(request));
+    public static JSONObject callViewMyProfileCommand() {
+        JSONObject request = makeRequest(new JSONObject(), "GET", new JSONObject());
+        TestHelper.attachTokenPayLoad(UserAppTest.token,request);
+        ViewMyProfile viewMyProfile=new ViewMyProfile();
+        return new JSONObject(TestHelper.execute(viewMyProfile,request));
     }
 
     public static JSONObject viewAnotherProfile(String username) {
