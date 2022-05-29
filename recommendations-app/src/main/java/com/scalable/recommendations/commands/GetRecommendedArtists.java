@@ -26,9 +26,9 @@ public class GetRecommendedArtists extends  RecommendationsCommand
     @Override
     public String execute() {
         System.out.println("I am executing the GetRecommendedArtists command");
-        //TODO get user_id from token
-        //String user_id =this.tokenPayload.getString("id");
-        String user_id = "user4";
+      
+        int user_id =Integer.parseInt(this.tokenPayload.getString("id"));
+        //String user_id = "user4";
         JSONObject response=new JSONObject();
         Arango arango = Arango.getInstance();
         ArrayList<String> artist_ids = new ArrayList<String>();
@@ -62,7 +62,7 @@ public class GetRecommendedArtists extends  RecommendationsCommand
 
     }
 
-    public Object get_arango_default_id(String user_id, Arango arango){
+    public Object get_arango_default_id(int user_id, Arango arango){
 
         try {
             HashMap<String, Object> bindVars = new HashMap<>();
@@ -97,8 +97,7 @@ public class GetRecommendedArtists extends  RecommendationsCommand
 
     @Override
     public boolean isAuthNeeded() {
-        //TODO GET TOKEN
-        return false;
+        return true;
     }
 
     @Override

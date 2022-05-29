@@ -25,16 +25,15 @@ public class GetRecommendedMusicTracks extends RecommendationsCommand{
     @Override
     public String execute() {
         System.out.println("I am executing the GetRecommendedMusicTracks command");
-        //TODO get user_id from token
-        //String user_id =this.tokenPayload.getString("id");
-        String user_id = "user4";
+        int user_id =Integer.parseInt(this.tokenPayload.getString("id"));
+        //String user_id = "user4";
         ArrayList<String> song_ids = new ArrayList<String>();
         JSONObject response=new JSONObject();
         int limitno = 3;
         Arango arango = Arango.getInstance();
         try {
             String arango_default_id = (String) get_arango_default_id(user_id, arango);
-            System.out.println("Returned Arango Default ID: " + arango_default_id);
+            System.out.println("Returned Arango Default ID: " + arango_default_id + " ID from token " + user_id);
             if (arango_default_id != null) {
                 String aqlQuery = String.format("LET similar_users = (FOR songs_history IN 1..1 OUTBOUND @user_id @@collection_name FOR user IN 1..1 INBOUND songs_history._id @@collection_name FILTER user._id != @user_id RETURN user) LET most_similar_users =(FOR similar_user IN similar_users COLLECT id = similar_user._id, name = similar_user.id, isArtist = similar_user.isArtist WITH COUNT INTO similarityCount SORT similarityCount DESC LIMIT @limitno RETURN {id,name,isArtist}  ) LET curr_user_history = (FOR songs_history IN 1..1 OUTBOUND @user_id @@collection_name RETURN TO_ARRAY(songs_history.id)) LET recommended = (FOR most_similar_user IN most_similar_users FOR song IN 1..1 OUTBOUND most_similar_user.id @@collection_name RETURN DISTINCT MINUS(FLATTEN(TO_ARRAY(song.id)),FLATTEN(curr_user_history))) FOR r in recommended FILTER length(r)>0 RETURN r");
                 HashMap<String, Object> bindVars = new HashMap<>();
@@ -63,7 +62,7 @@ public class GetRecommendedMusicTracks extends RecommendationsCommand{
 
     }
 
-    public Object get_arango_default_id(String user_id,Arango arango){
+    public Object get_arango_default_id(int user_id,Arango arango){
 
         try {
             HashMap<String, Object> bindVars = new HashMap<>();
@@ -97,8 +96,7 @@ public class GetRecommendedMusicTracks extends RecommendationsCommand{
 
     @Override
     public boolean isAuthNeeded() {
-        //TODO GET TOKEN
-        return false;
+        return true;
     }
 
     @Override
