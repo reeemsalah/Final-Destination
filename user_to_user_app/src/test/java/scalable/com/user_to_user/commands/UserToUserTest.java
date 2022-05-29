@@ -23,7 +23,7 @@ public class UserToUserTest {
         }
     }
 
-    public static String reportUser(int reported_Id, String comment) {
+    public static String reportUser(int reported_Id, String comment) throws Exception {
         JSONObject body = new JSONObject();
         body.put("reported_id", reported_Id);
         body.put("comment", comment);
@@ -45,7 +45,7 @@ public class UserToUserTest {
     }
 
     @Test
-    public void reportUserTest() {
+    public void reportUserTest() throws Exception {
         int beforeCount= arango.documentCount("user_to_user", "reports");
         String response = reportUser(200, "test comment");
         JSONObject responseJson = new JSONObject(response);

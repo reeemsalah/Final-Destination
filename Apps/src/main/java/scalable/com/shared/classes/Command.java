@@ -11,7 +11,7 @@ import java.util.concurrent.TimeoutException;
 
 public abstract class Command {
      public abstract String getCommandName();
-    public abstract String execute(JSONObject request);
+    public abstract String execute(JSONObject request) throws Exception;
 
 
     

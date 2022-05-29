@@ -24,7 +24,7 @@ public abstract class CommandVerifier extends Command {
     protected JSONObject origRequest;
 
     @Override
-    public final String execute(JSONObject request) {
+    public final String execute(JSONObject request) throws Exception {
         origRequest = request;
         //setting this objects uriParams
         uriParams = request.getJSONObject("uriParams");
@@ -57,7 +57,7 @@ public abstract class CommandVerifier extends Command {
         return execute();
     }
     
-    public abstract String execute();
+    public abstract String execute() throws Exception;
    // public abstract void validateAttributesNumber() throws IOException, ValidationException;
 
    
