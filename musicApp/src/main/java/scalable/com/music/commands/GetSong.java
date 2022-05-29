@@ -61,6 +61,8 @@ public class GetSong  extends MusicCommand {
                     );
             response.put("can_skip",canSkip);
             response.put("has_ads",hasAds);
+
+
         } catch (Exception e) {
             return Responder.makeErrorResponse(e.getMessage(), 404);
         }
