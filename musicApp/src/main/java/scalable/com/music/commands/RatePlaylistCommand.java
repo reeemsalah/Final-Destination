@@ -33,7 +33,7 @@ public class RatePlaylistCommand extends MusicCommand {
 
             arango = Arango.getInstance();
 
-            BaseDocument toRead = arango.readDocument("Spotify",
+            BaseDocument toRead = arango.readDocument("spotifyArangoDb",
                     "Playlists", playlistIdentifier);
             Double oldRating = (Double)(toRead.getAttribute("Rating"));
             int totalRatings = (Integer)(toRead.getAttribute("number_times_rated"));
@@ -48,7 +48,7 @@ public class RatePlaylistCommand extends MusicCommand {
             toRead.updateAttribute("number_times_rated", newtotalRatings);
             toRead.updateAttribute("people_rated", peopleRated);
 
-            arango.updateDocument("Spotify", "Playlists", toRead, playlistIdentifier);
+            arango.updateDocument("spotifyArangoDb", "Playlists", toRead, playlistIdentifier);
 
             return Responder.makeMsgResponse("successfully rated the playlist");
         }
