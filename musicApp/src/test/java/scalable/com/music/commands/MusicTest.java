@@ -118,7 +118,7 @@ public class MusicTest {
         String response = createSong("Song1", "1,2","Rock,Pop","1",true);
         JSONObject responseJson = new JSONObject(response);
         int afterCount =arango.documentCount("Spotify", "Songs");
-        assertEquals("Song created!", responseJson.getString("msg"));
+        assertEquals(200, responseJson.getInt("statusCode"));
         assertEquals(beforeCount+1, afterCount);
     }
     @Test

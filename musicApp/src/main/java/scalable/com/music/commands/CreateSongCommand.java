@@ -3,7 +3,7 @@ package scalable.com.music.commands;
 import com.arangodb.entity.BaseEdgeDocument;
 import org.json.JSONArray;
 import org.json.JSONML;
-import org.json.simple.JSONObject;
+import org.json.JSONObject;
 import scalable.com.exceptions.ValidationException;
 import scalable.com.shared.classes.Arango;
 import scalable.com.shared.classes.CommandVerifier;
@@ -32,6 +32,7 @@ public class CreateSongCommand  extends MusicCommand {
     public String execute() {
 
         Arango arango = Arango.getInstance();
+        JSONObject response=new JSONObject();
 
         try {
             if (this.tokenPayload==null)
@@ -89,11 +90,16 @@ public class CreateSongCommand  extends MusicCommand {
 
             BaseDocument res = arango.createDocument("Spotify", "Songs", myDocument);
 
+            //CREATE JSON RESPONSE
+            res.getProperties().forEach((key, value) ->
+                    response.put(key, value)
+            );
+            response.put("id",res.getKey());
 
         } catch (Exception e) {
             return Responder.makeErrorResponse(e.getMessage(), 404);
         }
-        return Responder.makeMsgResponse("Song created!");
+        return Responder.makeDataResponse(response);
     }
 
     @Override
