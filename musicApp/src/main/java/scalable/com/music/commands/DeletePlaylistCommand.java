@@ -23,7 +23,7 @@ public class DeletePlaylistCommand extends CommandVerifier {
 
                 arango = Arango.getInstance();
 
-                arango.deleteDocument("Spotify","Playlists", key);
+                arango.deleteDocument("spotifyArangoDb","Playlists", key);
                 return Responder.makeMsgResponse("Deleted Playlist");
             } catch (Exception e) {
                 return Responder.makeErrorResponse(e.getMessage(), 404);
@@ -39,7 +39,7 @@ public class DeletePlaylistCommand extends CommandVerifier {
 
     @Override
     public boolean isAuthNeeded() {
-        return false;
+        return true;
     }
 
     @Override
