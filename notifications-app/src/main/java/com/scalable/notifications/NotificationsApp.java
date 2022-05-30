@@ -11,18 +11,14 @@ public class NotificationsApp extends App {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException, TimeoutException {
         NotificationsApp app = new NotificationsApp();
-        arangoPool = new Arango();
-        app.dbInit();
         app.start();
-    }
-
-    @Override
-    protected void dbInit() throws IOException {
         Arango arango = Arango.getInstance();
-        arango.createPool(15);
         arango.createDatabaseIfNotExists("NotificationsDB");
         arango.createCollectionIfNotExists("NotificationsDB","Notifications",false);
+        arango.createCollectionIfNotExists("NotificationsDB","UserSubscribedTopics",false);
     }
+
+
     @Override
     protected String getAppName() {
         return "Notifications";

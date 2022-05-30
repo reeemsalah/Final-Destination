@@ -25,7 +25,7 @@ public class ResponseHandler extends SimpleChannelInboundHandler<Object> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Object o) {
         ByteBuf buffer = (ByteBuf) o;
-        
+        System.out.println("as");
         JSONObject jsonObject = new JSONObject(buffer.toString(CharsetUtil.UTF_8));
 
         returnDefaultResponse(ctx, jsonObject);

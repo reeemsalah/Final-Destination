@@ -37,13 +37,17 @@ public class SignUp extends UserCommand  {
     public String execute() {
 
 
-        System.out.println("iam in execute");
+        System.out.println("iam in execute1");
         //cases 1- username already exists 2- email already exists
         
 
         PreparedStatement preparedStatement = null;
         Connection connection = null;
         try {
+            JSONObject j=new JSONObject();
+            j.put("fady","sdsdas");
+            App.sendMessageToApp("Music",this.origRequest,"POST","Test",null,j);
+
 //            JSONObject communcateWithApp=new JSONObject(this.origRequest.toString());
 //
 //            communcateWithApp.put("commandName","Test");

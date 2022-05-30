@@ -15,7 +15,7 @@ public class MusicApp extends App {
 
 
         MusicApp app=new MusicApp();
-        app.dbInit();
+        //app.dbInit();
         app.start();
         //comment this line after development
         //DatabaseHelper.createSchema();

@@ -1,6 +1,6 @@
 CREATE or replace PROCEDURE userRegister(
-	username VARCHAR(20),
-	email VARCHAR(20),
+	username VARCHAR,
+	email VARCHAR,
 	password VARCHAR,
 	first_name VARCHAR(20),
 	last_name VARCHAR(20),

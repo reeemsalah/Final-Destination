@@ -12,11 +12,11 @@ import javax.validation.constraints.NotNull;
 
 public class SendNotification extends CommandVerifier {
 
-    @NotNull(message="reported id should not be empty")
+    @NotNull(message="title should not be empty")
     private String title;
-    @NotBlank(message="report comment should not be empty")
+    @NotBlank(message="body should not be empty")
     private String notification_body;
-    @NotBlank(message="report comment should not be empty")
+    @NotBlank(message="topic should not be empty")
     private String topic;
 
     @Override
