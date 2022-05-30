@@ -74,6 +74,7 @@ public class Login extends UserCommand{
                        claims.put("id", id);
                        claims.put("isArtist",""+isArtist);
                        claims.put("isPremium",""+isPremium);
+                       claims.put("username",username);
 
                        String token = JWTHandler.generateToken(claims);
 

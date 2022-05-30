@@ -22,13 +22,15 @@ public class Requester {
         request.put("methodType", methodType);
         request.put("uriParams", uriParams);
         
-        if(!needsTokenPayload) {
+        if(needsTokenPayload) {
             JSONObject tokenPayload=new JSONObject();
             tokenPayload.put("id",UserAppTest.id);
             tokenPayload.put("isArtist",UserAppTest.isArtist);
            
             request.put("tokenPayload",tokenPayload );
+            request.put("isAuthenticated",true);
         }
+        System.out.println("this is the request: "+request);
         return request;
     }
 
@@ -61,10 +63,11 @@ public class Requester {
         return new JSONObject(TestHelper.execute(viewMyProfile,request));
     }
 
-    public static JSONObject viewAnotherProfile(String username) {
+    public static JSONObject callViewAnotherProfile(String username) {
         JSONObject uriParams = new JSONObject().put("username", username);
         JSONObject request = makeRequest(null, "GET", uriParams,true);
-        return new JSONObject(new ViewAnotherUserProfile().execute(request));
+        ViewAnotherUserProfile viewAnotherUserProfile= new ViewAnotherUserProfile();
+        return new JSONObject(TestHelper.execute(viewAnotherUserProfile,request));
     }
 
     public static JSONObject updatePassword(String oldPassword, String newPassword) {
@@ -77,20 +80,28 @@ public class Requester {
     }
 
     static public JSONObject updateProfilePicture() throws IOException {
-        JSONObject request = makeRequest(new JSONObject(), "PUT", new JSONObject(),true);
-        //JSONObject files = new JSONObject().put("image", org.sab.minio.FileSimulation.generateImageJson());
-        //request.put("files", files);
-        return new JSONObject(new EditProfilePicture().execute(request));
-    }
+        JSONObject request = makeRequest(new JSONObject(), "POST", new JSONObject(),true);
 
+        JSONObject files = new JSONObject().put("image", scalable.com.shared.classes.FileCreator.generateImageJson());
+        request.put("files", files);
+        EditProfilePicture editProfilePicture=new EditProfilePicture();
+        return new JSONObject(TestHelper.execute(editProfilePicture,request));
+    }
+    public static JSONObject subscribeToPremium(){
+        JSONObject request = makeRequest(new JSONObject(), "POST", new JSONObject(),true);
+        SubscribeToPremium subscribeToPremium=new SubscribeToPremium();
+        return new JSONObject(TestHelper.execute(subscribeToPremium,request));
+
+    }
   
 
     public static JSONObject deleteAccount(String password) {
         JSONObject body = new JSONObject();
         body.put("password", password);
 
-        JSONObject request = makeRequest(body, "DELETE", new JSONObject(),true);
-        return new JSONObject(new DeleteAccount().execute(request));
+        JSONObject request = makeRequest(body, "POST", new JSONObject(),true);
+        DeleteAccount deleteAccount=new DeleteAccount();
+        return new JSONObject(TestHelper.execute(deleteAccount,request));
     }
 
 
