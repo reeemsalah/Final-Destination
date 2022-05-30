@@ -32,6 +32,7 @@ public class CreateUserNode extends  RecommendationsCommand {
             BaseDocument userNode = new BaseDocument();
             userNode.setKey(user_id);
             userNode.addAttribute("is_artist",is_artist);
+            userNode.addAttribute("id",user_id);
              arango.createDocument(DatabaseConstants.DATABASE_NAME,DatabaseConstants.USER_DOCUMENT_COLLECTION,userNode) ;
         } catch (Exception e){
             Responder.makeErrorResponse(e.getMessage(),404);

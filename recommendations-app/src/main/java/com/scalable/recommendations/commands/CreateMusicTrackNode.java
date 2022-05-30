@@ -29,6 +29,7 @@ public class CreateMusicTrackNode extends  RecommendationsCommand {
             BaseDocument trackNode = new BaseDocument();
             trackNode.setKey(track_id);
             trackNode.addAttribute("track_name",track_name);
+            trackNode.addAttribute("id",track_id);
 
              arango.createDocument(DatabaseConstants.DATABASE_NAME,DatabaseConstants.MUSIC_DOCUMENT_COLLECTION,trackNode) ;
         } catch (Exception e){

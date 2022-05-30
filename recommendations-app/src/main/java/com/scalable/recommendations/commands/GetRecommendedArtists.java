@@ -18,6 +18,7 @@ public class GetRecommendedArtists extends  RecommendationsCommand
 
     //input nothing, ana ma3aya el userID
     //output recommended artists
+    public static int limitno = 10;
     @Override
     public String getCommandName() {
         return "GetRecommendedArtists";
@@ -26,8 +27,8 @@ public class GetRecommendedArtists extends  RecommendationsCommand
     @Override
     public String execute() {
         System.out.println("I am executing the GetRecommendedArtists command");
-      
-        int user_id =Integer.parseInt(this.tokenPayload.getString("id"));
+
+        String user_id =this.tokenPayload.getString("id");
         //String user_id = "user4";
         JSONObject response=new JSONObject();
         Arango arango = Arango.getInstance();
@@ -36,10 +37,11 @@ public class GetRecommendedArtists extends  RecommendationsCommand
             String arango_default_id = (String) get_arango_default_id(user_id, arango);
             System.out.println("Returned Arango Default ID: " + arango_default_id);
             if (arango_default_id != null) {
-                String aqlQuery = String.format("FOR artist IN 1..10 OUTBOUND @user_id @@collection_name OPTIONS {uniqueVertices: \"global\", bfs: true} FILTER artist.isArtist == 1 RETURN artist");
+                String aqlQuery = String.format("FOR artist IN 2..@limitno OUTBOUND @user_id @@collection_name OPTIONS {uniqueVertices: \"global\", bfs: true} FILTER artist.isArtist == 1 RETURN artist");
                 HashMap<String, Object> bindVars = new HashMap<>();
                 bindVars.put("@collection_name", DatabaseConstants.USER_EDGE_COLLECTION);
                 bindVars.put("user_id", arango_default_id);
+                bindVars.put("limitno", limitno);
                 ArangoCursor<BaseDocument> cursor = arango.query( DatabaseConstants.DATABASE_NAME, aqlQuery, bindVars);
                 if(!(Objects.isNull(cursor))){
                     List<BaseDocument> artist = cursor.asListRemaining();
@@ -62,7 +64,7 @@ public class GetRecommendedArtists extends  RecommendationsCommand
 
     }
 
-    public Object get_arango_default_id(int user_id, Arango arango){
+    public Object get_arango_default_id(String user_id, Arango arango){
 
         try {
             HashMap<String, Object> bindVars = new HashMap<>();
@@ -79,12 +81,12 @@ public class GetRecommendedArtists extends  RecommendationsCommand
                     }
                 }
             } else {
-                return Responder.makeMsgResponse("No user exists with that id");
+                return null;
             }
         }
         catch (Exception e){
             System.out.println(e.toString());
-            return  Responder.makeErrorResponse("Something went wrong",400);
+            return  null;
         }
         return null;
     }

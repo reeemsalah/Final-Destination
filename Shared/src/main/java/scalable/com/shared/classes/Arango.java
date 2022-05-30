@@ -2,6 +2,7 @@ package scalable.com.shared.classes;
 
 import com.arangodb.ArangoCursor;
 import com.arangodb.ArangoDB;
+import com.arangodb.ArangoGraph;
 import com.arangodb.entity.BaseDocument;
 import com.arangodb.entity.BaseEdgeDocument;
 import com.arangodb.entity.CollectionType;
@@ -9,6 +10,7 @@ import com.arangodb.entity.ViewEntity;
 import com.arangodb.entity.arangosearch.CollectionLink;
 import com.arangodb.entity.arangosearch.FieldLink;
 import com.arangodb.internal.ArangoDefaults;
+import com.arangodb.internal.ArangoGraphImpl;
 import com.arangodb.mapping.ArangoJack;
 import com.arangodb.model.CollectionCreateOptions;
 import com.arangodb.model.arangosearch.ArangoSearchCreateOptions;
@@ -270,6 +272,10 @@ public class Arango implements PooledDatabaseClient {
 
     public ArangoCursor<List> query2(String dbName, String query, Map<String, Object> bindVars) {
         return arangoDB.db(dbName).query(query, bindVars, null, List.class);
+    }
+
+    public ArangoCursor<VPackSlice> query3(String dbName, String query, Map<String, Object> bindVars) {
+        return arangoDB.db(dbName).query(query, bindVars, null, VPackSlice.class);
     }
 
     public String getSingleEdgeId(String DB_Name, String collectionName, String fromNodeId, String toNodeId) {

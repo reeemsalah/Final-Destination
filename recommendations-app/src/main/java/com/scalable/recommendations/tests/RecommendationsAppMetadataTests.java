@@ -1,16 +1,16 @@
-package com.scalable.recommendations.commands;
+package com.scalable.recommendations.tests;
 
+import com.scalable.recommendations.commands.CreateMusicEdge;
+import com.scalable.recommendations.commands.CreateMusicTrackNode;
+import com.scalable.recommendations.commands.CreateUserEdge;
+import com.scalable.recommendations.commands.CreateUserNode;
 import com.scalable.recommendations.constants.DatabaseConstants;
 import org.json.JSONObject;
 import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.testng.annotations.AfterTest;
-import scalable.com.shared.classes.Arango;
+import scalable.com.shared.testsHelper.TestHelper;
 
-import javax.ejb.AfterCompletion;
-
-public class RecommendationsAppTest extends RecommendationsTest {
+public class RecommendationsAppMetadataTests extends RecommendationsMetadataTests {
     public static String user_id_1="1";
     public static boolean is_artist_1=false;
 
@@ -28,7 +28,8 @@ public class RecommendationsAppTest extends RecommendationsTest {
         body.put("track_name",track_name);
         JSONObject request = makeRequest(body, "POST", new JSONObject(),true,token);
         System.out.println("Request " + request.toString());
-        return new JSONObject(new CreateMusicTrackNode().execute(request));
+
+        return new JSONObject(TestHelper.execute(new CreateMusicTrackNode(),request));
     }
     public static JSONObject RequestSimulatorCreateUserNode(String user_id,boolean is_artist){
         JSONObject body = new JSONObject();
@@ -36,7 +37,8 @@ public class RecommendationsAppTest extends RecommendationsTest {
         body.put("is_artist",is_artist);
         JSONObject request = makeRequest(body, "POST", new JSONObject(),false,null);
         System.out.println("Request " + request.toString());
-        return new JSONObject(new CreateUserNode().execute(request));
+
+        return new JSONObject(TestHelper.execute(new CreateUserNode(),request));
     }
     public static JSONObject RequestSimulatorCreateUserEdge(String from,String to){
         JSONObject body = new JSONObject();
@@ -45,7 +47,8 @@ public class RecommendationsAppTest extends RecommendationsTest {
         body.put("followed_user_id", to);
         JSONObject request = makeRequest(body, "POST", new JSONObject(),true,token);
         System.out.println("Request " + request.toString());
-        return new JSONObject(new CreateUserEdge().execute(request));
+
+        return new JSONObject(TestHelper.execute(new CreateUserEdge(),request));
     }
     public static JSONObject RequestSimulatorCreateMusicEdge(String user_id,String track_id){
         JSONObject body = new JSONObject();
@@ -55,7 +58,8 @@ public class RecommendationsAppTest extends RecommendationsTest {
         body.put("track_id", track_id);
         JSONObject request = makeRequest(body, "POST", new JSONObject(),true,token);
         System.out.println("Request " + request.toString());
-        return new JSONObject(new CreateMusicEdge().execute(request));
+
+        return new JSONObject(TestHelper.execute(new CreateMusicEdge(),request));
     }
     public static JSONObject makeRequest(JSONObject body, String methodType, JSONObject uriParams, boolean isAuthenticated, JSONObject tokenPayload) {
         JSONObject request = new JSONObject();
@@ -72,7 +76,7 @@ public class RecommendationsAppTest extends RecommendationsTest {
     @Test
     public void addUserNode_NonArtist(){
         JSONObject  response = RequestSimulatorCreateUserNode(user_id_1,is_artist_1);
-        assert arangoPool.documentExists(DatabaseConstants.DATABASE_NAME,DatabaseConstants.USER_DOCUMENT_COLLECTION,user_id_1);
+        assert RecommendationsMetadataTests.arangoPool.documentExists(DatabaseConstants.DATABASE_NAME,DatabaseConstants.USER_DOCUMENT_COLLECTION,user_id_1);
         assert response.getInt("statusCode") ==200 ;
         assert response.getString("msg").equals("Node User Created Successfully");
 
@@ -81,7 +85,7 @@ public class RecommendationsAppTest extends RecommendationsTest {
     public void addUserNode_Artist(){
         JSONObject  response = RequestSimulatorCreateUserNode(user_id_2,is_artist_2);
         System.out.println(response);
-        assert arangoPool.documentExists(DatabaseConstants.DATABASE_NAME,DatabaseConstants.USER_DOCUMENT_COLLECTION,user_id_2);
+        assert RecommendationsMetadataTests.arangoPool.documentExists(DatabaseConstants.DATABASE_NAME,DatabaseConstants.USER_DOCUMENT_COLLECTION,user_id_2);
         assert response.getInt("statusCode") ==200;
         assert response.getString("msg").equals("Node User Created Successfully");
     }
@@ -89,7 +93,7 @@ public class RecommendationsAppTest extends RecommendationsTest {
     public void addMusicNode(){
         JSONObject  response = RequestSimulatorCreateMusicNode(track_id,track_name);
         System.out.println(response);
-        assert arangoPool.documentExists(DatabaseConstants.DATABASE_NAME,DatabaseConstants.MUSIC_DOCUMENT_COLLECTION,track_id);
+        assert RecommendationsMetadataTests.arangoPool.documentExists(DatabaseConstants.DATABASE_NAME,DatabaseConstants.MUSIC_DOCUMENT_COLLECTION,track_id);
 
         assert response.getInt("statusCode") ==200 ;
         assert response.getString("msg").equals("Node Track Created Successfully");
@@ -111,10 +115,10 @@ public class RecommendationsAppTest extends RecommendationsTest {
     @AfterClass
     public static void dropAllCollections() {
         System.out.println("In after test");
-        arangoPool.dropCollection(DatabaseConstants.DATABASE_NAME,DatabaseConstants.USER_DOCUMENT_COLLECTION);
-        arangoPool.dropCollection(DatabaseConstants.DATABASE_NAME,DatabaseConstants.MUSIC_DOCUMENT_COLLECTION);
-        arangoPool.dropCollection(DatabaseConstants.DATABASE_NAME,DatabaseConstants.USER_EDGE_COLLECTION);
-        arangoPool.dropCollection(DatabaseConstants.DATABASE_NAME,DatabaseConstants.MUSIC_EDGE_COLLECTION);
+        RecommendationsMetadataTests.arangoPool.dropCollection(DatabaseConstants.DATABASE_NAME,DatabaseConstants.USER_DOCUMENT_COLLECTION);
+        RecommendationsMetadataTests.arangoPool.dropCollection(DatabaseConstants.DATABASE_NAME,DatabaseConstants.MUSIC_DOCUMENT_COLLECTION);
+        RecommendationsMetadataTests.arangoPool.dropCollection(DatabaseConstants.DATABASE_NAME,DatabaseConstants.USER_EDGE_COLLECTION);
+        RecommendationsMetadataTests.arangoPool.dropCollection(DatabaseConstants.DATABASE_NAME,DatabaseConstants.MUSIC_EDGE_COLLECTION);
 
     }
 }
