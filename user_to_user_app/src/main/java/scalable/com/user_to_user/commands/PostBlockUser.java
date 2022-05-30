@@ -19,6 +19,7 @@ public class PostBlockUser extends UserToUserCommand{
     public String execute() {
 
         int id=Integer.parseInt(this.tokenPayload.getString("id"));
+//        int id = 1;
         Arango arango = null;
         try {
             arango = Arango.getInstance();
@@ -26,6 +27,13 @@ public class PostBlockUser extends UserToUserCommand{
             BaseDocument dbBlock = new BaseDocument();
             dbBlock.addAttribute("user_id",id);
             dbBlock.addAttribute("blocked_id", this.blocked_id);
+            String key = id + "-" + blocked_id;
+            dbBlock.setKey(key);
+            // if i follow the user, block and remove from followers:
+            boolean isFollowed = arango.documentExists("user_to_user","followed_ids", dbBlock.getKey());
+            if(isFollowed){
+                boolean deleted = arango.deleteDocument("user_to_user","followed_ids", dbBlock.getKey());
+            }
             BaseDocument res = arango.createDocument("user_to_user","blocked_ids", dbBlock);
             System.out.println("Block "+res+" added");
             return Responder.makeMsgResponse("Blocked: "+blocked_id);

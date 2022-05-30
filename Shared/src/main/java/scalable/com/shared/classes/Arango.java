@@ -76,6 +76,7 @@ public class Arango implements PooledDatabaseClient {
         }
         return instance;
     }
+    
      
     // For the purpose of running tests
     public static Arango getConnectedInstance() {

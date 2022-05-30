@@ -13,7 +13,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public abstract class CommandVerifier extends Command {
+public abstract class  CommandVerifier extends Command {
 
 
     protected JSONObject body, uriParams, authenticationParams, files,tokenPayload;
@@ -25,6 +25,7 @@ public abstract class CommandVerifier extends Command {
 
     @Override
     public final String execute(JSONObject request) {
+        System.out.println("executing ..."+this.getCommandName());
         origRequest = request;
         //setting this objects uriParams
         uriParams = request.getJSONObject("uriParams");
@@ -32,6 +33,7 @@ public abstract class CommandVerifier extends Command {
         String methodType = getRestAPIMethod();
         //check the request made has the correct restfull api method
         if (!methodType.toUpperCase().equals(request.getString("methodType"))) {
+            System.out.println("wrong method type");
             return Responder.makeErrorResponse(String.format("%s expects a %s Request!", getClass().getSimpleName(), methodType), 500);
         }
          //get the body of this request if found
@@ -42,9 +44,12 @@ public abstract class CommandVerifier extends Command {
 
         //did the server authenticate this request?
 
-        if (isAuthNeeded() && !request.getBoolean(IS_AUTHENTICATED))
+        if (isAuthNeeded() && !request.getBoolean(IS_AUTHENTICATED)) {
+            System.out.println("not authenticated!");
             return Responder.makeErrorResponse("Unauthorized action! Please Login!", 401);
+        }
                try {
+                 
                   this.verifyBody();
                }
                catch(Exception e){
@@ -64,8 +69,10 @@ public abstract class CommandVerifier extends Command {
     public void validateAttributesNumber() throws IOException, ValidationException {
         System.out.println("validating");
         try {
-            Properties prop = new Properties();
-            prop.load(CommandVerifier.class.getClassLoader().getResourceAsStream(this.getCommandName() + ".properties"));
+           if(this.validationProperties==null){
+               throw new NullPointerException();
+           }
+             Properties prop=this.validationProperties;
             for (Map.Entry<Object, Object> e : prop.entrySet()) {
                 System.out.println("\"" +e.getValue()+"\"");
                 if (!body.has( (String) e.getValue() )) {
