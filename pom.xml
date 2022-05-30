@@ -15,10 +15,10 @@
       <module>Shared</module>
     
     <module>user_app</module>
-    
+    <module>recommendations-app</module>
     <module>notifications-app</module>
     <module>musicApp</module>
-      <module>Test_App</module>
+    
   </modules>
 
   <name>Spotify</name>
@@ -46,7 +46,7 @@
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-all</artifactId>
-      <version>4.1.77.Final</version>
+      <version>4.1.60.Final</version>
     </dependency>
     <dependency>
       <groupId>org.json</groupId>
