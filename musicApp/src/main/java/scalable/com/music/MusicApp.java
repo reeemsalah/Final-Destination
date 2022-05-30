@@ -12,10 +12,11 @@ public class MusicApp extends App {
     public static Arango arangoPool;
 
     public static void main(String[] args) throws TimeoutException, IOException, ClassNotFoundException, SQLException {
+
+
         MusicApp app=new MusicApp();
-        //app.dbInit();
-      // arangoPool = new Arango();
-       // app.dbInit();
+        arangoPool = new Arango();
+        app.dbInit();
         app.start();
         Arango arango = Arango.getInstance();
         arango.createPool(15);
@@ -25,11 +26,13 @@ public class MusicApp extends App {
         //DatabaseHelper.createSchema();
         //DatabaseHelper.createProcs();
 
-
     }
-
     @Override
     public void dbInit() throws IOException {
+        Arango arango = Arango.getInstance();
+        arango.createPool(15);
+        arango.createDatabaseIfNotExists("Spotify");
+        arango.createCollectionIfNotExists("Spotify","Playlists",true);
 
     }
 
