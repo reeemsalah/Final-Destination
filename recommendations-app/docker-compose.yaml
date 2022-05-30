@@ -1,0 +1,43 @@
+version: "3.9"
+services:
+  rabbitmq:
+    image: "rabbitmq:latest"
+    ports:
+      - 5672:5672
+  arangodb:
+    image: "arangodb"
+    ports:
+      - 8529:8529
+    volumes:
+      - arangodb_data:/var/lib/arangodb3
+      - arangodb_apps_data:/var/lib/arangodb3-apps
+    environment:
+      - ARANGO_ROOT_PASSWORD=root
+
+
+  recommendation_app:
+    build:
+      context: "../../"
+      dockerfile: "Final-Destination/recommendations-app/Dockerfile"
+    restart: on-failure
+    ports:
+      - "4004:4004"
+    environment:
+      - RABBIT_HOST=li=localhost
+      - ARANGO_DB=spotifyDb
+      - ARANGO_USER=root
+      - ARANGO_PASSWORD=root
+      - ARANGO_HOST=arangodb
+
+    depends_on:
+      - "rabbitmq"
+      - "arangodb"
+
+networks:
+  default:
+    name: recommendation_nw
+
+volumes:
+  cb_data:
+  arangodb_data:
+  arangodb_apps_data:
