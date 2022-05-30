@@ -39,18 +39,22 @@ public class RatePlaylistCommand extends MusicCommand {
             int totalRatings = (Integer)(toRead.getAttribute("number_times_rated"));
             ArrayList<Integer> peopleRated = (ArrayList<Integer>)
                     (toRead.getAttribute("people_rated"));
+            if(peopleRated.contains(userId)) {
+                return Responder.makeMsgResponse("you have already rated this playlist");
+            }
+            else{
+                Double newRating = (oldRating*totalRatings+userRating)/(totalRatings+1);
+                int newtotalRatings = totalRatings +1;
+                peopleRated.add(userId);
+                toRead.updateAttribute("Rating", newRating);
+                toRead.updateAttribute("number_times_rated", newtotalRatings);
+                toRead.updateAttribute("people_rated", peopleRated);
 
-            Double newRating = (oldRating*totalRatings+userRating)/(totalRatings+1);
-            int newtotalRatings = totalRatings +1;
-            peopleRated.add(userId);
+                arango.updateDocument("Spotify", "Playlists", toRead, playlistIdentifier);
 
-            toRead.updateAttribute("Rating", newRating);
-            toRead.updateAttribute("number_times_rated", newtotalRatings);
-            toRead.updateAttribute("people_rated", peopleRated);
+                return Responder.makeMsgResponse("successfully rated the playlist");
 
-            arango.updateDocument("Spotify", "Playlists", toRead, playlistIdentifier);
-
-            return Responder.makeMsgResponse("successfully rated the playlist");
+            }
         }
         catch (Exception e) {
             return Responder.makeErrorResponse(e.getMessage(), 404);

@@ -37,10 +37,14 @@ public class RateMusicTrackCommand extends MusicCommand {
             int totalRatings = (Integer)(toRead.getAttribute("number_times_rated"));
             ArrayList<Integer> peopleRated = (ArrayList<Integer>)
                     (toRead.getAttribute("people_rated"));
+            if(peopleRated.contains(userId)) {
+                return Responder.makeMsgResponse("you have already rated this song");
+            }
+            else {
 
-            Double newRating = (oldRating*totalRatings+userRating)/(totalRatings+1);
-            int newtotalRatings = totalRatings +1;
-            peopleRated.add(userId);
+                Double newRating = (oldRating * totalRatings + userRating) / (totalRatings + 1);
+                int newtotalRatings = totalRatings + 1;
+                peopleRated.add(userId);
 
 
                 toRead.updateAttribute("Rating", newRating);
@@ -50,6 +54,7 @@ public class RateMusicTrackCommand extends MusicCommand {
                 arango.updateDocument("Spotify", "Songs", toRead, songIdentifier);
 
                 return Responder.makeMsgResponse("successfully rated the playlist");
+            }
             }
             catch (Exception e) {
                 return Responder.makeErrorResponse(e.getMessage(), 404);
