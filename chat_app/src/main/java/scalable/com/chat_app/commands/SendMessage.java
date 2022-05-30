@@ -1,13 +1,16 @@
-package Commands;
+package scalable.com.chat_app.commands;
 
+import scalable.com.chat_app.commands.ChatAppCommand;
+import scalable.com.chat_app.commands.Quickstart;
 import scalable.com.exceptions.ValidationException;
+
 
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
 
-public class SendMessageCommand extends ChatAppCommand{
+public class SendMessage extends ChatAppCommand {
     String message;
     String roomID;
 
@@ -21,7 +24,6 @@ public class SendMessageCommand extends ChatAppCommand{
     public String execute() throws Exception {
         int id=Integer.parseInt(this.tokenPayload.getString("id"));
         Quickstart qs = new Quickstart();
-
         Date date = new Date();
         HashMap<String, Object> data = new HashMap<>();
         Timestamp timestamp2 = new Timestamp(date.getTime());
@@ -31,6 +33,7 @@ public class SendMessageCommand extends ChatAppCommand{
         data.put("user" , id);
         String uniqueID = UUID.randomUUID().toString();
         qs.addDocument("MessagesNew" , uniqueID+ timestamp2.toString(),data);
+        System.out.println("w7da w7da");
         return null;        
     }
 
