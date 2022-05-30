@@ -9,11 +9,13 @@ import scalable.com.shared.classes.Responder;
 
 import javax.validation.constraints.NotBlank;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 public class RateMusicTrackCommand extends MusicCommand {
     @NotBlank(message = "please give a rating!")
     private int rating;
+    private String song_id;
     @Override
     public String getCommandName() {
         return "RateMusicTrack";
@@ -21,8 +23,39 @@ public class RateMusicTrackCommand extends MusicCommand {
     @Override
     public String execute(){
 
+        Arango arango = null;
+        try{
+            String songIdentifier = body.getString(song_id);
+            int userId = Integer.parseInt(this.tokenPayload.getString("id"));
+            int userRating = body.getInt("rating");
 
-        return Responder.makeMsgResponse("successfully rated");
+            arango = Arango.getInstance();
+
+            BaseDocument toRead = arango.readDocument("spotifyArangoDb",
+                    "Songs", songIdentifier);
+            Double oldRating = (Double)(toRead.getAttribute("Rating"));
+            int totalRatings = (Integer)(toRead.getAttribute("number_times_rated"));
+            ArrayList<Integer> peopleRated = (ArrayList<Integer>)
+                    (toRead.getAttribute("people_rated"));
+
+            Double newRating = (oldRating*totalRatings+userRating)/(totalRatings+1);
+            int newtotalRatings = totalRatings +1;
+            peopleRated.add(userId);
+
+
+                toRead.updateAttribute("Rating", newRating);
+                toRead.updateAttribute("number_times_rated", newtotalRatings);
+                toRead.updateAttribute("people_rated", peopleRated);
+
+                arango.updateDocument("spotifyArangoDb", "Songs", toRead, songIdentifier);
+
+                return Responder.makeMsgResponse("successfully rated the playlist");
+            }
+            catch (Exception e) {
+                return Responder.makeErrorResponse(e.getMessage(), 404);
+            }
+
+
     }
     @Override
     public String getRestAPIMethod() {

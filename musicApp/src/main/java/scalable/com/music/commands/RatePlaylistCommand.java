@@ -9,21 +9,53 @@ import scalable.com.shared.classes.Responder;
 
 import javax.validation.constraints.NotBlank;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 public class RatePlaylistCommand extends MusicCommand {
     @NotBlank(message = "please give a rating!")
     private int rating;
+    private String playlist_id;
+
+
 
     @Override
     public String getCommandName() {
-        return "RateSong";
+        return "RatePlaylist";
     }
     @Override
     public String execute(){
+        Arango arango = null;
+        try{
+            String playlistIdentifier = body.getString(playlist_id);
+            int userId = Integer.parseInt(this.tokenPayload.getString("id"));
+            int userRating = body.getInt("rating");
 
+            arango = Arango.getInstance();
 
-        return Responder.makeMsgResponse("successfully rated");
+            BaseDocument toRead = arango.readDocument("spotifyArangoDb",
+                    "Playlists", playlistIdentifier);
+            Double oldRating = (Double)(toRead.getAttribute("Rating"));
+            int totalRatings = (Integer)(toRead.getAttribute("number_times_rated"));
+            ArrayList<Integer> peopleRated = (ArrayList<Integer>)
+                    (toRead.getAttribute("people_rated"));
+
+            Double newRating = (oldRating*totalRatings+userRating)/(totalRatings+1);
+            int newtotalRatings = totalRatings +1;
+            peopleRated.add(userId);
+
+            toRead.updateAttribute("Rating", newRating);
+            toRead.updateAttribute("number_times_rated", newtotalRatings);
+            toRead.updateAttribute("people_rated", peopleRated);
+
+            arango.updateDocument("spotifyArangoDb", "Playlists", toRead, playlistIdentifier);
+
+            return Responder.makeMsgResponse("successfully rated the playlist");
+        }
+        catch (Exception e) {
+            return Responder.makeErrorResponse(e.getMessage(), 404);
+        }
+
     }
     @Override
     public String getRestAPIMethod() {
