@@ -44,7 +44,7 @@ public class PlaylistVisibilityCommand extends CommandVerifier {
 
     @Override
     public boolean isAuthNeeded() {
-        return false;
+        return true;
     }
 
     @Override
