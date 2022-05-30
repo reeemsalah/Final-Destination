@@ -89,12 +89,14 @@ public class UserToUserTest {
 
     @Test
     public void postFollowUserTest(){
+        arango.createCollectionIfNotExists("user_to_user","followed_ids",false);
         int beforeCount= arango.documentCount("user_to_user", "followed_ids");
         String response = postFollowUser(3);
         JSONObject responseJson = new JSONObject(response);
         int afterCount =arango.documentCount("user_to_user", "followed_ids");
         assertEquals("Following: 3", responseJson.getString("msg"));
         assertEquals(beforeCount+1, afterCount);
+        arango.dropCollection("user_to_user", "followed_ids");
     }
 
     public static String postBlockUser(int blocked_id){
@@ -120,12 +122,14 @@ public class UserToUserTest {
 
     @Test
     public void postBlockUserTest(){
+        arango.createCollectionIfNotExists("user_to_user","blocked_ids",false);
         int beforeCount= arango.documentCount("user_to_user", "blocked_ids");
         String response = postBlockUser(4);
         JSONObject responseJson = new JSONObject(response);
         int afterCount =arango.documentCount("user_to_user", "blocked_ids");
         assertEquals("Blocked: "+"4", responseJson.getString("msg"));
         assertEquals(beforeCount+1, afterCount);
+        arango.dropCollection("user_to_user", "blocked_ids");
     }
 
     public static String blockUser(int blocked_id) {
