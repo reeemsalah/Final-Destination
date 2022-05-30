@@ -1,43 +1,43 @@
 package Commands;
 
-import com.google.firebase.database.annotations.NotNull;
 import scalable.com.exceptions.ValidationException;
+import scalable.com.shared.classes.FireStoreInstance;
+import scalable.com.shared.classes.Responder;
+
 import javax.validation.constraints.NotBlank;
-import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.concurrent.ExecutionException;
+import java.util.UUID;
 
-public class CreateChatRoomCommand extends ChatAppCommand{
-
-
-
-    @NotBlank(message="room name shouldnt be empty")
-    private String roomName;
-
+public class SendMessage extends ChatAppCommand{
+    @NotBlank(message="message shouldnt be empty")
+    String message;
+    @NotBlank(message="room ID shouldnt be empty")
+    String roomID;
 
 
     @Override
     public String getCommandName() {
-
-        return "CreateChatRoom";
+        return "SendMessage";
     }
 
     @Override
     public String execute() throws Exception {
         int id=Integer.parseInt(this.tokenPayload.getString("id"));
 
-        Quickstart qs = new Quickstart();
-        HashMap<String, Object> data = new HashMap<>();
-        Date date = new Date();
-        Timestamp timestamp2 = new Timestamp(date.getTime());
-        data.put("creationDate",timestamp2.toString() );
-        data.put("roomName", this.roomName);
-        data.put("user" , id);
-        qs.addDocument("Rooms" , id+roomName,data);
 
-        return null;
+        Date date = new Date();
+        HashMap<String, Object> data = new HashMap<>();
+        Timestamp timestamp2 = new Timestamp(date.getTime());
+        data.put("message", this.message);
+        data.put("date",timestamp2.toString());
+        data.put("room", this.roomID);
+        data.put("user" , id);
+        String uniqueID = UUID.randomUUID().toString();
+
+        FireStoreInstance.addDocument("MessagesNew" , uniqueID+ timestamp2.toString(),data);
+        return Responder.makeMsgResponse("Message Sent Successfully");
     }
 
     @Override
@@ -53,7 +53,9 @@ public class CreateChatRoomCommand extends ChatAppCommand{
     @Override
     public void validateAttributeTypes() throws ValidationException {
         try {
-            this.roomName = body.getString("roomName");
+            this.message = body.getString("message");
+            this.roomID = body.getString("roomID");
+
         }
         catch (Exception e){
             throw new ValidationException("attributes data types are wrong");

@@ -1,13 +1,12 @@
 
-import Commands.Quickstart;
 import scalable.com.shared.App;
-import scalable.com.shared.classes.Arango;
+import scalable.com.shared.classes.FireStoreInstance;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
-public class ChatApp extends App{
-    public static Quickstart qs;
+public class ChatApp extends App {
+    public static FireStoreInstance qs;
 
     public static void main(String[] args) throws TimeoutException, IOException, ClassNotFoundException {
 
@@ -19,12 +18,17 @@ public class ChatApp extends App{
 
     @Override
     public void dbInit() throws IOException {
-        Quickstart qs = new Quickstart();
-        qs = qs;
+        FireStoreInstance qss = new FireStoreInstance();
+        qs = qss;
     }
 
     @Override
     protected String getAppName() {
-        return "ChatApp";
+        return "Chat";
+    }
+
+    public static FireStoreInstance getDBInstance()
+    {
+        return qs;
     }
 }

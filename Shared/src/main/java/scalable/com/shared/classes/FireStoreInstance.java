@@ -1,19 +1,4 @@
-package Commands;/*
- * Copyright 2017 Google Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
+package scalable.com.shared.classes;
 
 import com.google.api.core.ApiFuture;
 import com.google.auth.oauth2.GoogleCredentials;
@@ -39,18 +24,18 @@ import java.util.Map;
  * A simple Quick start application demonstrating how to connect to Firestore
  * and add and query documents.
  */
-public class Quickstart {
+public class FireStoreInstance {
 
-    private Firestore db;
+    private static Firestore db;
 
-    public Quickstart(String projectId) throws Exception {
+    public FireStoreInstance(String projectId) throws Exception {
 
     }
 
     /**
      * Initialize Firestore using default project ID.
      */
-    public Quickstart() throws IOException {
+    public FireStoreInstance() throws IOException {
         // [START firestore_setup_client_create]
         // Option 1: Initialize a Firestore client with a specific `projectId` and
         //           authorization credential.
@@ -137,7 +122,7 @@ public class Quickstart {
     }
 
 
-    void addDocument(String collection, String docName , HashMap<String, Object> documentObject)throws Exception
+     public static void addDocument(String collection, String docName , HashMap<String, Object> documentObject)throws Exception
     {
         DocumentReference docRef = db.collection(collection).document(docName);
         ApiFuture<WriteResult> result = docRef.set(documentObject);
@@ -192,7 +177,7 @@ public class Quickstart {
         // [END fs_add_query]
     }
 
-    ArrayList<QueryDocumentSnapshot> retrieveAllDocuments(String collection) throws Exception {
+    public static ArrayList<QueryDocumentSnapshot> retrieveAllDocuments(String collection) throws Exception {
         // [START fs_get_all]
         // asynchronously retrieve all users
         ApiFuture<QuerySnapshot> query = db.collection(collection).get();
@@ -242,7 +227,7 @@ public class Quickstart {
     public static void main(String[] args) throws Exception {
         // default project is will be used if project-id argument is not available
         System.out.println("Main method");
-        Quickstart quickStart = new Quickstart();
+        FireStoreInstance quickStart = new FireStoreInstance();
         quickStart.run();
         quickStart.close();
     }
@@ -250,5 +235,9 @@ public class Quickstart {
     /** Closes the gRPC channels associated with this instance and frees up their resources. */
     void close() throws Exception {
         db.close();
+    }
+
+    public static Firestore getInstance() throws IOException {
+        return db;
     }
 }
