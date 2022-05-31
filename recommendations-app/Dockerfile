@@ -1,4 +1,29 @@
-FROM openjdk:18-alpine
-ARG JAR_FILE=target/*jar
-COPY ${JAR_FILE} app.jar
-ENTRYPOINT ["java","-jar","/app.jar"]
+# base docker image
+FROM maven:3.8.1-openjdk-15-slim AS build
+
+
+COPY pom.xml /Final-Destination/
+
+WORKDIR /Final-Destination
+
+COPY pom.xml pom.xml
+COPY src src
+COPY out out
+#ADD ../Shared Shared
+#ADD Apps Apps
+
+RUN mvn -q -ntp -B -pl common -am dependency:go-offline
+COPY NettyServer NettyServer
+
+RUN mvn -q -B -pl NettyServer install
+
+
+
+#RUN mvn clean package -pl :${APP_NAME} -am -DskipTests
+
+FROM openjdk:15
+ENV APP_NAME=recommendations-app
+
+COPY --from=build /Final-Destination/recommendations-app/target/recommendations-app-1.0-SNAPSHOT.jar /usr/local/lib/recommendations-app.jar
+
+ENTRYPOINT ["java","-jar","/usr/local/lib/recommendations-app.jar"]
