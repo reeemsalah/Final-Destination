@@ -1,39 +1,30 @@
 package com.scalable.notifications;
 
-import com.google.auth.oauth2.GoogleCredentials;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.FirebaseOptions;
-import com.google.firebase.messaging.FirebaseMessaging;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
+import scalable.com.shared.App;
+import scalable.com.shared.classes.Arango;
 
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.concurrent.TimeoutException;
 
-@SpringBootApplication
-public class NotificationsApp {
+public class NotificationsApp extends App {
+    public static Arango arangoPool;
 
-    @Bean
-    FirebaseMessaging firebaseMessaging() throws IOException {
-//        GoogleCredentials googleCredentials = GoogleCredentials
-//                .fromStream(new ClassPathResource("firebase-service-account.json").getInputStream());
-//        FirebaseOptions firebaseOptions = FirebaseOptions
-//                .builder()
-//                .setCredentials(googleCredentials)
-//                .build();
-        FileInputStream serviceAccount =
-                new FileInputStream("/Users/abdelrahman.sweilam/Desktop/GUC/Semester 10/Scalable Apps/2-Project/Final-Destination/notifications-app/src/main/resources/firebase-service-account.json");
-
-        FirebaseOptions firebaseOptions = new FirebaseOptions.Builder()
-                .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                .build();
-        FirebaseApp app = FirebaseApp.initializeApp(firebaseOptions, "notifications-app");
-        return FirebaseMessaging.getInstance(app);
+    public static void main(String[] args) throws IOException, ClassNotFoundException, TimeoutException {
+        NotificationsApp app = new NotificationsApp();
+        arangoPool = new Arango();
+        app.dbInit();
+        app.start();
     }
 
-    public static void main(String[] args) {
-        SpringApplication.run(NotificationsApp.class,args);
-
+    @Override
+    public void dbInit() throws IOException {
+        Arango arango = Arango.getInstance();
+        arango.createPool(15);
+        arango.createDatabaseIfNotExists("NotificationsDB");
+        arango.createCollectionIfNotExists("NotificationsDB","Notifications",false);
+    }
+    @Override
+    protected String getAppName() {
+        return "Notifications";
     }
 }
