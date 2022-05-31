@@ -5,6 +5,7 @@ import com.rabbitmq.client.Delivery;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.util.CharsetUtil;
+import io.quarkus.arc.impl.Reflections;
 import org.json.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -15,26 +16,35 @@ import scalable.com.rabbitMQ.RabbitMQCommunicatorServer;
 import scalable.com.rabbitMQ.RabbitMQServer;
 import scalable.com.shared.classes.*;
 
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Enumeration;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 public abstract class App  {
 
-protected Properties properties;
+public Properties properties;
 protected RabbitMQApp rabbitMQApp;
 protected RabbitMQCommunicatorApp rabbitMQCommunicatorApp;
 protected Controller appController;
 protected ThreadPoolManager threadsManager;
-protected ClassManager classManager=new ClassManager();
-protected PostgresConnection sqlDb;
+public ClassManager classManager=new ClassManager();
+public PostgresConnection sqlDb;
 
-
+protected BackdoorServer backDoorServer=null;
 protected static RabbitMQServer rabbitMQInterAppCommunication;
 
 //read the .properties file and set the properties variable
@@ -42,31 +52,41 @@ public RabbitMQCommunicatorApp getRabbitMQCommunicatorApp(){
         return  this.rabbitMQCommunicatorApp;
     }
 protected abstract String getAppName();
+
+public  String loggingLevel="normal";
   
-    protected void dbInit() throws IOException {
-        Properties properties=new Properties();
-        properties.load(App.class.getClassLoader().getResourceAsStream("db.properties"));
+public void dbInit() throws IOException {
+       
                 if(properties.contains("arangodb")) {
                     System.out.println(" i created arango db !!!!");
                     Arango arango = Arango.getInstance();
-                    arango.createPool(1);
-                    arango.createDatabaseIfNotExists("spotifyArangoDb");
+                    arango.createPool(Integer.parseInt(this.properties.getProperty(AppsConstants.DEFAULT_NUMBER_OF_ARANGO_DB_PROPERTY_Name)));
+                    arango.createDatabaseIfNotExists(properties.getProperty("arangodb"));
                 }
                 if(properties.contains("postgres")){
                     //TODO initialize postgres
                     System.out.println("I created postgres db");
                     sqlDb=new PostgresConnection();
+                    sqlDb.setDbMaxConnections(this.properties.getProperty(AppsConstants.DEFAULT_NUMBER_OF_POSTGRES_DB_PROPERTY_Name));
                     sqlDb.initSource();
                 }
 
     }
 
-protected  void start() throws IOException, TimeoutException, ClassNotFoundException {
-    
-      initProperties();
+public  void start() throws IOException, TimeoutException, ClassNotFoundException {
 
-     this.classManager.init();
-    appController=new Controller(this);
+       
+
+    //Set<String> resourceList = this.getClass().getClassLoader().getResources(Pattern.compile(".*\\.properties"));
+    //System.out.println(enumeration.count());
+
+         
+   
+   System.out.println("resources");
+      initProperties();
+      this.dbInit();
+      this.classManager.init();
+      appController=new Controller(this);
    
     this.initRabbitMQ();
     
@@ -74,25 +94,55 @@ protected  void start() throws IOException, TimeoutException, ClassNotFoundExcep
     this.threadsManager.initThreadPool(10);
      
     appController.start();
+
+    createBackDoorServer();
+}
+
+private void createBackDoorServer()  {
+    new Thread(() -> {
+        try {
+            int portNumber=System.getenv("backDoorPort")==null?9090:Integer.parseInt(System.getenv("backDoorPort"));
+            this.backDoorServer=new BackdoorServer(portNumber,appController);
+            this.backDoorServer.start();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }).start();
+
 }
 protected void initProperties() {
-        Properties properties=new Properties();
+        this.properties=new Properties();
         try {
-            properties.load(App.class.getClassLoader().getResourceAsStream("app.properties"));
-            this.properties=properties;
             
-
+            this.properties.load(App.class.getClassLoader().getResourceAsStream("db.properties"));
+          
+            readDefaultProperties();
+           
         }
         catch (Exception e){
             System.out.println(e.getMessage());
             System.exit(0);
         }
     }
+protected void readDefaultProperties(){
+    String rabbitmqHost=System.getenv(AppsConstants.RabbitMQ_Host_PropertyName);
+    this.properties.put(AppsConstants.RabbitMQ_Host_PropertyName,rabbitmqHost==null?AppsConstants.RABBITMQ_HOST_DEFAULT_VALUE:rabbitmqHost);
+
+     String backDoorPort=System.getenv(AppsConstants.BACKDOOR_PORT_PROPERTY_NAME);
+     this.properties.put(AppsConstants.BACKDOOR_PORT_PROPERTY_NAME,backDoorPort==null?AppsConstants.BACKDOOR_PORT_VALUE:Integer.parseInt(backDoorPort));
+
+
+     this.properties.put(AppsConstants.DEFAULT_NUMBER_OF_ARANGO_DB_PROPERTY_Name,""+AppsConstants.DEFAULT_NUMBER_OF_ARANGO_DB_CONNECTIONS);
+     this.properties.put(AppsConstants.DEFAULT_NUMBER_OF_POSTGRES_DB_PROPERTY_Name,""+AppsConstants.DEFAULT_NUMBER_OF_POSTGRES_DB_CONNECTIONS);
+     
+     this.properties.put(AppsConstants.DEFAULT_MAX_Threads_PROPERTY_NAME,""+AppsConstants.DEFAULT_MAX_THREADS_VALUE);
+
+}
 protected  void initRabbitMQ() throws IOException, TimeoutException {
     Hook hook=this::appHook;
-    this.rabbitMQApp=new RabbitMQApp(properties.getProperty("rabbitMQ_host"));
+    this.rabbitMQApp=new RabbitMQApp(properties.getProperty(AppsConstants.RabbitMQ_Host_PropertyName));
     this.rabbitMQCommunicatorApp=this.rabbitMQApp.getNewCommunicator(this.getAppName().toUpperCase()+"Server",hook);
-    rabbitMQInterAppCommunication=new RabbitMQServer(properties.getProperty("rabbitmq_host"));
+    rabbitMQInterAppCommunication=new RabbitMQServer(properties.getProperty(AppsConstants.RabbitMQ_Host_PropertyName));
     
 }
 public void appHook(String consumerTag, Delivery delivery) throws IOException {
@@ -159,6 +209,7 @@ public void appHook(String consumerTag, Delivery delivery) throws IOException {
           
             final Command commandInstance = (Command) commandClass.getDeclaredConstructor().newInstance();
             // callback responsible for invoking the required method of the command class
+            commandInstance.validationProperties=classManager.validationMap.get(commandInstance.getCommandName());
             return (String) commandClass.getMethod("execute", req.getClass()).invoke(commandInstance, req);
         } 
         catch (ClassNotFoundException e) {
@@ -206,7 +257,33 @@ public static JSONObject communicateWithApp(String myAppName,String appToCommuni
         }
             return null;
     }
+    public static void sendMessageToApp(String appToCommunicateWith,JSONObject originalRequest,String methodType,String commandName,JSONObject uriParams,JSONObject body){
 
+        appToCommunicateWith=appToCommunicateWith.toUpperCase()+"Server";
+      
+        
+
+        JSONObject newRequestObject=new JSONObject(originalRequest.toString());
+        newRequestObject.put("body",body==null?new JSONObject():body);
+        newRequestObject.put("uriParams",uriParams==null?new JSONObject():uriParams);
+        newRequestObject.put("methodType",methodType);
+        
+        newRequestObject.put("isAuthenticated",true);
+
+        newRequestObject.put("commandName",commandName);
+
+
+
+        try (RabbitMQCommunicatorServer channel = App.rabbitMQInterAppCommunication.getNewCommunicator()) {
+            channel.call_withoutResponse(newRequestObject.toString(), appToCommunicateWith);
+          
+          
+
+        } catch (IOException | TimeoutException  | NullPointerException e) {
+            e.printStackTrace();
+        }
+       
+    }
 
 
 }
