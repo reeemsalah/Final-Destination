@@ -15,7 +15,7 @@ import org.junit.Test;
 import scalable.com.shared.classes.Arango;
 import scalable.com.music.MusicApp;
 import scalable.com.shared.testsHelper.TestHelper;
-import scalable.com.music.constants.DatabaseConstants;
+import scalable.com.music.constants.*;
 
 public class MusicTest {
     private String artist_id = "1", user_id = "1", song_id = "22197";

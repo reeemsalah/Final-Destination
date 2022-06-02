@@ -3,7 +3,7 @@ package scalable.com.music;
 import scalable.com.databaseHelper.DatabaseHelper;
 import scalable.com.shared.App;
 import scalable.com.shared.classes.Arango;
-import scalable.com.music.constants.DatabaseConstants;
+import scalable.com.music.constants.*;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -14,9 +14,6 @@ public class MusicApp extends App {
 
     public static void main(String[] args) throws TimeoutException, IOException, ClassNotFoundException, SQLException {
         MusicApp app = new MusicApp();
-        // app.dbInit();
-        // arangoPool = new Arango();
-        // app.dbInit();
         app.start();
         Arango arango = Arango.getInstance();
         arango.createPool(15);

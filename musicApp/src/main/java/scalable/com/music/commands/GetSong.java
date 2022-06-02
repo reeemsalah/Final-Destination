@@ -13,7 +13,7 @@ import scalable.com.shared.classes.MinIo;
 import scalable.com.shared.classes.Responder;
 import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
-import scalable.com.music.constants.DatabaseConstants;
+import scalable.com.music.constants.*;
 
 public class GetSong extends MusicCommand {
     // @NotBlank(message = "song_id should not be empty")

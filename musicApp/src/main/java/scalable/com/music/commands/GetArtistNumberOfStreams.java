@@ -14,7 +14,7 @@ import scalable.com.shared.classes.Responder;
 import javax.validation.constraints.NotBlank;
 import java.util.Collections;
 import java.util.Map;
-import scalable.com.music.constants.DatabaseConstants;
+import scalable.com.music.constants.*;
 
 public class GetArtistNumberOfStreams extends MusicCommand {
     // @NotBlank(message = "artist_id should not be empty")
