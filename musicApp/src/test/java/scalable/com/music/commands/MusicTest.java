@@ -18,7 +18,7 @@ import scalable.com.shared.testsHelper.TestHelper;
 import scalable.com.music.constants.*;
 
 public class MusicTest {
-    private String artist_id = "1", user_id = "1", song_id = "22197";
+    private String artist_id = "1", user_id = "1", song_id = "39710";
     private static Arango arango;
     public static String user_id_1 = "1";
     public static boolean is_artist_1 = false;
