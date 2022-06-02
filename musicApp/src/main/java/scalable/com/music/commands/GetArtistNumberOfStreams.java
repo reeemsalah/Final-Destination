@@ -14,9 +14,10 @@ import scalable.com.shared.classes.Responder;
 import javax.validation.constraints.NotBlank;
 import java.util.Collections;
 import java.util.Map;
+import scalable.com.music.constants.DatabaseConstants;
 
-public class GetArtistNumberOfStreams  extends MusicCommand {
-    //    @NotBlank(message = "artist_id should not be empty")
+public class GetArtistNumberOfStreams extends MusicCommand {
+    // @NotBlank(message = "artist_id should not be empty")
     private String artist_id;
     private int number_of_streams;
 
@@ -28,20 +29,21 @@ public class GetArtistNumberOfStreams  extends MusicCommand {
     @Override
     public String execute() {
 
-        org.json.JSONObject response=new JSONObject();
+        org.json.JSONObject response = new JSONObject();
         Arango arango = Arango.getInstance();
         try {
 
-            arango.createDatabaseIfNotExists("Spotify");
-            arango.createCollectionIfNotExists("Spotify","Songs",false);
-            //extract song id
+            arango.createDatabaseIfNotExists(DatabaseConstants.DATABASE_NAME);
+            arango.createCollectionIfNotExists(DatabaseConstants.DATABASE_NAME, DatabaseConstants.SONGS_COLLECTION,
+                    false);
+            // extract song id
             this.artist_id = body.getString("artist_id");
 
             String query = "FOR song IN Songs FILTER @artist_id IN song.artists RETURN song";
-            Map<String, Object> bindVars = Collections.singletonMap("artist_id", this.artist_id );
-            ArangoCursor<BaseDocument> cursor = arango.query("Spotify",query,bindVars);
-                    cursor.forEachRemaining(aDocument -> {
-                number_of_streams += Integer.parseInt(aDocument.getAttribute("number_of_streams")+"") ;
+            Map<String, Object> bindVars = Collections.singletonMap("artist_id", this.artist_id);
+            ArangoCursor<BaseDocument> cursor = arango.query(DatabaseConstants.DATABASE_NAME, query, bindVars);
+            cursor.forEachRemaining(aDocument -> {
+                number_of_streams += Integer.parseInt(aDocument.getAttribute("number_of_streams") + "");
             });
 
             response.put("number_of_streams", number_of_streams);
@@ -66,13 +68,12 @@ public class GetArtistNumberOfStreams  extends MusicCommand {
     public void validateAttributeTypes() throws ValidationException {
 
         try {
-            //extract song id
+            // extract song id
             this.artist_id = body.getString("artist_id");
 
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             System.out.println(body);
-            throw new ValidationException("attributes data types are wrong: "+e.getMessage());
+            throw new ValidationException("attributes data types are wrong: " + e.getMessage());
         }
     }
 }

@@ -11,9 +11,10 @@ import com.arangodb.entity.BaseDocument;
 import scalable.com.shared.classes.MinIo;
 import scalable.com.shared.classes.Responder;
 import javax.validation.constraints.NotBlank;
+import scalable.com.music.constants.DatabaseConstants;
 
-public class GetSongNumberOfStreams  extends MusicCommand {
-//    @NotBlank(message = "song_id should not be empty")
+public class GetSongNumberOfStreams extends MusicCommand {
+    // @NotBlank(message = "song_id should not be empty")
     private String song_id;
 
     @Override
@@ -25,16 +26,17 @@ public class GetSongNumberOfStreams  extends MusicCommand {
     public String execute() {
         BaseDocument res;
         Arango arango = Arango.getInstance();
-        org.json.JSONObject response=new JSONObject();
+        org.json.JSONObject response = new JSONObject();
 
         try {
 
-            arango.createDatabaseIfNotExists("Spotify");
-            arango.createCollectionIfNotExists("Spotify","Songs",false);
-            //extract song id
+            arango.createDatabaseIfNotExists(DatabaseConstants.DATABASE_NAME);
+            arango.createCollectionIfNotExists(DatabaseConstants.DATABASE_NAME, DatabaseConstants.SONGS_COLLECTION,
+                    false);
+            // extract song id
             this.song_id = body.getString("song_id");
-            res = arango.readDocument("Spotify","Songs",song_id);
-            if(res==null)  {
+            res = arango.readDocument(DatabaseConstants.DATABASE_NAME, DatabaseConstants.SONGS_COLLECTION, song_id);
+            if (res == null) {
                 return Responder.makeErrorResponse("Song does not exist", 404);
             }
 
@@ -59,13 +61,12 @@ public class GetSongNumberOfStreams  extends MusicCommand {
     public void validateAttributeTypes() throws ValidationException {
 
         try {
-            //extract song id
+            // extract song id
             this.song_id = body.getString("song_id");
 
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             System.out.println(body);
-            throw new ValidationException("attributes data types are wrong: "+e.getMessage());
+            throw new ValidationException("attributes data types are wrong: " + e.getMessage());
         }
     }
 }

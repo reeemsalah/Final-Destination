@@ -3,6 +3,7 @@ package scalable.com.music;
 import scalable.com.databaseHelper.DatabaseHelper;
 import scalable.com.shared.App;
 import scalable.com.shared.classes.Arango;
+import scalable.com.music.constants.DatabaseConstants;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -12,19 +13,19 @@ public class MusicApp extends App {
     public static Arango arangoPool;
 
     public static void main(String[] args) throws TimeoutException, IOException, ClassNotFoundException, SQLException {
-        MusicApp app=new MusicApp();
-        //app.dbInit();
-      // arangoPool = new Arango();
-       // app.dbInit();
+        MusicApp app = new MusicApp();
+        // app.dbInit();
+        // arangoPool = new Arango();
+        // app.dbInit();
         app.start();
         Arango arango = Arango.getInstance();
         arango.createPool(15);
-        arango.createDatabaseIfNotExists("Spotify");
-        arango.createCollectionIfNotExists("Spotify","Songs",false);
-        //comment this line after development
-        //DatabaseHelper.createSchema();
-        //DatabaseHelper.createProcs();
+        arango.createDatabaseIfNotExists(DatabaseConstants.DATABASE_NAME);
+        arango.createCollectionIfNotExists(DatabaseConstants.DATABASE_NAME, DatabaseConstants.SONGS_COLLECTION, false);
 
+        // comment this line after development
+        // DatabaseHelper.createSchema();
+        // DatabaseHelper.createProcs();
 
     }
 
@@ -33,12 +34,9 @@ public class MusicApp extends App {
 
     }
 
-
     @Override
     protected String getAppName() {
         return "Music";
     }
-
-
 
 }
