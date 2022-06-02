@@ -9,13 +9,12 @@ import java.sql.SQLException;
 import java.util.concurrent.TimeoutException;
 
 public class MusicApp extends App {
-    public static Arango arangoPool;
+    public Arango arangoPool;
 
     public static void main(String[] args) throws TimeoutException, IOException, ClassNotFoundException, SQLException {
 
 
         MusicApp app=new MusicApp();
-        arangoPool = new Arango();
         app.dbInit();
         app.start();
         Arango arango = Arango.getInstance();
