@@ -5,7 +5,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.Headers;
 import io.netty.handler.codec.base64.Base64;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.multipart.Attribute;
@@ -17,10 +16,8 @@ import io.netty.util.CharsetUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import Netty.Server;
 import scalable.com.shared.classes.JWTHandler;
 
-import java.awt.desktop.SystemEventListener;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
