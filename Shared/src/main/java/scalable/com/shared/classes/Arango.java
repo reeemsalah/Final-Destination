@@ -2,6 +2,7 @@ package scalable.com.shared.classes;
 
 import com.arangodb.ArangoCursor;
 import com.arangodb.ArangoDB;
+import com.arangodb.ArangoGraph;
 import com.arangodb.entity.BaseDocument;
 import com.arangodb.entity.BaseEdgeDocument;
 import com.arangodb.entity.CollectionType;
@@ -9,16 +10,17 @@ import com.arangodb.entity.ViewEntity;
 import com.arangodb.entity.arangosearch.CollectionLink;
 import com.arangodb.entity.arangosearch.FieldLink;
 import com.arangodb.internal.ArangoDefaults;
+import com.arangodb.internal.ArangoGraphImpl;
 import com.arangodb.mapping.ArangoJack;
 import com.arangodb.model.CollectionCreateOptions;
 import com.arangodb.model.arangosearch.ArangoSearchCreateOptions;
+import com.arangodb.velocypack.VPackSlice;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.lang.reflect.Array;
+import java.util.*;
 
 import scalable.com.Interfaces.PooledDatabaseClient;
 import scalable.com.shared.classes.PoolDoesNotExistException;
@@ -268,6 +270,14 @@ public class Arango implements PooledDatabaseClient {
         return arangoDB.db(dbName).query(query, bindVars, null, BaseDocument.class);
     }
 
+    public ArangoCursor<List> query2(String dbName, String query, Map<String, Object> bindVars) {
+        return arangoDB.db(dbName).query(query, bindVars, null, List.class);
+    }
+
+    public ArangoCursor<VPackSlice> query3(String dbName, String query, Map<String, Object> bindVars) {
+        return arangoDB.db(dbName).query(query, bindVars, null, VPackSlice.class);
+    }
+
     public String getSingleEdgeId(String DB_Name, String collectionName, String fromNodeId, String toNodeId) {
         String query = """
                 FOR node, edge IN 1..1 OUTBOUND @fromNodeId @collectionName
@@ -314,6 +324,19 @@ public class Arango implements PooledDatabaseClient {
         return query(DB_Name, query, bindVars);
     }
 
+    public ArangoCursor<BaseDocument> filterCollection(String DB_Name, String collectionName, String attributeName, int attributeValue) {
+        JSONArray data = new JSONArray();
+        String query = """
+                FOR obj IN %s
+                    FILTER obj.%s == @attributeValue
+                    RETURN obj
+                """.formatted(collectionName, attributeName);
+
+        Map<String, Object> bindVars = new HashMap<>();
+        bindVars.put("attributeValue", attributeValue);
+        return query(DB_Name, query, bindVars);
+    }
+
     public ArangoCursor<BaseDocument> filterEdgeCollection(String DB_Name, String collectionName, String fromNodeId) {
         String query = """
                 FOR node IN 1..1 OUTBOUND @fromNodeId @collectionName
@@ -331,6 +354,7 @@ public class Arango implements PooledDatabaseClient {
         cursor.forEachRemaining(document -> {
             JSONObject object = new JSONObject();
             for (String attribute : attributeNames) {
+                System.out.println(attribute + " : " + document.getProperties().get(attribute));
                 object.put(attribute, document.getProperties().get(attribute));
             }
             object.put(keyName, document.getKey());
