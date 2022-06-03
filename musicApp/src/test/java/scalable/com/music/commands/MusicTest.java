@@ -260,6 +260,42 @@ public class MusicTest {
         return request;
     }
 
+    public static String ratePlayList(String playlist_id, int rating) {
+        JSONObject body = new JSONObject();
+        body.put("playlist_id", playlist_id);
+        body.put("rating", rating);
+        JSONObject uriParams = new JSONObject();
+        JSONObject token = new JSONObject();
+        token.put("id", "2");
+        JSONObject request = new JSONObject();
+        request.put("body", body);
+        request.put("methodType", "POST");
+        request.put("uriParams", uriParams);
+        request.put("isAuthenticated", true);
+        request.put("tokenPayload", token);
+
+        RatePlaylistCommand ratePlaylistCommand = new RatePlaylistCommand();
+        return TestHelper.execute(ratePlaylistCommand, request);
+    }
+
+    public static String rateMusicTrack(String song_id, int rating) {
+        JSONObject body = new JSONObject();
+        body.put("song_id", song_id);
+        body.put("rating", rating);
+        JSONObject uriParams = new JSONObject();
+        JSONObject token = new JSONObject();
+        token.put("id", "2");
+        JSONObject request = new JSONObject();
+        request.put("body", body);
+        request.put("methodType", "POST");
+        request.put("uriParams", uriParams);
+        request.put("isAuthenticated", true);
+        request.put("tokenPayload", token);
+
+        RateMusicTrackCommand rateMusicTrackCommand = new RateMusicTrackCommand();
+        return TestHelper.execute(rateMusicTrackCommand, request);
+    }
+
     // STREAMING APP TESTS~~~~~~~~~~~~~~~~~~~~
     @Test
     public void createSongAsArtistTest() {
@@ -270,6 +306,21 @@ public class MusicTest {
         assertEquals(200, responseJson.getInt("statusCode"));
         assertEquals(beforeCount + 1, afterCount);
     }
+    @Test
+    public void ratePlaylistTest() {
+
+        String response = ratePlayList(playlist_id, 5);
+        JSONObject responseJson = new JSONObject(response);
+        assertEquals("the new rating is:" + 5, responseJson.getString("msg"));
+    }
+    @Test
+    public void rateMusicTrackTest() {
+
+        String response = rateMusicTrack(song_id, 5);
+        JSONObject responseJson = new JSONObject(response);
+        assertEquals("the new rating is:" + 5, responseJson.getString("msg"));
+    }
+
 
     @Test
     public void createSongAsNonArtistTest() {

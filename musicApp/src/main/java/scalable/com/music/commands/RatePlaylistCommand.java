@@ -13,11 +13,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 public class RatePlaylistCommand extends MusicCommand {
-    @NotBlank(message = "please give a rating!")
-    private int rating;
-
-
-
     @Override
     public String getCommandName() {
         return "RatePlaylist";
@@ -32,8 +27,11 @@ public class RatePlaylistCommand extends MusicCommand {
 
             arango = Arango.getInstance();
 
-            BaseDocument toRead = arango.readDocument("Spotify",
+            BaseDocument toRead = arango.readDocument("spotifyArangoDb",
                     "Playlists", playlistIdentifier);
+            if(toRead == (null)){
+                return Responder.makeMsgResponse("This playlist does not exist");
+            }
             Double oldRating = (Double)(toRead.getAttribute("Rating"));
             int totalRatings = (Integer)(toRead.getAttribute("number_times_rated"));
             ArrayList<Integer> peopleRated = (ArrayList<Integer>)
@@ -49,9 +47,9 @@ public class RatePlaylistCommand extends MusicCommand {
                 toRead.updateAttribute("number_times_rated", newtotalRatings);
                 toRead.updateAttribute("people_rated", peopleRated);
 
-                arango.updateDocument("Spotify", "Playlists", toRead, playlistIdentifier);
+                arango.updateDocument("spotifyArangoDb", "Playlists", toRead, playlistIdentifier);
 
-                return Responder.makeMsgResponse("successfully rated the playlist");
+                return Responder.makeMsgResponse("the new rating is:" + newRating);
 
             }
         }
@@ -70,13 +68,6 @@ public class RatePlaylistCommand extends MusicCommand {
     }
     @Override
     public void validateAttributeTypes() throws ValidationException {
-        try{
-            this.rating = body.getInt("rating");
-        }
-        catch (Exception e){
-            throw new ValidationException("attributes data types are wrong");
-        }
-        this.validateAnnotations();
 
     }
 }
