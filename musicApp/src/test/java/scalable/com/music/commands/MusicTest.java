@@ -248,7 +248,7 @@ public class MusicTest {
         JSONObject token = new JSONObject();
         token.put("id", "1");
         request.put("body", body);
-        request.put("methodType", "POST");
+        request.put("methodType", "GET");
         request.put("uriParams", uriParams);
         request.put("isAuthenticated", true);
         request.put("tokenPayload", token);
@@ -264,7 +264,7 @@ public class MusicTest {
         JSONObject token = new JSONObject();
         token.put("id", "2");
         request.put("body", body);
-        request.put("methodType", "POST");
+        request.put("methodType", "GET");
         request.put("uriParams", uriParams);
         request.put("isAuthenticated", true);
         request.put("tokenPayload", token);
@@ -280,7 +280,7 @@ public class MusicTest {
         JSONObject token = new JSONObject();
         uriParams.put("user_id", "2");
         request.put("body", body);
-        request.put("methodType", "POST");
+        request.put("methodType", "GET");
         request.put("uriParams", uriParams);
         request.put("isAuthenticated", true);
         request.put("tokenPayload", token);
@@ -297,7 +297,7 @@ public class MusicTest {
         uriParams.put("user_id", "1");
         token.put("id", "2");
         request.put("body", body);
-        request.put("methodType", "POST");
+        request.put("methodType", "GET");
         request.put("uriParams", uriParams);
         request.put("isAuthenticated", true);
         request.put("tokenPayload", token);
