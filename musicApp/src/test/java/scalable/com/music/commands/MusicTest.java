@@ -97,7 +97,7 @@ public class MusicTest {
         token.put("isPremium", isPremium);
         JSONObject request = new JSONObject();
         request.put("body", body);
-        request.put("methodType", "GET");
+        request.put("methodType", "POST");
         request.put("uriParams", uriParams);
         request.put("isAuthenticated", true);
         request.put("tokenPayload", token);
@@ -394,10 +394,15 @@ public class MusicTest {
 
     @Test
     public void getSongNumberOfStreamsTest() {
-        String response = getSongNumberOfStreams(song_id);
+
+        String song_response = createSong("Song1", "1,2", "Rock,Pop", "1", true);
+        JSONObject song_responseJson = new JSONObject(song_response);
+        String temp_song_id =(song_responseJson.getJSONObject("data")).get("id")+"";
+
+        String response = getSongNumberOfStreams(temp_song_id);
         JSONObject responseJson = new JSONObject(response);
         BaseDocument songExist = arango.readDocument(DatabaseConstants.DATABASE_NAME,
-                DatabaseConstants.SONGS_COLLECTION, song_id);
+                DatabaseConstants.SONGS_COLLECTION, temp_song_id);
         if (songExist == null) {
             assertEquals(404, responseJson.getInt("statusCode"));
 
@@ -417,12 +422,17 @@ public class MusicTest {
     @Test
     public void getSongTest() {
 
+        String song_response = createSong("Song1", "1,2", "Rock,Pop", "1", true);
+        JSONObject song_responseJson = new JSONObject(song_response);
+        String temp_song_id =(song_responseJson.getJSONObject("data")).get("id")+"";
         BaseDocument song = arango.readDocument(DatabaseConstants.DATABASE_NAME, DatabaseConstants.SONGS_COLLECTION,
-                song_id);
+                temp_song_id);
         int streams_before = Integer.parseInt(song.getAttribute("number_of_streams") + "");
-        String response = getSong(song_id, user_id, true);
-        song = arango.readDocument(DatabaseConstants.DATABASE_NAME, DatabaseConstants.SONGS_COLLECTION, song_id);
+        String response = getSong(temp_song_id, user_id, true);
+        
+        song = arango.readDocument(DatabaseConstants.DATABASE_NAME, DatabaseConstants.SONGS_COLLECTION, temp_song_id);
         int streams_after = Integer.parseInt(song.getAttribute("number_of_streams") + "");
+
         JSONObject responseJson = new JSONObject(response);
         assertEquals(200, responseJson.getInt("statusCode"));
         assertEquals(streams_before + 1, streams_after);
