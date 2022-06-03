@@ -28,7 +28,7 @@ public class ClassManager {
         loadCommandMap();
         
         loadCommandClasses();
-        System.out.println("loading validations");
+        //System.out.println("loading validations");
         loadValidations();
 
        

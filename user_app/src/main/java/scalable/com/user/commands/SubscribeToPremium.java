@@ -2,6 +2,7 @@ package scalable.com.user.commands;
 
 import org.json.JSONObject;
 import scalable.com.exceptions.ValidationException;
+import scalable.com.shared.classes.JWTHandler;
 import scalable.com.shared.classes.PostgresConnection;
 import scalable.com.shared.classes.Responder;
 
@@ -9,6 +10,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 public class SubscribeToPremium extends UserCommand{
@@ -55,7 +58,15 @@ public class SubscribeToPremium extends UserCommand{
 
             PostgresConnection.disconnect(result, preparedStatement, connection);
         }
-        return Responder.makeMsgResponse("Successfully subscribed to premium");
+        Map<String, String> claims = new HashMap<String, String>();
+        claims.put("id", this.tokenPayload.getString("id"));
+        claims.put("isArtist",""+this.tokenPayload.getBoolean("isArtist"));
+        claims.put("isPremium",""+true);
+
+        String token = JWTHandler.generateToken(claims);
+        JSONObject resp=new JSONObject();
+        resp.put("newToken",token);
+        return Responder.makeDataResponse(resp);
     }
 
     @Override

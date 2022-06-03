@@ -49,14 +49,14 @@ public class Login extends UserCommand{
             connection = PostgresConnection.getDataSource().getConnection();
             connection.setAutoCommit(true);
             
-            preparedStatement=connection.prepareStatement("select id,username,first_name,last_name,profile_photo,password,isartist from users where email=?", ResultSet.TYPE_SCROLL_SENSITIVE,
+            preparedStatement=connection.prepareStatement("select id,username,first_name,last_name,profile_photo,password,isartist,ispremium from users where email=?", ResultSet.TYPE_SCROLL_SENSITIVE,
                     ResultSet.CONCUR_UPDATABLE);
            
             preparedStatement.setString(1,this.email);
             
-            System.out.println("before executing");
+           // System.out.println("before executing");
             result=preparedStatement.executeQuery();
-            System.out.println("after executing");
+            //System.out.println("after executing");
             //System.out.println(result.getFetchSize());
                result.last();
             if(result.getRow()>=1){
@@ -67,12 +67,14 @@ public class Login extends UserCommand{
                        first_name = result.getString("first_name");
                        image_url = result.getString("profile_photo");
                        isArtist=result.getBoolean("isartist");
-
+                       boolean isPremium= result.getBoolean("ispremium");
                        id = result.getString("id");
 
                        Map<String, String> claims = new HashMap<String, String>();
                        claims.put("id", id);
                        claims.put("isArtist",""+isArtist);
+                       claims.put("isPremium",""+isPremium);
+                       claims.put("username",username);
 
                        String token = JWTHandler.generateToken(claims);
 
@@ -80,6 +82,7 @@ public class Login extends UserCommand{
                        response.put("last_name", last_name);
                        response.put("first_name", first_name);
                        response.put("id", id);
+                       response.put("isPremium",isPremium);
                        if (image_url != null) response.put("image_url", image_url);
                        response.put("token", token);
 

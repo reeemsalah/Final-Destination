@@ -68,7 +68,7 @@ public class RequestHandler extends SimpleChannelInboundHandler<HttpObject> {
         Object tokenPayload=authenticationParams.has(JWTHandler.TOKEN_PAYLOAD)?authenticationParams.get(JWTHandler.TOKEN_PAYLOAD):new JSONObject();
         returnObject.put(JWTHandler.TOKEN_PAYLOAD,tokenPayload);
         returnObject.put(JWTHandler.IS_AUTHENTICATED,authenticationParams.get(JWTHandler.IS_AUTHENTICATED));
-        System.out.println(returnObject.toString()+"mkfmd");
+        //System.out.println(returnObject.toString()+"mkfmd");
         return returnObject ;
     }
     private String getQueueName(){
@@ -104,13 +104,13 @@ public class RequestHandler extends SimpleChannelInboundHandler<HttpObject> {
 
 
         if (requestDecoder != null) {
-            System.out.println(6);
+           // System.out.println(6);
             JSONObject httpData = readHttpData();
-            System.out.println(7);
+            //System.out.println(7);
             //System.out.println(httpData.getString("email")+"httpdataaaa");
             httpData.keySet().forEach(key -> request.put(key, httpData.getJSONObject(key)));
         }
-        System.out.println(request);
+        //System.out.println(request);
         return request;
     }
 
@@ -123,9 +123,9 @@ public class RequestHandler extends SimpleChannelInboundHandler<HttpObject> {
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, HttpObject msg) {
-        System.out.println("in channel read request handler");
+        //System.out.println("in channel read request handler");
         if (msg instanceof HttpRequest) {
-            System.out.println("here");
+            //System.out.println("here");
             req = (HttpRequest) msg;
             uri = req.uri();
 
@@ -144,7 +144,7 @@ public class RequestHandler extends SimpleChannelInboundHandler<HttpObject> {
             }
         }
         if (msg instanceof HttpContent && !isFormData) {
-            System.out.println(1);
+           // System.out.println(1);
             HttpContent content = (HttpContent) msg;
             if (isEmptyHttpContent(content))
                 return;
@@ -161,22 +161,22 @@ public class RequestHandler extends SimpleChannelInboundHandler<HttpObject> {
         }
        
         if (msg instanceof FullHttpRequest) {
-            System.out.println(2);
+            //System.out.println(2);
             if (!methodType.equals("GET") && isFormData) {
-                System.out.println(3);
+                //System.out.println(3);
                 requestDecoder = new HttpPostRequestDecoder((FullHttpRequest) msg);
 
                 requestDecoder.setDiscardThreshold(0);
             }
         }
         if (msg instanceof LastHttpContent) {
-            System.out.println(4);
+            //System.out.println(4);
             if (queueName != null && Server.apps.contains(queueName.toLowerCase())) {
                 ctx.channel().attr(Server.QUEUE_KEY).set(queueName);
                 try {
-                    System.out.println(5);
+                    //System.out.println(5);
                     JSONObject request = packRequest();
-                    System.out.println(request);
+                   // System.out.println(request);
                     ByteBuf content = Unpooled.copiedBuffer(request.toString(), CharsetUtil.UTF_8);
                     ctx.fireChannelRead(content.copy());
                 } catch (IOException | JSONException e) {
@@ -216,7 +216,7 @@ public class RequestHandler extends SimpleChannelInboundHandler<HttpObject> {
             if (httpData.getHttpDataType() == HttpDataType.Attribute) {
 
                 Attribute attribute = (Attribute) httpData;
-                System.out.println(attribute.getName()+"readHTTPDATA");
+                //System.out.println(attribute.getName()+"readHTTPDATA");
                 body.put(attribute.getName(),attribute.getValue());
                 //data.put(attribute.getName(), new JSONObject(attribute.getValue()));
             } else if (httpData.getHttpDataType() == HttpDataType.FileUpload) {
