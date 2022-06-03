@@ -157,25 +157,39 @@ public class MusicTest {
         return TestHelper.execute(searchSong, request);
     }
 
-    public static JSONObject RequestSimulatorCreatePlaylist(String playlist_name) {
+    public static String RequestSimulatorCreatePlaylist(String playlist_name) {
         JSONObject body = new JSONObject();
+        JSONObject uriParams = new JSONObject();
+        JSONObject request = new JSONObject();
         JSONObject token = new JSONObject();
         token.put("id", "2");
         body.put("name", playlist_name);
-        JSONObject request = makeRequest(body, "POST", new JSONObject(), true, token);
-        System.out.println("Request " + request.toString());
-        return new JSONObject(new CreatePlaylistCommand().execute(request));
+        request.put("body", body);
+        request.put("methodType", "POST");
+        request.put("uriParams", uriParams);
+        request.put("isAuthenticated", true);
+        request.put("tokenPayload", token);
+
+        CreatePlaylistCommand createPlaylistCommand = new CreatePlaylistCommand();
+        return TestHelper.execute(createPlaylistCommand,request);
     }
 
     // MUSIC APP TESTS~~~~~~~~~~~~~~~~~~~~
-    public static JSONObject RequestSimulatorDeletePlaylist(String created_playlist1) {
+    public static String  RequestSimulatorDeletePlaylist(String created_playlist1) {
         JSONObject body = new JSONObject();
+        JSONObject uriParams = new JSONObject();
+        JSONObject request = new JSONObject();
         JSONObject token = new JSONObject();
         token.put("id", "2");
         body.put("id", created_playlist1);
-        JSONObject request = makeRequest(body, "POST", new JSONObject(), true, token);
-        System.out.println("Request " + request.toString());
-        return new JSONObject(new DeletePlaylistCommand().execute(request));
+        request.put("body", body);
+        request.put("methodType", "POST");
+        request.put("uriParams", uriParams);
+        request.put("isAuthenticated", true);
+        request.put("tokenPayload", token);
+
+        DeletePlaylistCommand deletePlaylistCommand = new DeletePlaylistCommand();
+        return TestHelper.execute(deletePlaylistCommand,request);
     }
 
     public static JSONObject RequestSimulatorFavoriteAlbum(String album_id) {
@@ -427,27 +441,32 @@ public class MusicTest {
 
     @Test
     public void CreatePlaylist() {
-        JSONObject response = RequestSimulatorCreatePlaylist(playlist_name);
+        String response = RequestSimulatorCreatePlaylist(playlist_name);
         System.out.println(response);
-        assert response.getInt("statusCode") == 200;
+        assert new JSONObject(response).getInt("statusCode") == 200;
     }
 
     @Test
     public void DeletePlaylist() {
-        JSONObject playlist = RequestSimulatorCreatePlaylist(playlist_name);
-        JSONObject data = playlist.getJSONObject("data");
+        String playlist = RequestSimulatorCreatePlaylist(playlist_name);
+        System.out.println(playlist);
+
+        JSONObject response_1 =new JSONObject(playlist);
+        JSONObject data = response_1.getJSONObject("data");
+        System.out.println(data);
         String key = data.getString("_key");
         created_playlist1 = key;
-        JSONObject response = RequestSimulatorDeletePlaylist(created_playlist1);
+        String response = RequestSimulatorDeletePlaylist(created_playlist1);
         System.out.println(response);
-        assert response.getInt("statusCode") == 200;
-        assert response.getString("msg").equals("Deleted Playlist");
+        assert new JSONObject(response).getInt("statusCode") == 200;
+        assert new JSONObject(response).getString("msg").equals("Deleted Playlist");
     }
 
     @Test
     public void PlaylistVisibility() {
-        JSONObject playlist = RequestSimulatorCreatePlaylist(playlist_name);
-        JSONObject data = playlist.getJSONObject("data");
+        String playlist = RequestSimulatorCreatePlaylist(playlist_name);
+        JSONObject data = new JSONObject(playlist);
+//        System.out.println(data);
         String key = data.getString("_key");
         created_playlist1 = key;
         JSONObject response = RequestSimulatorPlaylistVisibility(created_playlist1);
