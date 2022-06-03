@@ -119,7 +119,7 @@ public class HttpUploadServerHandler extends SimpleChannelInboundHandler<HttpObj
                 readHttpDataChunkByChunk();
                 // example of reading only if at the end
                 if (chunk instanceof LastHttpContent) {
-                    System.out.println("here1231231231");
+                    //System.out.println("here1231231231");
                     //writeResponse(ctx.channel());
 
                     reset();

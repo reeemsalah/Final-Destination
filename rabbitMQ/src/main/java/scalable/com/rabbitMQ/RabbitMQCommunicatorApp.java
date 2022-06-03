@@ -44,7 +44,7 @@ public class RabbitMQCommunicatorApp extends RabbitMQCommunicator {
         // creating a callback which would invoke the required command specified by the
         // JSON request message
         // adding the corrID of the response, which is the corrID of the request
-        System.out.println("hereeee");
+        //System.out.println("hereeee");
              appHook.send(consumerTag,delivery);
         
     }

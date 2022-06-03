@@ -25,7 +25,7 @@ public abstract class  CommandVerifier extends Command {
 
     @Override
     public final String execute(JSONObject request) {
-        System.out.println("executing ..."+this.getCommandName());
+        //System.out.println("executing ..."+this.getCommandName());
         origRequest = request;
         //setting this objects uriParams
         uriParams = request.getJSONObject("uriParams");
@@ -67,14 +67,14 @@ public abstract class  CommandVerifier extends Command {
 
    
     public void validateAttributesNumber() throws IOException, ValidationException {
-        System.out.println("validating");
+        //System.out.println("validating");
         try {
            if(this.validationProperties==null){
                throw new NullPointerException();
            }
              Properties prop=this.validationProperties;
             for (Map.Entry<Object, Object> e : prop.entrySet()) {
-                System.out.println("\"" +e.getValue()+"\"");
+                
                 if (!body.has( (String) e.getValue() )) {
 
                     throw new ValidationException("Attribute: "+e.toString()+" is missing");

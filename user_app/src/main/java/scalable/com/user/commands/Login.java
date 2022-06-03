@@ -54,9 +54,9 @@ public class Login extends UserCommand{
            
             preparedStatement.setString(1,this.email);
             
-            System.out.println("before executing");
+           // System.out.println("before executing");
             result=preparedStatement.executeQuery();
-            System.out.println("after executing");
+            //System.out.println("after executing");
             //System.out.println(result.getFetchSize());
                result.last();
             if(result.getRow()>=1){
