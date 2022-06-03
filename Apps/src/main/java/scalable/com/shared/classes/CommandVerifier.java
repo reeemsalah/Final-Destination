@@ -62,7 +62,7 @@ public abstract class  CommandVerifier extends Command {
         return execute();
     }
     
-    public abstract String execute() throws Exception;
+    public abstract String execute() ;
    // public abstract void validateAttributesNumber() throws IOException, ValidationException;
 
    

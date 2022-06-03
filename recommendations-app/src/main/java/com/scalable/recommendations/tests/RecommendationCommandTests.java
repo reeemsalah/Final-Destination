@@ -184,6 +184,21 @@ public class RecommendationCommandTests {
 
         return new JSONObject(TestHelper.execute(getRecommendedMusicTracks,request));
     }
+    public static boolean asserJSONARRAY(JSONArray expected, JSONArray actual){
+        if(expected.length()!= actual.length())
+            return false;
+        for(int i=0;i<expected.length();i++){
+            boolean found = false;
+            for(int j=0;j<actual.length();j++){
+                if(expected.get(i).equals(actual.get(j)))
+                    found = true;
+            }
+            if(!found)
+                return false;
+        }
+        return true;
+    }
+
 
     public static JSONObject RequestSimulatorArtist(String user_id){
         JSONObject body = new JSONObject();
@@ -215,7 +230,7 @@ public class RecommendationCommandTests {
         JSONArray expected = new JSONArray();
         expected.put("4");
         ObjectMapper mapper = new ObjectMapper();
-        assertEquals(mapper.readTree(String.valueOf(actual)), mapper.readTree(String.valueOf(expected)));
+        asserJSONARRAY(actual, expected);
 
     }
     @Test
@@ -230,7 +245,7 @@ public class RecommendationCommandTests {
         expected.put("3");
         expected.put("5");
         ObjectMapper mapper = new ObjectMapper();
-        assertEquals(mapper.readTree(String.valueOf(actual)), mapper.readTree(String.valueOf(expected)));
+        asserJSONARRAY(actual,expected);
         
     }
     @Test
@@ -244,7 +259,7 @@ public class RecommendationCommandTests {
         expected.put("2");
         expected.put("4");
         ObjectMapper mapper = new ObjectMapper();
-        assertEquals(mapper.readTree(String.valueOf(actual)), mapper.readTree(String.valueOf(expected)));
+        asserJSONARRAY(actual, expected);
 
     }
     @Test
@@ -258,7 +273,7 @@ public class RecommendationCommandTests {
         expected.put("1");
         expected.put("4");
         ObjectMapper mapper = new ObjectMapper();
-        assertEquals(mapper.readTree(String.valueOf(actual)), mapper.readTree(String.valueOf(expected)));
+        asserJSONARRAY(actual, expected);
 
     }
     @Test
@@ -272,7 +287,7 @@ public class RecommendationCommandTests {
         expected.put("5");
         expected.put("3");
         ObjectMapper mapper = new ObjectMapper();
-        assertEquals(mapper.readTree(String.valueOf(actual)), mapper.readTree(String.valueOf(expected)));
+        asserJSONARRAY(actual, expected);
 
     }
     @Test
@@ -284,7 +299,7 @@ public class RecommendationCommandTests {
         JSONArray actual = data.getJSONArray("recommended_song_id");
         JSONArray expected = new JSONArray();
         ObjectMapper mapper = new ObjectMapper();
-        assertEquals(mapper.readTree(String.valueOf(actual)), mapper.readTree(String.valueOf(expected)));
+        asserJSONARRAY(actual, expected);
 
     }
 
