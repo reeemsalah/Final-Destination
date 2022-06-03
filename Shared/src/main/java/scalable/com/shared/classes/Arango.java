@@ -365,7 +365,7 @@ public class Arango implements PooledDatabaseClient {
 
     public ArangoCursor<BaseDocument> filterEdgeCollectionInbound(String DB_Name, String collectionName, String toNodeId) {
         String query = """
-                FOR node IN 1..1 INBOUND @fromNodeId @collectionName
+                FOR node IN 1..1 createDocumentINBOUND @fromNodeId @collectionName
                 RETURN node
                 """;
 
