@@ -97,7 +97,7 @@ public class MusicTest {
         token.put("isPremium", isPremium);
         JSONObject request = new JSONObject();
         request.put("body", body);
-        request.put("methodType", "POST");
+        request.put("methodType", "GET");
         request.put("uriParams", uriParams);
         request.put("isAuthenticated", true);
         request.put("tokenPayload", token);
