@@ -1,10 +1,6 @@
-package com.scalable.recommendations.tests;
+package tests;
 
-import com.arangodb.ArangoCursor;
 import com.arangodb.entity.BaseDocument;
-import com.arangodb.entity.BaseEdgeDocument;
-import com.arangodb.velocypack.VPackSlice;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scalable.recommendations.RecommendationsApp;
@@ -14,11 +10,11 @@ import com.scalable.recommendations.constants.DatabaseConstants;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import scalable.com.shared.App;
 import scalable.com.shared.classes.Arango;
-import scalable.com.shared.testsHelper.TestHelper;
+import shared.testsHelper.TestHelper;
 
 import java.io.IOException;
 import java.util.*;
@@ -205,6 +201,20 @@ public class RecommendationCommandTests {
         request.put("authenticationParams", authenticationParams);
         return request;
     }
+    public static boolean assertJSONArrays(JSONArray expected,JSONArray actual){
+        if(expected.length()!=actual.length())
+            return false;
+        for(int i=0;i<expected.length();i++){
+            boolean found = false;
+            for(int j=0;j<actual.length();j++){
+                if(expected.get(i).equals(actual.get(j)))
+                    found =true;
+            }
+            if(!found)
+                return false;
+        }
+        return true;
+    }
     @Test
     public void T01_GetRecommendedArtists() throws JsonProcessingException {
 
@@ -215,7 +225,7 @@ public class RecommendationCommandTests {
         JSONArray expected = new JSONArray();
         expected.put("4");
         ObjectMapper mapper = new ObjectMapper();
-        assertEquals(mapper.readTree(String.valueOf(actual)), mapper.readTree(String.valueOf(expected)));
+        assert assertJSONArrays(expected,actual);
 
     }
     @Test
@@ -227,10 +237,10 @@ public class RecommendationCommandTests {
         JSONArray actual = data.getJSONArray("recommended_song_id");
         JSONArray expected = new JSONArray();
         expected.put("4");
-        expected.put("3");
         expected.put("5");
+        expected.put("3");
         ObjectMapper mapper = new ObjectMapper();
-        assertEquals(mapper.readTree(String.valueOf(actual)), mapper.readTree(String.valueOf(expected)));
+        assert assertJSONArrays(expected,actual);
         
     }
     @Test
@@ -244,7 +254,7 @@ public class RecommendationCommandTests {
         expected.put("2");
         expected.put("4");
         ObjectMapper mapper = new ObjectMapper();
-        assertEquals(mapper.readTree(String.valueOf(actual)), mapper.readTree(String.valueOf(expected)));
+        assert assertJSONArrays(expected,actual);
 
     }
     @Test
@@ -257,8 +267,10 @@ public class RecommendationCommandTests {
         JSONArray expected = new JSONArray();
         expected.put("1");
         expected.put("4");
+
+
         ObjectMapper mapper = new ObjectMapper();
-        assertEquals(mapper.readTree(String.valueOf(actual)), mapper.readTree(String.valueOf(expected)));
+        assert assertJSONArrays(expected,actual);
 
     }
     @Test
@@ -272,7 +284,7 @@ public class RecommendationCommandTests {
         expected.put("5");
         expected.put("3");
         ObjectMapper mapper = new ObjectMapper();
-        assertEquals(mapper.readTree(String.valueOf(actual)), mapper.readTree(String.valueOf(expected)));
+        assert assertJSONArrays(expected,actual);
 
     }
     @Test
@@ -284,7 +296,7 @@ public class RecommendationCommandTests {
         JSONArray actual = data.getJSONArray("recommended_song_id");
         JSONArray expected = new JSONArray();
         ObjectMapper mapper = new ObjectMapper();
-        assertEquals(mapper.readTree(String.valueOf(actual)), mapper.readTree(String.valueOf(expected)));
+        assert assertJSONArrays(expected,actual);
 
     }
 

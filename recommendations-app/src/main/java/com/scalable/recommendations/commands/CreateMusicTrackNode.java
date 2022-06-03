@@ -1,10 +1,11 @@
 package com.scalable.recommendations.commands;
 
 import com.arangodb.entity.BaseDocument;
+import com.exceptions.ValidationException;
 import com.scalable.recommendations.constants.DatabaseConstants;
-import scalable.com.exceptions.ValidationException;
-import scalable.com.shared.classes.Arango;
-import scalable.com.shared.classes.Responder;
+import com.shared.classes.Arango;
+import com.shared.classes.Responder;
+
 
 public class CreateMusicTrackNode extends  RecommendationsCommand {
     private String track_id;

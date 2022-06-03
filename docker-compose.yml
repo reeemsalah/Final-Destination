@@ -1,0 +1,23 @@
+version: "3.9"
+services:
+  recommendations-app:
+    build: recommendations-app
+    container_name: 'recommendations-app'
+    volumes:
+      - ./recommendations-app:/var/www/recommendations-app/
+    depends_on:
+      - rmq
+      - arangodb
+  rmq:
+    image: rabbitmq
+    container_name: 'rabbitmq'
+    ports:
+      - 5672:5672
+      - 15672:15672
+  arangodb:
+    image: arangodb
+    container_name: 'arangodb'
+    ports:
+      - 8529:8529
+    environment:
+      ARANGO_NO_AUTH: 1
