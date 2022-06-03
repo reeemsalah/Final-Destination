@@ -11,7 +11,6 @@ import static org.junit.Assert.fail;
 import org.json.JSONObject;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import scalable.com.shared.testsHelper.TestHelper;
 
 public class NotificationsTest {
 
@@ -19,10 +18,9 @@ public class NotificationsTest {
     @BeforeClass
     public static void setUp() {
         try {
-            NotificationsApp app= new NotificationsApp();
-            app.start();
             arango = Arango.getConnectedInstance();
-            TestHelper.appBeingTested=app;
+            NotificationsApp app= new NotificationsApp();
+            app.dbInit();
         } catch (Exception e) {
             fail(e.getMessage());
         }
@@ -47,8 +45,7 @@ public class NotificationsTest {
         request.put("tokenPayload", token);
 
         SendNotification sendNotification = new SendNotification();
-
-        return TestHelper.execute(sendNotification,request);
+        return sendNotification.execute(request);
     }
 
     @Test
