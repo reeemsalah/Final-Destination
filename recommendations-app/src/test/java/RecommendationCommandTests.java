@@ -1,10 +1,4 @@
-package com.scalable.recommendations.tests;
-
-import com.arangodb.ArangoCursor;
 import com.arangodb.entity.BaseDocument;
-import com.arangodb.entity.BaseEdgeDocument;
-import com.arangodb.velocypack.VPackSlice;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scalable.recommendations.RecommendationsApp;
@@ -16,15 +10,15 @@ import org.json.JSONObject;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import scalable.com.shared.App;
 import scalable.com.shared.classes.Arango;
 import scalable.com.shared.testsHelper.TestHelper;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.TimeoutException;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 public class RecommendationCommandTests {
     static String[] users;

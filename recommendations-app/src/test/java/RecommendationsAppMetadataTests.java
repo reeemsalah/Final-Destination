@@ -1,5 +1,3 @@
-package com.scalable.recommendations.tests;
-
 import com.scalable.recommendations.commands.CreateMusicEdge;
 import com.scalable.recommendations.commands.CreateMusicTrackNode;
 import com.scalable.recommendations.commands.CreateUserEdge;

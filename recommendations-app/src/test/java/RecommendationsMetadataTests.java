@@ -1,14 +1,10 @@
-package com.scalable.recommendations.tests;
-
-
 import com.scalable.recommendations.RecommendationsApp;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import scalable.com.shared.classes.Arango;
-
-import static org.junit.Assert.*;
 import com.scalable.recommendations.constants.DatabaseConstants;
+import org.junit.BeforeClass;
+import scalable.com.shared.classes.Arango;
 import scalable.com.shared.testsHelper.TestHelper;
+
+import static org.junit.Assert.fail;
 
 
 public abstract class RecommendationsMetadataTests {
