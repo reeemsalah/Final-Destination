@@ -24,9 +24,14 @@ public class ReadChat extends  ChatAppCommand{
     }
 
     @Override
-    public String execute() throws Exception {
+    public String execute()  {
         System.out.println("here is the past chat history in this server : ");
-        ArrayList<QueryDocumentSnapshot> arr = FireStoreInstance.retrieveAllDocuments("MessagesNew");
+        ArrayList<QueryDocumentSnapshot> arr = null;
+        try {
+            arr = FireStoreInstance.retrieveAllDocuments("MessagesNew");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         ArrayList<HashMap<String,Object>> records = new ArrayList<>();
         for (int i = 0; i < arr.size(); i++) {
             QueryDocumentSnapshot document = arr.get(i);
