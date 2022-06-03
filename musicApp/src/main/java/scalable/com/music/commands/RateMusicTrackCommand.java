@@ -33,7 +33,7 @@ public class RateMusicTrackCommand extends MusicCommand {
             if(toRead == (null)){
                 return Responder.makeMsgResponse("This song does not exist");
             }
-            Double oldRating = (Double)(toRead.getAttribute("Rating"));
+            Double oldRating = (Double)(toRead.getAttribute("rating"));
             int totalRatings = (Integer)(toRead.getAttribute("number_times_rated"));
             ArrayList<Integer> peopleRated = (ArrayList<Integer>)
                     (toRead.getAttribute("people_rated"));

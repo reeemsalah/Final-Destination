@@ -368,17 +368,56 @@ public class MusicTest {
     }
     @Test
     public void ratePlaylistTest() {
+        String playlist = RequestSimulatorCreatePlaylist(playlist_name);
+        System.out.println(playlist);
 
-        String response = ratePlayList(playlist_id, 5);
+        JSONObject response_1 =new JSONObject(playlist);
+        JSONObject data = response_1.getJSONObject("data");
+        System.out.println(data);
+        String key = data.getString("_key");
+        created_playlist1 = key;
+
+        String response = ratePlayList(created_playlist1, 5);
         JSONObject responseJson = new JSONObject(response);
-        assertEquals("the new rating is:" + 5, responseJson.getString("msg"));
+        assertEquals("the new rating is:" + 5.0, responseJson.getString("msg"));
+    }
+    @Test
+    public void ratePlaylistAlreadyRatedTest() {
+
+        String playlist = RequestSimulatorCreatePlaylist(playlist_name);
+        System.out.println(playlist);
+
+        JSONObject response_1 =new JSONObject(playlist);
+        JSONObject data = response_1.getJSONObject("data");
+        System.out.println(data);
+        String key = data.getString("_key");
+        created_playlist1 = key;
+
+        String response = ratePlayList(created_playlist1, 5);
+        response = ratePlayList(created_playlist1, 5);
+        JSONObject responseJson = new JSONObject(response);
+        assertEquals("you have already rated this playlist", responseJson.getString("msg"));
     }
     @Test
     public void rateMusicTrackTest() {
-
-        String response = rateMusicTrack(song_id, 5);
+        String song_response = createSong("Song1", "1,2", "Rock,Pop", "1", true);
+        JSONObject song_responseJson = new JSONObject(song_response);
+        String temp_song_id =(song_responseJson.getJSONObject("data")).get("id")+"";
+        System.out.println(temp_song_id);
+        String response = rateMusicTrack(temp_song_id, 5);
         JSONObject responseJson = new JSONObject(response);
-        assertEquals("the new rating is:" + 5, responseJson.getString("msg"));
+        assertEquals("the new rating is:" + 5.0, responseJson.getString("msg"));
+    }
+    @Test
+    public void rateMusicTrackAlreadyRatedTest() {
+        String song_response = createSong("Song1", "1,2", "Rock,Pop", "1", true);
+        JSONObject song_responseJson = new JSONObject(song_response);
+        String temp_song_id =(song_responseJson.getJSONObject("data")).get("id")+"";
+
+        String response = rateMusicTrack(temp_song_id, 5);
+        response = rateMusicTrack(temp_song_id, 5);
+        JSONObject responseJson = new JSONObject(response);
+        assertEquals("you have already rated this song", responseJson.getString("msg"));
     }
 
 
