@@ -25,7 +25,7 @@ public class CreateChatRoom extends ChatAppCommand{
     }
 
     @Override
-    public String execute() throws Exception {
+    public String execute() {
         int id=Integer.parseInt(this.tokenPayload.getString("id"));
 
         HashMap<String, Object> data = new HashMap<>();
@@ -34,10 +34,11 @@ public class CreateChatRoom extends ChatAppCommand{
         data.put("creationDate",timestamp2.toString() );
         data.put("roomName", this.roomName);
         data.put("user" , id);
-        FireStoreInstance.addDocument("ChatRooms" , this.roomName+"-"+id , data);
-
-
-
+        try {
+            FireStoreInstance.addDocument("ChatRooms" , this.roomName+"-"+id , data);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
         return Responder.makeMsgResponse("successfully created room");

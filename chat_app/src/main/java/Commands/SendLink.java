@@ -25,7 +25,7 @@ import java.util.UUID;
         }
 
         @Override
-        public String execute() throws Exception {
+        public String execute()  {
             int id=Integer.parseInt(this.tokenPayload.getString("id"));
 
 
@@ -39,7 +39,11 @@ import java.util.UUID;
             data.put("user" , id);
             String uniqueID = UUID.randomUUID().toString();
 
-            FireStoreInstance.addDocument("MessagesNew" , uniqueID+ timestamp2.toString(),data);
+            try {
+                FireStoreInstance.addDocument("MessagesNew" , uniqueID+ timestamp2.toString(),data);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             return Responder.makeMsgResponse("Link Shared Successfully");
         }
 
