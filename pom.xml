@@ -15,7 +15,8 @@
     <module>Shared</module>
     <module>recommendations-app</module>
     <module>user_app</module>
-    
+    <module>chat_app</module>
+
     <module>notifications-app</module>
     <module>musicApp</module>
     <module>Test_App</module>
