@@ -192,72 +192,118 @@ public class MusicTest {
         return TestHelper.execute(deletePlaylistCommand,request);
     }
 
-    public static JSONObject RequestSimulatorFavoriteAlbum(String album_id) {
+    public static String RequestSimulatorFavoriteAlbum(String album_id) {
         JSONObject body = new JSONObject();
+        JSONObject uriParams = new JSONObject();
+        JSONObject request = new JSONObject();
         JSONObject token = new JSONObject();
         token.put("id", "2");
         body.put("album_id", album_id);
-        JSONObject request = makeRequest(body, "POST", new JSONObject(), true, token);
+        request.put("body", body);
+        request.put("methodType", "POST");
+        request.put("uriParams", uriParams);
+        request.put("isAuthenticated", true);
+        request.put("tokenPayload", token);
         System.out.println("Request " + request.toString());
-        return new JSONObject(new FavoriteAlbumCommand().execute(request));
-    }
+        FavoriteAlbumCommand favoriteAlbumCommand = new FavoriteAlbumCommand();
+        return TestHelper.execute(favoriteAlbumCommand,request);    }
 
-    public static JSONObject RequestSimulatorFavoriteTrack(String track_id) {
+    public static String RequestSimulatorFavoriteTrack(String track_id) {
         JSONObject body = new JSONObject();
+        JSONObject uriParams = new JSONObject();
+        JSONObject request = new JSONObject();
         JSONObject token = new JSONObject();
         token.put("id", "1");
         body.put("track_id", track_id);
-        JSONObject request = makeRequest(body, "POST", new JSONObject(), true, token);
+        request.put("body", body);
+        request.put("methodType", "POST");
+        request.put("uriParams", uriParams);
+        request.put("isAuthenticated", true);
+        request.put("tokenPayload", token);
         System.out.println("Request " + request.toString());
-        return new JSONObject(new FavoriteTrackCommand().execute(request));
+        FavoriteTrackCommand favoriteTrackCommand = new FavoriteTrackCommand();
+        return TestHelper.execute(favoriteTrackCommand,request);
     }
 
-    public static JSONObject RequestSimulatorPlaylistVisibility(String created_playlist2) {
+    public static String RequestSimulatorPlaylistVisibility(String created_playlist2) {
         JSONObject body = new JSONObject();
+        JSONObject uriParams = new JSONObject();
+        JSONObject request = new JSONObject();
         JSONObject token = new JSONObject();
         body.put("id", created_playlist2);
-        JSONObject request = makeRequest(body, "POST", new JSONObject(), true, token);
+        request.put("body", body);
+        request.put("methodType", "POST");
+        request.put("uriParams", uriParams);
+        request.put("isAuthenticated", true);
+        request.put("tokenPayload", token);
         System.out.println("Request " + request.toString());
-        return new JSONObject(new PlaylistVisibilityCommand().execute(request));
+        PlaylistVisibilityCommand playlistVisibilityCommand = new PlaylistVisibilityCommand();
+        return TestHelper.execute(playlistVisibilityCommand,request);
     }
 
-    public static JSONObject RequestSimulatorViewFavoriteTracks() {
-        JSONObject token = new JSONObject();
-        JSONObject body = new JSONObject();
-        token.put("id", "1");
-        JSONObject request = makeRequest(body, "GET", new JSONObject(), true, token);
-        System.out.println("Request " + request.toString());
-        return new JSONObject(new ViewFavoriteTracksCommand().execute(request));
-    }
-
-    public static JSONObject RequestSimulatorViewFavoriteAlbums() {
-        JSONObject token = new JSONObject();
-        JSONObject body = new JSONObject();
-        token.put("id", "2");
-        JSONObject request = makeRequest(body, "GET", new JSONObject(), true, token);
-        System.out.println("Request " + request.toString());
-        return new JSONObject(new ViewFavoriteAlbumsCommand().execute(request));
-    }
-
-    public static JSONObject RequestSimulatorFavoriteAlbumsOfOthers() {
+    public static String RequestSimulatorViewFavoriteTracks() {
         JSONObject body = new JSONObject();
         JSONObject uriParams = new JSONObject();
+        JSONObject request = new JSONObject();
+        JSONObject token = new JSONObject();
+        token.put("id", "1");
+        request.put("body", body);
+        request.put("methodType", "POST");
+        request.put("uriParams", uriParams);
+        request.put("isAuthenticated", true);
+        request.put("tokenPayload", token);
+        System.out.println("Request " + request.toString());
+        ViewFavoriteTracksCommand viewFavoriteTracks = new ViewFavoriteTracksCommand();
+        return TestHelper.execute(viewFavoriteTracks,request);
+    }
+
+    public static String RequestSimulatorViewFavoriteAlbums() {
+        JSONObject body = new JSONObject();
+        JSONObject uriParams = new JSONObject();
+        JSONObject request = new JSONObject();
+        JSONObject token = new JSONObject();
+        token.put("id", "2");
+        request.put("body", body);
+        request.put("methodType", "POST");
+        request.put("uriParams", uriParams);
+        request.put("isAuthenticated", true);
+        request.put("tokenPayload", token);
+        System.out.println("Request " + request.toString());
+        ViewFavoriteAlbumsCommand viewFavoriteAlbums = new ViewFavoriteAlbumsCommand();
+        return TestHelper.execute(viewFavoriteAlbums,request);
+    }
+
+    public static String RequestSimulatorFavoriteAlbumsOfOthers() {
+        JSONObject body = new JSONObject();
+        JSONObject uriParams = new JSONObject();
+        JSONObject request = new JSONObject();
         JSONObject token = new JSONObject();
         uriParams.put("user_id", "2");
-        JSONObject request = makeRequest(body, "GET", uriParams, true, token);
+        request.put("body", body);
+        request.put("methodType", "POST");
+        request.put("uriParams", uriParams);
+        request.put("isAuthenticated", true);
+        request.put("tokenPayload", token);
         System.out.println("Request " + request.toString());
-        return new JSONObject(new FavoriteAlbumsOfOthersCommand().execute(request));
+        FavoriteAlbumsOfOthersCommand favoriteAlbumsOfOthers = new FavoriteAlbumsOfOthersCommand();
+        return TestHelper.execute(favoriteAlbumsOfOthers,request);
     }
 
-    public static JSONObject RequestSimulatorFavoriteTracksOfOthers() {
-        JSONObject uriParams = new JSONObject();
-        JSONObject token = new JSONObject();
+    public static String RequestSimulatorFavoriteTracksOfOthers() {
         JSONObject body = new JSONObject();
+        JSONObject uriParams = new JSONObject();
+        JSONObject request = new JSONObject();
+        JSONObject token = new JSONObject();
         uriParams.put("user_id", "1");
         token.put("id", "2");
-        JSONObject request = makeRequest(body, "GET", uriParams, true, token);
+        request.put("body", body);
+        request.put("methodType", "POST");
+        request.put("uriParams", uriParams);
+        request.put("isAuthenticated", true);
+        request.put("tokenPayload", token);
         System.out.println("Request " + request.toString());
-        return new JSONObject(new FavoriteTracksOfOthersCommand().execute(request));
+        FavoriteTracksOfOthersCommand favoriteTracksOfOthers = new FavoriteTracksOfOthersCommand();
+        return TestHelper.execute(favoriteTracksOfOthers,request);
     }
 
     public static JSONObject makeRequest(JSONObject body, String methodType, JSONObject uriParams,
@@ -392,7 +438,9 @@ public class MusicTest {
     // MUSIC APP TESTS~~~~~~~~~~~~~~~~~~~~
     @Test
     public void FavoriteTrack() {
-        JSONObject response = RequestSimulatorFavoriteTrack(track_id);
+        String Track = RequestSimulatorFavoriteTrack(track_id);
+        JSONObject response = new JSONObject(Track);
+
         System.out.println(response);
         assert response.getInt("statusCode") == 200;
         assert response.getString("msg").equals("Added Track to Favorites");
@@ -400,7 +448,9 @@ public class MusicTest {
 
     @Test
     public void FavoriteTracksOfOthers() {
-        JSONObject response = RequestSimulatorFavoriteTracksOfOthers();
+        String Tracks = RequestSimulatorFavoriteTracksOfOthers();
+        JSONObject response = new JSONObject(Tracks);
+
         JSONObject data = new JSONObject();
         JSONObject correct = new JSONObject();
         ArrayList<String> newdata = new ArrayList<>();
@@ -417,7 +467,9 @@ public class MusicTest {
 
     @Test
     public void FavoriteAlbum() {
-        JSONObject response = RequestSimulatorFavoriteAlbum(album_id);
+        String Album = RequestSimulatorFavoriteAlbum(album_id);
+        JSONObject response = new JSONObject(Album);
+
         System.out.println(response);
         assert response.getInt("statusCode") == 200;
         assert response.getString("msg").equals("Added Album to Favorites");
@@ -425,7 +477,9 @@ public class MusicTest {
 
     @Test
     public void FavoriteAlbumsOfOthers() {
-        JSONObject response = RequestSimulatorFavoriteAlbumsOfOthers();
+        String Albums = RequestSimulatorFavoriteAlbumsOfOthers();
+        JSONObject response = new JSONObject(Albums);
+
         JSONObject data = new JSONObject();
         JSONObject correct = new JSONObject();
         ArrayList<String> newdata = new ArrayList<>();
@@ -465,20 +519,21 @@ public class MusicTest {
     @Test
     public void PlaylistVisibility() {
         String playlist = RequestSimulatorCreatePlaylist(playlist_name);
-        JSONObject data = new JSONObject(playlist);
-//        System.out.println(data);
+        JSONObject response_1 = new JSONObject(playlist);
+        JSONObject data = response_1.getJSONObject("data");
         String key = data.getString("_key");
         created_playlist1 = key;
-        JSONObject response = RequestSimulatorPlaylistVisibility(created_playlist1);
+        String response = RequestSimulatorPlaylistVisibility(created_playlist1);
         System.out.println(response);
-        assert response.getInt("statusCode") == 200;
-        assert response.getString("msg").equals("UpdatedPlaylist");
+        assert new JSONObject(response).getInt("statusCode") == 200;
+        assert new JSONObject(response).getString("msg").equals("UpdatedPlaylist");
     }
 
     // response is an object
     @Test
     public void ViewFavoriteAlbums() {
-        JSONObject response = RequestSimulatorViewFavoriteAlbums();
+        String Albums = RequestSimulatorViewFavoriteAlbums();
+        JSONObject response = new JSONObject(Albums);
         JSONObject data = new JSONObject();
         JSONObject correct = new JSONObject();
         ArrayList<String> newdata = new ArrayList<>();
@@ -495,7 +550,9 @@ public class MusicTest {
     // response is an object
     @Test
     public void ViewFavoriteTracks() {
-        JSONObject response = RequestSimulatorViewFavoriteTracks();
+        String Tracks = RequestSimulatorViewFavoriteTracks();
+        JSONObject response = new JSONObject(Tracks);
+
         JSONObject data = new JSONObject();
         JSONObject correct = new JSONObject();
         String[] tracks = { "1" };
