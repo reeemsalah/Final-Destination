@@ -19,6 +19,7 @@
 
     <module>notifications-app</module>
     <module>musicApp</module>
+    <module>user_to_user_app</module>
     <module>Test_App</module>
   </modules>
 
@@ -47,7 +48,7 @@
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-all</artifactId>
-      <version>4.1.77.Final</version>
+      <version>4.1.60.Final</version>
     </dependency>
     <dependency>
       <groupId>org.json</groupId>

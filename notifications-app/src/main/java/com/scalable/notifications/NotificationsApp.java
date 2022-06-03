@@ -17,6 +17,7 @@ public class NotificationsApp extends App {
     }
 
     @Override
+
     public void dbInit() throws IOException {
         Arango arango = Arango.getInstance();
         arango.createPool(15);
