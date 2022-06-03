@@ -17,13 +17,15 @@ public class UserToUserApp extends App{
         app.start();
         Arango arango = Arango.getInstance();
 
+      
         arango.createDatabaseIfNotExists("user_to_user");
         arango.createCollectionIfNotExists("user_to_user","blocked_ids",false);
         arango.createCollectionIfNotExists("user_to_user","followed_ids",false);
         arango.createCollectionIfNotExists("user_to_user","reports",false);
-
+      
     }
 
+  
 //    @Override
 //    public void dbInit() throws IOException {
 //        Arango arango = Arango.getInstance();
@@ -33,6 +35,8 @@ public class UserToUserApp extends App{
 //        arango.createCollectionIfNotExists("user_to_user","followed_ids",false);
 //        arango.createCollectionIfNotExists("user_to_user","reports",false);
 //    }
+
+
 
     @Override
     protected String getAppName() {

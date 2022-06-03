@@ -26,7 +26,7 @@ public class NotificationsTest {
         }
     }
 
-    public static String sendNotification(String title, String notification_body, String topic) {
+    public static String sendNotification(String title, String notification_body, String topic) throws Exception {
         JSONObject body = new JSONObject();
         body.put("title", title);
         body.put("body", notification_body);
@@ -49,7 +49,7 @@ public class NotificationsTest {
     }
 
     @Test
-    public void sendNotificationTest() {
+    public void sendNotificationTest() throws Exception {
         int beforeCount = arango.documentCount("NotificationsDB", "Notifications");
         String response = sendNotification("test title", "test body", "testtopic");
         JSONObject responseJson = new JSONObject(response);

@@ -11,11 +11,12 @@
   <modules>
     <module>NettyServer</module>
     <module>rabbitMQ</module>
-      <module>Apps</module>
-      <module>Shared</module>
-    
+    <module>Apps</module>
+    <module>Shared</module>
+    <module>recommendations-app</module>
     <module>user_app</module>
-    
+    <module>chat_app</module>
+
     <module>notifications-app</module>
     <module>musicApp</module>
     <module>user_to_user_app</module>
