@@ -120,6 +120,7 @@ protected void initProperties() {
            
         }
         catch (Exception e){
+            e.printStackTrace();
             System.out.println(e.getMessage());
             System.exit(0);
         }
